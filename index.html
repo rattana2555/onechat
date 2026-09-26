@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.13">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.14">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.13">
-<title>Rattana One Chat v2.13</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.14">
+<title>Rattana One Chat v2.14</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -821,7 +821,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
     </button>
     <div class="lg-note">ใช้อีเมลบริษัทที่หัวหน้าเพิ่มไว้ในทีม · ล็อกอินครั้งเดียวแล้วเลือกบัญชี LINE<br>ยังไม่มีสิทธิ์? ติดต่อหัวหน้าแผนกหรือผู้ดูแลระบบ</div>
     <div class="lg-err" id="lgErr"></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.13 · 26/09/2569</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.14 · 26/09/2569</div>
   </div>
 </div>
 
@@ -871,7 +871,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.13</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.14</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -1117,7 +1117,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.13 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.14 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1132,6 +1132,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
 //  v2.11: บนเว็บแอพอยู่ที่ index.html (ลิงก์ = โฟลเดอร์ ไม่มีชื่อไฟล์) · rattana-purchase-chat.html เหลือเป็นหน้าเด้งมาที่นี่ (คง ?… และ #… ไว้)
 //  v2.12: ปุ่มอิโมจิ/สติกเกอร์ในช่องตอบ (แบบแป้นสติกเกอร์ของ LINE) — สติกเกอร์ส่งได้เฉพาะชุดฟรีทางการของ LINE (pur-send v2.2)
 //  v2.13: จุดวิกฤต — ตัวเลขที่เข้าเกณฑ์ (LV) เป็นตัวแดง/ส้มเด่น + กล่อง "ต้องแก้ด่วน" บนสุดของแดชบอร์ดและหน้าภาพรวม · เกณฑ์ตายตัวเทียบกับ SLA ของบัญชี
+//  v2.14: เช็คส่วนขยาย OA จากเวลาที่ส่วนขยายติดต่อเข้ามาล่าสุด (RPC pur_oa_heartbeat) ไม่ใช่ข้อความล่าสุดที่ทีมพิมพ์ — บัญชีที่เงียบ (มาร์ท) ไม่ถูกเตือนผิดอีก
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
@@ -2857,13 +2858,22 @@ async function loadDash(){
 // คำตอบที่ทีมพิมพ์ใน OA Manager เข้าระบบได้ทางส่วนขยาย Chrome ทางเดียว
 // ถ้าส่วนขยายหยุด ตัวเลขงานค้าง/เกิน SLA จะสูงเกินจริงโดยไม่มีใครรู้ → เตือนไว้ตรงหัวแดชบอร์ด
 const OA_STALE_MIN = 120;
+// ส่วนขยายติดต่อเข้ามาล่าสุดเมื่อไร (ms) — ใช้สัญญาณของส่วนขยายเอง (ส่งทุก 30 วิ–10 นาทีแม้ไม่มีข้อความใหม่)
+// เดิมดูจากข้อความล่าสุดที่ทีมพิมพ์ใน OA → บัญชีที่เงียบทั้งวันถูกเตือนว่าส่วนขยายหยุด ทั้งที่ยังทำงานอยู่
+async function oaLastSeen(accountId){
+  try{
+    const { data, error } = await sb.rpc('pur_oa_heartbeat', { p_account:accountId });
+    if(!error && data) return Date.parse(data);
+  }catch(_){ /* ถอยไปใช้วิธีเดิม */ }
+  const { data } = await sb.from('pur_messages').select('created_at').eq('account_id', accountId)
+    .eq('via', 'oa').order('created_at', { ascending:false }).limit(1).maybeSingle();
+  return data?.created_at ? Date.parse(data.created_at) : 0;
+}
 async function checkOaFresh(){
   const el = $('oaStale'); if(!el) return;
   if(DEMO) return;
   try{
-    const { data } = await sb.from('pur_messages').select('created_at').eq('account_id', acct.id)
-      .eq('via', 'oa').order('created_at', { ascending:false }).limit(1).maybeSingle();
-    const last = data?.created_at ? Date.parse(data.created_at) : 0;
+    const last = await oaLastSeen(acct.id);
     const mins = last ? Math.round((Date.now() - last) / 60000) : null;
     // บัญชีที่ไม่เคยใช้ส่วนขยายเลย (ตอบจากแอพอย่างเดียว) ไม่ต้องเตือน — เตือนเฉพาะบัญชีที่เคยมีคำตอบจาก OA Manager แล้วเงียบไป
     dash.oaQuiet = null;
@@ -2872,7 +2882,7 @@ async function checkOaFresh(){
     dash.oaQuiet = mins ?? 0; renderDashAlerts();
     const ago = mins === null ? 'ยังไม่เคยมีข้อมูลเข้ามา'
               : mins >= 60 ? `${Math.floor(mins / 60)} ชม.${mins % 60 ? ' ' + (mins % 60) + ' น.' : ''}` : `${mins} นาที`;
-    el.innerHTML = `<div class="warn-box bad mt-8">⚠️ <b>คำตอบจาก OA Manager ไม่เข้าระบบมา ${ago}</b> —
+    el.innerHTML = `<div class="warn-box bad mt-8">⚠️ <b>ส่วนขยาย OA Manager ไม่ได้ส่งข้อมูลมา ${ago}</b> —
       ตัวเลข "งานค้าง" และ "เกิน SLA" อาจสูงเกินจริง เพราะงานที่ทีมตอบใน OA Manager ยังไม่ถูกบันทึก<br>
       แก้: เปิด Chrome เครื่องที่ติดตั้งส่วนขยาย ค้างแท็บ <b>chat.line.biz</b> ไว้ แล้วกด <b>ดึงเดี๋ยวนี้</b> ที่ไอคอนส่วนขยาย
       ${isSup() ? '· ระบบจะแจ้งเตือนหัวหน้า/ผู้ดูแลอัตโนมัติถ้าเงียบเกิน 2 ชม. ในเวลาทำการ' : ''}</div>`;
@@ -2916,7 +2926,7 @@ const LV = {
 };
 const lvWorst = (...l) => l.includes('crit') ? 'crit' : l.includes('warn') ? 'warn' : '';
 const lvTag = (lv, why) => lv ? `<span class="lv-badge ${lv === 'warn' ? 'warn' : ''}">${lv === 'crit' ? 'วิกฤต · แก้ด่วน' : 'เฝ้าระวัง'}</span>${why ? `<span class="lv-why ${lv === 'warn' ? 'warn' : ''}">${why}</span>` : ''}` : '';
-const LV_RULES = `<b>วิกฤต</b>: ค้างเกิน SLA ตั้งแต่ 5 งาน · มีงานค้างนานเกิน 4 เท่าของ SLA · ตอบทัน SLA ต่ำกว่า 70% · อัตราการตอบต่ำกว่า 80% · เวลาตอบกลางเกิน SLA · รายคนค้างเลย SLA ตั้งแต่ 3 งาน หรือตอบทันต่ำกว่า 70% · คำตอบจาก OA Manager ไม่เข้าระบบเกิน 2 ชม.<br>
+const LV_RULES = `<b>วิกฤต</b>: ค้างเกิน SLA ตั้งแต่ 5 งาน · มีงานค้างนานเกิน 4 เท่าของ SLA · ตอบทัน SLA ต่ำกว่า 70% · อัตราการตอบต่ำกว่า 80% · เวลาตอบกลางเกิน SLA · รายคนค้างเลย SLA ตั้งแต่ 3 งาน หรือตอบทันต่ำกว่า 70% · ส่วนขยาย OA Manager ไม่ได้ส่งข้อมูลเกิน 2 ชม.<br>
   <b>เฝ้าระวัง</b>: เริ่มมีงานเลย SLA · ตอบทัน SLA ต่ำกว่า 80% · อัตราการตอบต่ำกว่า 95% · เวลาตอบกลางเกินครึ่งหนึ่งของ SLA · ข้อความเข้ามากกว่าสัปดาห์ก่อน 1.5 เท่า<br>
   ตัวเลขจากงานไม่ถึง ${LV_MIN} งานไม่ตัดสิน`;
 // กล่องสรุปบนสุด · items = [{ lv, text, go }] — go = id ขององค์ประกอบที่จะเลื่อนไปหาเมื่อกด
@@ -2983,7 +2993,7 @@ function renderDash(){
 function renderDashAlerts(){
   const el = $('dashAlerts'); if(!el || !dashLoadedOnce) return;
   const items = [...(dash.lvItems || [])];
-  if(dash.oaQuiet != null) items.unshift({ lv:'crit', go:'oaStale', text:`<b>คำตอบจาก OA Manager ไม่เข้าระบบมา ${fmtDur(dash.oaQuiet * 60)}</b> — ตัวเลขค้าง/ช้าอาจสูงเกินจริง เปิด Chrome เครื่องที่ติดส่วนขยาย` });
+  if(dash.oaQuiet != null) items.unshift({ lv:'crit', go:'oaStale', text:`<b>ส่วนขยาย OA Manager ไม่ได้ส่งข้อมูลมา ${fmtDur(dash.oaQuiet * 60)}</b> — ตัวเลขค้าง/ช้าอาจสูงเกินจริง เปิด Chrome เครื่องที่ติดส่วนขยาย` });
   if(dash.person === 'all') (dash.lastPersons || []).filter(r => r.email).forEach(r => {
     if(LV.person(r) !== 'crit') return;
     const why = [r.openLate >= 3 && `ค้างเลย SLA ${nf(r.openLate)} งาน`, r.answered >= LV_MIN && r.slaPct < .7 && `ตอบทัน ${Math.round(r.slaPct * 100)}%`].filter(Boolean).join(' · ');
@@ -4289,7 +4299,7 @@ async function loadOverview(){
         sb.from('pur_chats').select('id').in('account_id', ids).eq('exclude_kpi', true),
         Promise.all(ids.map(id => sb.rpc('pur_account_team', { p_account:id }))),
         Promise.all(ids.flatMap(id => [R.cur, R.prev].map(r => sb.rpc('pur_reply_counts', { p_from:r[0].toISOString(), p_to:r[1].toISOString(), p_account:id })))),
-        Promise.all(ids.map(id => sb.from('pur_messages').select('created_at').eq('account_id', id).eq('via', 'oa').order('created_at', { ascending:false }).limit(1).maybeSingle())),
+        Promise.all(ids.map(id => oaLastSeen(id))),
       ]);
       const bad = [excl, ...teams, ...reps].find(r => r.error);
       if(bad) throw new Error(bad.error.message);
@@ -4297,7 +4307,7 @@ async function loadOverview(){
       ids.forEach((id, i) => {
         data.teams[id] = teams[i].data || [];
         data.reps[id] = { cur:reps[i * 2].data || [], prev:reps[i * 2 + 1].data || [] };
-        data.oaLast[id] = oa[i].data?.created_at ? Date.parse(oa[i].data.created_at) : 0;
+        data.oaLast[id] = oa[i] || 0;
       });
     }
     if(seq !== ov.seq) return;                                 // กดเปลี่ยนช่วงระหว่างรอ — ทิ้งผลชุดเก่า
@@ -4427,13 +4437,13 @@ function renderOverview(){
     const oldest = (a.waits || []).reduce((m, ts) => Math.max(m, elapsedSec(ts, null, x.st)), 0);
     const L1 = { b:LV.breach(late), o:LV.oldest(oldest, slaS), s:LV.sla(c.sla, c.ans), m:LV.median(c.med, slaS, c.ans), q:oaMin != null && oaMin >= OA_STALE_MIN ? 'crit' : '' };
     const lvA = lvWorst(...Object.values(L1)), nm = `<b>${esc(a.name)}</b>`, cid = 'ovA' + a.id;
-    if(L1.q) ovItems.push({ lv:'crit', go:cid, text:`${nm}: คำตอบจาก OA Manager ไม่เข้าระบบมา ${fmtDur(oaMin * 60)} — ตัวเลขอาจสูงเกินจริง` });
+    if(L1.q) ovItems.push({ lv:'crit', go:cid, text:`${nm}: ส่วนขยาย OA Manager ไม่ได้ส่งข้อมูลมา ${fmtDur(oaMin * 60)} — ตัวเลขอาจสูงเกินจริง` });
     if(L1.b) ovItems.push({ lv:L1.b, go:cid, text:`${nm}: ค้างเกิน SLA ${nf(late)} งานตอนนี้` });
     if(L1.o) ovItems.push({ lv:L1.o, go:cid, text:`${nm}: มีงานรอตอบนาน ${fmtDur(oldest)} (SLA ${nf(x.st.sla_minutes)} นาที)` });
     if(L1.s) ovItems.push({ lv:L1.s, go:cid, text:`${nm}: ตอบทัน SLA ${ovPctTxt(c.sla)} (ช้ากว่า SLA ${nf(c.late)} งาน)` });
     if(L1.m) ovItems.push({ lv:L1.m, go:cid, text:`${nm}: เวลาตอบกลาง ${fmtDur(c.med)} (SLA ${nf(x.st.sla_minutes)} นาที)` });
     const flags = [];
-    if(oaMin != null && oaMin >= OA_STALE_MIN) flags.push(`<div class="ov-flag bad">คำตอบจาก OA Manager ไม่เข้าระบบมา ${fmtDur(oaMin * 60)} — ตัวเลขค้าง/เกิน SLA อาจสูงเกินจริง (เปิด Chrome เครื่องที่ติดส่วนขยาย)</div>`);
+    if(oaMin != null && oaMin >= OA_STALE_MIN) flags.push(`<div class="ov-flag bad">ส่วนขยาย OA Manager ไม่ได้ส่งข้อมูลมา ${fmtDur(oaMin * 60)} — ตัวเลขค้าง/เกิน SLA อาจสูงเกินจริง (เปิด Chrome เครื่องที่ติดส่วนขยาย)</div>`);
     if(!team) flags.push('<div class="ov-flag">ยังไม่ได้เพิ่มทีมของบัญชีนี้ ผลงานรายคนจึงยังว่าง</div>');
     if(c.unknown) flags.push(`<div class="ov-flag">ยังไม่รู้ว่าใครตอบ ${nf(c.unknown)} งาน · ผูกชื่อแอดมิน OA / ตั้ง "คนในบริษัท" ในหน้าตั้งค่าของบัญชีนี้ แล้วระบบนับให้ย้อนหลัง</div>`);
     if(!pv && c.waits) flags.push(`<div class="ov-flag info">ยังไม่มีข้อมูล${esc(ov.R.prevName)}ให้เทียบ</div>`);
@@ -4547,7 +4557,7 @@ function renderOvRank(C){
   if(slow && slow !== late && ranked.length > 1) out.push(['info', 'i', `เวลาตอบกลางช้าสุด: ${who(slow)} ${fmtDur(slow.cur.med)} · 90% ของงานตอบภายใน ${fmtDur(slow.cur.p90)}`]);
   C.acc.filter(x => ov.filter === 'all' || String(x.a.id) === ov.filter).forEach(x => {
     const oaLast = ov.data.oaLast[x.a.id];
-    if(oaLast && Date.now() - oaLast >= OA_STALE_MIN * 60000) out.push(['bad', '!', `<b>${esc(x.a.name)}</b>: คำตอบจาก OA Manager ไม่เข้าระบบมา ${fmtDur((Date.now() - oaLast) / 1000)} ตัวเลขค้าง/ช้าอาจสูงเกินจริง`]);
+    if(oaLast && Date.now() - oaLast >= OA_STALE_MIN * 60000) out.push(['bad', '!', `<b>${esc(x.a.name)}</b>: ส่วนขยาย OA Manager ไม่ได้ส่งข้อมูลมา ${fmtDur((Date.now() - oaLast) / 1000)} ตัวเลขค้าง/ช้าอาจสูงเกินจริง`]);
     if(x.cur.unknown) out.push(['info', 'i', `<b>${esc(x.a.name)}</b>: ยังไม่รู้ว่าใครตอบ ${nf(x.cur.unknown)} งาน — ผูกชื่อแอดมิน OA และตั้งคนในบริษัทแล้วอันดับจะแม่นขึ้น`]);
   });
   if(!out.length) out.push(['good', '✓', 'ไม่มีเรื่องต้องจับตาในช่วงนี้']);
