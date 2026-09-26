@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.12">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.13">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.12">
-<title>Rattana One Chat v2.12</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.13">
+<title>Rattana One Chat v2.13</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -293,6 +293,38 @@ button.older-bar:hover{border-color:var(--gold);color:var(--text)}
 .stat-card .s-sub{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4}
 .stat-card.danger{border-top-color:var(--st-crit)}.stat-card.danger .s-value{color:var(--st-crit)}
 .stat-card.good{border-top-color:var(--st-good)}
+/* ── จุดวิกฤต (v2.13) — วิกฤต = แดงเด่น · เฝ้าระวัง = ส้ม ── */
+.stat-card.lv-crit,.ov-panel.lv-crit{border-color:rgba(208,59,59,.6);background:linear-gradient(rgba(208,59,59,.08),rgba(208,59,59,.08)),var(--card-bg);box-shadow:0 0 0 1px rgba(208,59,59,.28),var(--shadow-sm)}
+.stat-card.lv-crit{border-top:3px solid var(--st-crit)}
+.stat-card.lv-warn{border-top-color:var(--st-warn)}
+.ov-panel.lv-warn{border-color:rgba(250,178,25,.6)}
+.stat-card.lv-crit .s-value,.ov-k.lv-crit .v,.lv-crit-txt{color:var(--st-crit)!important}
+.stat-card.lv-warn .s-value,.ov-k.lv-warn .v,.lv-warn-txt{color:#b7791f!important}
+body.dark .stat-card.lv-warn .s-value,body.dark .ov-k.lv-warn .v,body.dark .lv-warn-txt{color:#f2c661!important}
+.lv-badge{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:999px;background:var(--st-crit);color:#fff;white-space:nowrap;vertical-align:1px;letter-spacing:.2px}
+.lv-badge.warn{background:#fef3d7;color:#8a5a00}
+body.dark .lv-badge.warn{background:#3a2e15;color:#e8c86a}
+.lv-badge:not(.warn)::before{content:'';width:6px;height:6px;border-radius:50%;background:#fff;animation:lvpulse 1.4s ease-in-out infinite}
+@keyframes lvpulse{50%{opacity:.25}}
+.lv-why{display:block;font-weight:700;margin-top:3px;color:var(--st-crit)}
+.lv-why.warn{color:#b7791f}
+body.dark .lv-why.warn{color:#f2c661}
+.lv-box{border-radius:12px;padding:10px 14px;margin:10px 0 12px;font-size:13.5px;line-height:1.55}
+.lv-box.crit{background:rgba(208,59,59,.09);border:1.5px solid rgba(208,59,59,.55)}
+.lv-box.warn{background:rgba(250,178,25,.11);border:1px solid rgba(250,178,25,.5)}
+.lv-box.ok{background:rgba(12,163,12,.07);border:1px solid rgba(12,163,12,.3);padding:7px 14px}
+.lv-box h4{font-size:15px;font-weight:800;margin:0 0 4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lv-box.crit h4{color:var(--st-crit)}
+.lv-box ul{margin:2px 0 0;padding-left:20px}
+.lv-box li{margin:2px 0}
+.lv-box li[data-go]{cursor:pointer}
+.lv-box li[data-go]:hover{text-decoration:underline}
+.lv-box .more{margin-top:6px;color:var(--muted);font-size:12.5px}
+.lv-box details{margin-top:6px;font-size:11.5px;color:var(--muted)}
+.lv-box summary{cursor:pointer}
+.lv-flash{animation:lvflash 1.1s ease 2}
+@keyframes lvflash{50%{box-shadow:0 0 0 5px rgba(208,59,59,.45)}}
+@media (prefers-reduced-motion:reduce){.lv-flash,.lv-badge::before{animation:none!important}}
 @media(min-width:640px){.stat-card .s-value{font-size:26px}}
 .grid-2{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px}
 @media(min-width:900px){.grid-2{grid-template-columns:1fr 1fr}}
@@ -418,6 +450,10 @@ body.dark .fx-bubble{background:#f7f8fb}
 .mc-bar i{display:block;height:100%;border-radius:99px;background:var(--st-good)}
 .mcard.warn .mc-bar i{background:var(--st-warn)}
 .mcard.crit .mc-bar i{background:var(--st-crit)}
+.mcard.crit{background:linear-gradient(rgba(208,59,59,.07),rgba(208,59,59,.07)),var(--card-bg);border-color:rgba(208,59,59,.45)}
+.mcard.crit .mc-sla{color:var(--st-crit)}
+.mcard.warn .mc-sla{color:#b7791f}
+body.dark .mcard.warn .mc-sla{color:#f2c661}
 .mc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 4px}
 .mc-grid div{min-width:0}
 .mc-grid b{display:block;font-size:14px;line-height:1.2}
@@ -785,7 +821,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
     </button>
     <div class="lg-note">ใช้อีเมลบริษัทที่หัวหน้าเพิ่มไว้ในทีม · ล็อกอินครั้งเดียวแล้วเลือกบัญชี LINE<br>ยังไม่มีสิทธิ์? ติดต่อหัวหน้าแผนกหรือผู้ดูแลระบบ</div>
     <div class="lg-err" id="lgErr"></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.12 · 26/09/2569</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.13 · 26/09/2569</div>
   </div>
 </div>
 
@@ -814,6 +850,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
   </div>
   <div class="ov-body" id="ovBody"><div class="ov-in">
     <div class="ov-period" id="ovPeriod">กำลังโหลด…</div>
+    <div id="ovAlerts"></div>
     <section class="ov-kpis" id="ovKpis"></section>
     <section class="ov-sec"><div class="ov-h"><h2>แต่ละบัญชี</h2><span class="hint">ตัวเลขหลักของทุกบัญชีวางเทียบกัน</span></div><div class="ov-accts" id="ovAccts"></div></section>
     <section class="ov-sec"><div class="ov-h"><h2>ข้อความที่ทักเข้ามารายวัน</h2><span class="hint" id="ovDailyHint"></span></div>
@@ -834,7 +871,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.12</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.13</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -961,6 +998,8 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
         <div id="oaStale" style="width:100%"></div>
       </div>
 
+      <div id="dashAlerts"></div>
+
       <div class="stat-grid" id="statGrid"></div>
 
       <div class="card card-gold">
@@ -1078,7 +1117,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.12 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.13 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1092,6 +1131,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
 //  v2.10: ป้ายที่หมายถึง "ปริมาณ" เปลี่ยนจาก "งานรอตอบ" เป็น "ข้อความที่ทักเข้ามา" (หน่วย ครั้ง) — ผู้ใช้อ่านแล้วนึกว่าเป็นงานค้าง · งานค้างจริงคือ "ค้างตอนนี้"
 //  v2.11: บนเว็บแอพอยู่ที่ index.html (ลิงก์ = โฟลเดอร์ ไม่มีชื่อไฟล์) · rattana-purchase-chat.html เหลือเป็นหน้าเด้งมาที่นี่ (คง ?… และ #… ไว้)
 //  v2.12: ปุ่มอิโมจิ/สติกเกอร์ในช่องตอบ (แบบแป้นสติกเกอร์ของ LINE) — สติกเกอร์ส่งได้เฉพาะชุดฟรีทางการของ LINE (pur-send v2.2)
+//  v2.13: จุดวิกฤต — ตัวเลขที่เข้าเกณฑ์ (LV) เป็นตัวแดง/ส้มเด่น + กล่อง "ต้องแก้ด่วน" บนสุดของแดชบอร์ดและหน้าภาพรวม · เกณฑ์ตายตัวเทียบกับ SLA ของบัญชี
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
@@ -2826,8 +2866,10 @@ async function checkOaFresh(){
     const last = data?.created_at ? Date.parse(data.created_at) : 0;
     const mins = last ? Math.round((Date.now() - last) / 60000) : null;
     // บัญชีที่ไม่เคยใช้ส่วนขยายเลย (ตอบจากแอพอย่างเดียว) ไม่ต้องเตือน — เตือนเฉพาะบัญชีที่เคยมีคำตอบจาก OA Manager แล้วเงียบไป
-    if(mins === null && acct.id !== 1){ el.innerHTML = ''; return; }
-    if(mins !== null && mins < OA_STALE_MIN){ el.innerHTML = ''; return; }
+    dash.oaQuiet = null;
+    if(mins === null && acct.id !== 1){ el.innerHTML = ''; renderDashAlerts(); return; }
+    if(mins !== null && mins < OA_STALE_MIN){ el.innerHTML = ''; renderDashAlerts(); return; }
+    dash.oaQuiet = mins ?? 0; renderDashAlerts();
     const ago = mins === null ? 'ยังไม่เคยมีข้อมูลเข้ามา'
               : mins >= 60 ? `${Math.floor(mins / 60)} ชม.${mins % 60 ? ' ' + (mins % 60) + ' น.' : ''}` : `${mins} นาที`;
     el.innerHTML = `<div class="warn-box bad mt-8">⚠️ <b>คำตอบจาก OA Manager ไม่เข้าระบบมา ${ago}</b> —
@@ -2858,6 +2900,42 @@ function quantile(sorted, q){ if(!sorted.length) return null; const pos = (sorte
 const sumReplies = rows => rows.reduce((s, r) => s + Number(r.replies || 0), 0);
 const tile = (label, value, sub, cls = '') => `<div class="stat-card ${cls}"><div class="s-label">${label}</div><div class="s-value">${value}</div><div class="s-sub">${sub}</div></div>`;
 
+// ═══ จุดวิกฤต (v2.13) — เกณฑ์ตายตัว อธิบายได้ ใช้ชุดเดียวกันทุกหน้าแดชบอร์ด ═══
+// เทียบกับ SLA ของบัญชีนั้น · ตัวเลขที่มาจากงานไม่ถึง 10 งานไม่ตัดสิน (% จากไม่กี่งานแกว่งเกินไป)
+const LV_MIN = 10;
+const LV = {
+  breach: n => n >= 5 ? 'crit' : n >= 1 ? 'warn' : '',                                   // ค้างเกิน SLA ตอนนี้ (งาน)
+  oldest: (sec, sla) => sec >= sla * 4 ? 'crit' : sec > sla ? 'warn' : '',               // ค้างนานสุด
+  sla:    (p, n) => n < LV_MIN || p == null ? '' : p < 70 ? 'crit' : p < 80 ? 'warn' : '',   // % ตอบทัน SLA
+  answer: (p, n) => n < LV_MIN || p == null ? '' : p < 80 ? 'crit' : p < 95 ? 'warn' : '',   // % อัตราการตอบ
+  median: (sec, sla, n) => n < LV_MIN || sec == null ? '' : sec > sla ? 'crit' : sec > sla / 2 ? 'warn' : '',
+  surge:  (now, prev) => prev >= 20 && now >= prev * 1.5 ? 'warn' : '',                  // ข้อความเข้ามากกว่าสัปดาห์ก่อนมาก
+  // รายคน: งานค้างที่เลย SLA แล้ว หรือ % ตอบทันต่ำ (ใช้กับการ์ด/ตารางผลงานรายคน)
+  person: r => (r.openLate >= 3 || (r.answered >= LV_MIN && r.slaPct < .7)) ? 'crit'
+             : (r.openLate > 0 || r.openNow > 0 || (r.answered >= 5 && r.slaPct < .8)) ? 'warn' : '',
+};
+const lvWorst = (...l) => l.includes('crit') ? 'crit' : l.includes('warn') ? 'warn' : '';
+const lvTag = (lv, why) => lv ? `<span class="lv-badge ${lv === 'warn' ? 'warn' : ''}">${lv === 'crit' ? 'วิกฤต · แก้ด่วน' : 'เฝ้าระวัง'}</span>${why ? `<span class="lv-why ${lv === 'warn' ? 'warn' : ''}">${why}</span>` : ''}` : '';
+const LV_RULES = `<b>วิกฤต</b>: ค้างเกิน SLA ตั้งแต่ 5 งาน · มีงานค้างนานเกิน 4 เท่าของ SLA · ตอบทัน SLA ต่ำกว่า 70% · อัตราการตอบต่ำกว่า 80% · เวลาตอบกลางเกิน SLA · รายคนค้างเลย SLA ตั้งแต่ 3 งาน หรือตอบทันต่ำกว่า 70% · คำตอบจาก OA Manager ไม่เข้าระบบเกิน 2 ชม.<br>
+  <b>เฝ้าระวัง</b>: เริ่มมีงานเลย SLA · ตอบทัน SLA ต่ำกว่า 80% · อัตราการตอบต่ำกว่า 95% · เวลาตอบกลางเกินครึ่งหนึ่งของ SLA · ข้อความเข้ามากกว่าสัปดาห์ก่อน 1.5 เท่า<br>
+  ตัวเลขจากงานไม่ถึง ${LV_MIN} งานไม่ตัดสิน`;
+// กล่องสรุปบนสุด · items = [{ lv, text, go }] — go = id ขององค์ประกอบที่จะเลื่อนไปหาเมื่อกด
+function lvBoxHtml(items){
+  const c = items.filter(i => i.lv === 'crit'), w = items.filter(i => i.lv === 'warn');
+  const li = i => `<li${i.go ? ` data-go="${esc(i.go)}" title="กดเพื่อไปที่จุดนี้"` : ''}>${i.text}</li>`;
+  const rules = `<details><summary>เกณฑ์ที่ใช้ตัดสิน</summary>${LV_RULES}</details>`;
+  if(c.length) return `<div class="lv-box crit" role="alert"><h4><span class="lv-badge">วิกฤต</span>ต้องแก้ด่วน ${nf(c.length)} จุด</h4><ul>${c.map(li).join('')}</ul>
+    ${w.length ? `<div class="more">เฝ้าระวังอีก ${nf(w.length)} จุด: ${w.map(i => i.text.replace(/<[^>]+>/g, '')).join(' · ')}</div>` : ''}${rules}</div>`;
+  if(w.length) return `<div class="lv-box warn"><h4><span class="lv-badge warn">เฝ้าระวัง</span>${nf(w.length)} จุดที่ควรจับตา</h4><ul>${w.map(li).join('')}</ul>${rules}</div>`;
+  return `<div class="lv-box ok">✓ ไม่มีจุดวิกฤตในช่วงนี้ ${rules.replace('<details>', '<details style="display:inline-block;margin:0 0 0 8px">')}</div>`;
+}
+document.addEventListener('click', e => {
+  const li = e.target.closest('.lv-box li[data-go]'); if(!li) return;
+  const el = document.getElementById(li.dataset.go); if(!el) return;
+  el.scrollIntoView({ behavior:'smooth', block:'center' });
+  el.classList.remove('lv-flash'); void el.offsetWidth; el.classList.add('lv-flash');
+});
+
 function renderDash(){
   if(!dashLoadedOnce) return;
   renderRangeLabel();                       // เปลี่ยนนาฬิกา/SLA แล้วป้าย "นับตาม…" ต้องตามตัวเลขด้วย
@@ -2875,17 +2953,43 @@ function renderDash(){
   const repApp = sumReplies(reps.filter(r => r.via === 'app')), repLine = sumReplies(reps.filter(r => r.via === 'line')), repOa = sumReplies(reps.filter(r => r.via === 'oa'));
   const needReply = answered.length + openInR.length;
 
+  // จุดวิกฤต (v2.13) — ระดับของแต่ละการ์ด + เหตุผลสั้นๆ ที่ขึ้นใต้ตัวเลข
+  const slaP = answered.length ? okN / answered.length * 100 : null, ansP = needReply ? answered.length / needReply * 100 : null;
+  const lvB = LV.breach(breach.length), lvO = LV.oldest(oldest, sla), lvOpen = lvWorst(lvB, lvO);
+  const lvS = LV.sla(slaP, answered.length), lvA = LV.answer(ansP, needReply), lvM = LV.median(med, sla, durs.length);
+  const whyOpen = [lvB && `ค้างเกิน SLA ${nf(breach.length)} งาน`, lvO && `รอนานสุด ${fmtDur(oldest)}`].filter(Boolean).join(' · ');
+  const lvCls = (lv, fallback = '') => lv ? 'lv-' + lv : fallback;
   $('statGrid').innerHTML = [
-    tile('ค้างตอนนี้', nf(open.length), open.length ? `เกิน SLA ${nf(breach.length)} งาน · รอนานสุด ${fmtDur(oldest)}` : 'ไม่มีงานค้าง 🎉', open.length ? (breach.length ? 'danger' : '') : 'good'),
+    tile('ค้างตอนนี้', nf(open.length), (open.length ? `เกิน SLA ${nf(breach.length)} งาน · รอนานสุด ${fmtDur(oldest)}` : 'ไม่มีงานค้าง 🎉') + lvTag(lvOpen, lvOpen === 'crit' ? whyOpen : ''), lvCls(lvOpen, open.length ? '' : 'good')).replace('class="stat-card', 'id="lvOpen" class="stat-card'),
     tile('ข้อความที่ทักเข้ามา', nf(inR.length), `จาก ${nf(new Set(inR.map(w => w.chat_id)).size)} แชท · ไม่ต้องตอบ ${nf(dismissed.length)}`),
-    tile('อัตราการตอบ', pct(answered.length, needReply), `ตอบแล้ว ${nf(answered.length)} จาก ${nf(needReply)} งาน`, needReply && answered.length === needReply ? 'good' : (openInR.length ? 'danger' : '')),
-    tile('เวลาตอบ (มัธยฐาน)', fmtDur(med), durs.length ? `P90 ${fmtDur(p90)} · เฉลี่ย ${fmtDur(mean)}` : 'ยังไม่มีงานที่ตอบ'),
-    tile(`ตอบทัน SLA ${settings.sla_minutes} นาที`, pct(okN, answered.length), answered.length ? `ช้ากว่า SLA ${nf(answered.length - okN)} งาน` : 'ยังไม่มีงานที่ตอบ', answered.length ? (okN / answered.length < .8 ? 'danger' : 'good') : ''),
+    tile('อัตราการตอบ', pct(answered.length, needReply), `ตอบแล้ว ${nf(answered.length)} จาก ${nf(needReply)} งาน` + lvTag(lvA, lvA === 'crit' ? `ยังไม่ตอบ ${nf(openInR.length)} งาน` : ''), lvCls(lvA, needReply && answered.length === needReply ? 'good' : '')).replace('class="stat-card', 'id="lvAns" class="stat-card'),
+    tile('เวลาตอบ (มัธยฐาน)', fmtDur(med), (durs.length ? `P90 ${fmtDur(p90)} · เฉลี่ย ${fmtDur(mean)}` : 'ยังไม่มีงานที่ตอบ') + lvTag(lvM, lvM === 'crit' ? `ช้ากว่า SLA ${settings.sla_minutes} นาที` : ''), lvCls(lvM)).replace('class="stat-card', 'id="lvMed" class="stat-card'),
+    tile(`ตอบทัน SLA ${settings.sla_minutes} นาที`, pct(okN, answered.length), (answered.length ? `ช้ากว่า SLA ${nf(answered.length - okN)} งาน` : 'ยังไม่มีงานที่ตอบ') + lvTag(lvS, lvS === 'crit' ? 'ต่ำกว่า 70%' : ''), lvCls(lvS, answered.length >= LV_MIN ? 'good' : '')).replace('class="stat-card', 'id="lvSla" class="stat-card'),
     tile('ข้อความที่ทีมส่ง', nf(repApp + repLine + repOa), `แอป ${nf(repApp)} · LINE ส่วนตัว ${nf(repLine)} · OA Manager ${nf(repOa)}${repsAllKinds ? ' · <b>นับทุกประเภทแชท</b>' : ''}`),
   ].join('');
+  dash.lvItems = [
+    lvB  && { lv:lvB, go:'lvOpen', text:`<b>ค้างเกิน SLA ${nf(breach.length)} งาน</b> ตอนนี้ — ดูรายการในการ์ด "งานค้างตอนนี้"` },
+    lvO  && { lv:lvO, go:'lvOpen', text:`<b>มีงานรอตอบนาน ${fmtDur(oldest)}</b> (SLA ${settings.sla_minutes} นาที)` },
+    lvA  && { lv:lvA, go:'lvAns',  text:`<b>อัตราการตอบ ${Math.round(ansP)}%</b> — ยังไม่ตอบ ${nf(openInR.length)} จาก ${nf(needReply)} งานในช่วงนี้` },
+    lvS  && { lv:lvS, go:'lvSla',  text:`<b>ตอบทัน SLA แค่ ${Math.round(slaP)}%</b> — ช้ากว่า SLA ${nf(answered.length - okN)} งาน` },
+    lvM  && { lv:lvM, go:'lvMed',  text:`<b>เวลาตอบกลาง ${fmtDur(med)}</b> (SLA ${settings.sla_minutes} นาที)` },
+  ].filter(Boolean);
 
   renderDaily(inR, from, to); renderHist(answered); renderHeat(inR);
   renderPersons(inR, open, reps); renderBacklog(open); renderLate(); renderNoOwner(); renderTop(inR);
+  renderDashAlerts();
+}
+// กล่อง "ต้องแก้ด่วน" บนสุดของแดชบอร์ด = การ์ดตัวเลข + รายคน + ส่วนขยาย OA เงียบ (checkOaFresh เรียกซ้ำเมื่อรู้ผล)
+function renderDashAlerts(){
+  const el = $('dashAlerts'); if(!el || !dashLoadedOnce) return;
+  const items = [...(dash.lvItems || [])];
+  if(dash.oaQuiet != null) items.unshift({ lv:'crit', go:'oaStale', text:`<b>คำตอบจาก OA Manager ไม่เข้าระบบมา ${fmtDur(dash.oaQuiet * 60)}</b> — ตัวเลขค้าง/ช้าอาจสูงเกินจริง เปิด Chrome เครื่องที่ติดส่วนขยาย` });
+  if(dash.person === 'all') (dash.lastPersons || []).filter(r => r.email).forEach(r => {
+    if(LV.person(r) !== 'crit') return;
+    const why = [r.openLate >= 3 && `ค้างเลย SLA ${nf(r.openLate)} งาน`, r.answered >= LV_MIN && r.slaPct < .7 && `ตอบทัน ${Math.round(r.slaPct * 100)}%`].filter(Boolean).join(' · ');
+    items.push({ lv:'crit', go:'personChart', text:`<b>${esc(r.name)}</b>: ${why}` });
+  });
+  el.innerHTML = lvBoxHtml(items);
 }
 
 // ── ทูลทิป (ใช้ร่วมทุกกราฟ) ──
@@ -3040,6 +3144,8 @@ function renderPersons(inR, open, reps){
     String(a.name).localeCompare(String(b.name), 'th'));
 
   const mTone = r => !r.total && !r.openNow && !r.reps          ? 'none'    // ยังไม่มีงานเลย อย่าให้ดูเหมือนผลงานดี
+                   : LV.person(r) || '';   // v2.13 เกณฑ์เดียวกับกล่อง "ต้องแก้ด่วน" · บรรทัดล่างคือเกณฑ์เดิม (ไม่ถูกใช้แล้ว)
+  const mToneOld = r => !r.total && !r.openNow && !r.reps          ? 'none'
                    : r.openLate > 0 || (r.slaPct != null && r.slaPct < .7) ? 'crit'
                    : r.openNow > 0  || (r.slaPct != null && r.slaPct < .9) ? 'warn' : '';
   const mPct = r => r.slaPct == null ? '–' : Math.round(r.slaPct * 100) + '%';
@@ -4297,12 +4403,17 @@ function renderOverview(){
   // ── ตัวเลขรวม ──
   const kT = ovPct(T), kL = hasPrev ? ovPct(L) : null;
   const k = (lb, v, u, d) => `<div class="ov-panel ov-k"><div class="lb">${lb}</div><div class="v">${v}<small>${u}</small></div><div class="d">${d}</div></div>`;
+  // จุดวิกฤต (v2.13): การ์ดรวม + รายบัญชี + รายคน → กล่อง "ต้องแก้ด่วน"
+  const lvK = { surge:hasPrev ? LV.surge(T.waits, L.waits) : '', sla:LV.sla(kT, T.ans), open:LV.breach(breach) };
+  const kk = (lv, id, ...a) => k(...a).replace('class="ov-panel ov-k"', `id="${id}" class="ov-panel ov-k ${lv ? 'lv-' + lv : ''}"`);
   $('ovKpis').innerHTML = [
-    k('ข้อความที่ทักเข้ามา (ทุกบัญชี)', nf(T.waits), 'ครั้ง', `${ovDelta(T.waits, hasPrev ? L.waits : null, 0)} ${hasPrev ? esc(R.prevName) + ' ' + nf(L.waits) : ''}`),
-    k('ตอบทัน SLA', ovPctTxt(kT).replace('%', ''), kT == null ? '' : '%', `${ovDelta(kT, kL, 1, 'pt')} ${kL != null ? 'จาก ' + ovPctTxt(kL) : ''}`),
+    kk(lvK.surge, 'ovkIn', 'ข้อความที่ทักเข้ามา (ทุกบัญชี)', nf(T.waits), 'ครั้ง', `${ovDelta(T.waits, hasPrev ? L.waits : null, 0)} ${hasPrev ? esc(R.prevName) + ' ' + nf(L.waits) : ''}` + lvTag(lvK.surge)),
+    kk(lvK.sla, 'ovkSla', 'ตอบทัน SLA', ovPctTxt(kT).replace('%', ''), kT == null ? '' : '%', `${ovDelta(kT, kL, 1, 'pt')} ${kL != null ? 'จาก ' + ovPctTxt(kL) : ''}` + lvTag(lvK.sla)),
     k('ช้ากว่า SLA', nf(T.ans - T.ok), 'งาน', `${ovDelta(T.ans - T.ok, hasPrev ? L.ans - L.ok : null, -1)} ${hasPrev ? esc(R.prevName) + ' ' + nf(L.ans - L.ok) : ''}`),
-    k('ค้างตอนนี้', nf(openNow), 'แชท', breach ? `<span class="ov-d bad">เกิน SLA ${nf(breach)}</span> ${list.map(a => `${esc(a.name)} ${nf(a.awaiting || 0)}`).join(' · ')}` : list.map(a => `${esc(a.name)} ${nf(a.awaiting || 0)}`).join(' · ')),
+    kk(lvK.open, 'ovkOpen', 'ค้างตอนนี้', nf(openNow), 'แชท', (breach ? `<span class="ov-d bad">เกิน SLA ${nf(breach)}</span> ${list.map(a => `${esc(a.name)} ${nf(a.awaiting || 0)}`).join(' · ')}` : list.map(a => `${esc(a.name)} ${nf(a.awaiting || 0)}`).join(' · ')) + lvTag(lvK.open)),
   ].join('');
+  const ovItems = [];
+  if(lvK.surge) ovItems.push({ lv:lvK.surge, go:'ovkIn', text:`<b>ข้อความเข้ามา ${nf(T.waits)} ครั้ง</b> มากกว่า${esc(R.prevName)} ${Math.round(T.waits / L.waits * 10) / 10} เท่า` });
 
   // ── การ์ดรายบัญชี ──
   $('ovAccts').innerHTML = C.acc.map(x => {
@@ -4311,19 +4422,31 @@ function renderOverview(){
     const tot = x.mix.cur.app + x.mix.cur.line + x.mix.cur.oa;
     const seg = [['แอป', x.mix.cur.app, '--ch1'], ['LINE ส่วนตัว', x.mix.cur.line, '--ch2'], ['OA Manager', x.mix.cur.oa, '--ch3']];
     const oaLast = ov.data.oaLast[a.id], oaMin = oaLast ? Math.round((Date.now() - oaLast) / 60000) : null;
+    // จุดวิกฤตของบัญชีนี้ (SLA ของบัญชีเอง)
+    const slaS = (x.st.sla_minutes || 60) * 60, late = acctLate(a);
+    const oldest = (a.waits || []).reduce((m, ts) => Math.max(m, elapsedSec(ts, null, x.st)), 0);
+    const L1 = { b:LV.breach(late), o:LV.oldest(oldest, slaS), s:LV.sla(c.sla, c.ans), m:LV.median(c.med, slaS, c.ans), q:oaMin != null && oaMin >= OA_STALE_MIN ? 'crit' : '' };
+    const lvA = lvWorst(...Object.values(L1)), nm = `<b>${esc(a.name)}</b>`, cid = 'ovA' + a.id;
+    if(L1.q) ovItems.push({ lv:'crit', go:cid, text:`${nm}: คำตอบจาก OA Manager ไม่เข้าระบบมา ${fmtDur(oaMin * 60)} — ตัวเลขอาจสูงเกินจริง` });
+    if(L1.b) ovItems.push({ lv:L1.b, go:cid, text:`${nm}: ค้างเกิน SLA ${nf(late)} งานตอนนี้` });
+    if(L1.o) ovItems.push({ lv:L1.o, go:cid, text:`${nm}: มีงานรอตอบนาน ${fmtDur(oldest)} (SLA ${nf(x.st.sla_minutes)} นาที)` });
+    if(L1.s) ovItems.push({ lv:L1.s, go:cid, text:`${nm}: ตอบทัน SLA ${ovPctTxt(c.sla)} (ช้ากว่า SLA ${nf(c.late)} งาน)` });
+    if(L1.m) ovItems.push({ lv:L1.m, go:cid, text:`${nm}: เวลาตอบกลาง ${fmtDur(c.med)} (SLA ${nf(x.st.sla_minutes)} นาที)` });
     const flags = [];
     if(oaMin != null && oaMin >= OA_STALE_MIN) flags.push(`<div class="ov-flag bad">คำตอบจาก OA Manager ไม่เข้าระบบมา ${fmtDur(oaMin * 60)} — ตัวเลขค้าง/เกิน SLA อาจสูงเกินจริง (เปิด Chrome เครื่องที่ติดส่วนขยาย)</div>`);
     if(!team) flags.push('<div class="ov-flag">ยังไม่ได้เพิ่มทีมของบัญชีนี้ ผลงานรายคนจึงยังว่าง</div>');
     if(c.unknown) flags.push(`<div class="ov-flag">ยังไม่รู้ว่าใครตอบ ${nf(c.unknown)} งาน · ผูกชื่อแอดมิน OA / ตั้ง "คนในบริษัท" ในหน้าตั้งค่าของบัญชีนี้ แล้วระบบนับให้ย้อนหลัง</div>`);
     if(!pv && c.waits) flags.push(`<div class="ov-flag info">ยังไม่มีข้อมูล${esc(ov.R.prevName)}ให้เทียบ</div>`);
-    return `<article class="ov-panel ov-acct">
+    const tx = lv => lv ? `lv-${lv}-txt` : '';
+    return `<article class="ov-panel ov-acct ${lvA ? 'lv-' + lvA : ''}" id="${cid}">
+      ${lvA ? `<div>${lvTag(lvA)}</div>` : ''}
       <div class="ov-at">${acctAv(a, 'ov-av')}
         <div style="min-width:0"><h3><i class="ov-dot" style="background:${ovCol(a.id)}"></i> ${esc(a.name)}</h3><div class="mode">${x.st.use_assignee !== false ? 'แบ่งงานรายแชท' : 'แอดมินใครว่างก็ตอบ'} · ${team ? `ทีม ${nf(team)} คน` : 'ยังไม่มีทีม'}</div></div>
-        <div class="open ${(a.awaiting || 0) > 20 ? 'hot' : ''}"><b>${nf(a.awaiting || 0)}</b>ค้างตอนนี้</div></div>
+        <div class="open"><b class="${tx(lvWorst(L1.b, L1.o))}">${nf(a.awaiting || 0)}</b>ค้างตอนนี้${late ? `<br><span class="${tx(L1.b) || 'lv-warn-txt'}">เกิน SLA ${nf(late)}</span>` : ''}</div></div>
       <div class="ov-mets">
         <div class="ov-met"><div class="lb">ทักเข้ามา</div><div class="v">${nf(c.waits)}</div><div class="c">${pv ? ovDelta(c.waits, p.waits, 0) : ''}</div></div>
-        <div class="ov-met"><div class="lb">ตอบทัน SLA ${nf(x.st.sla_minutes)} น.</div><div class="v">${ovPctTxt(c.sla)}</div><div class="c">${pv && c.sla != null && p.sla != null ? ovDelta(c.sla, p.sla, 1, 'pt') : ''}</div></div>
-        <div class="ov-met"><div class="lb">เวลาตอบกลาง</div><div class="v">${fmtDur(c.med)}</div><div class="c">${pv && c.med != null && p.med != null ? ovDelta(c.med, p.med, -1, 'dur') : ''}</div></div>
+        <div class="ov-met"><div class="lb">ตอบทัน SLA ${nf(x.st.sla_minutes)} น.</div><div class="v ${tx(L1.s)}">${ovPctTxt(c.sla)}</div><div class="c">${pv && c.sla != null && p.sla != null ? ovDelta(c.sla, p.sla, 1, 'pt') : ''}</div></div>
+        <div class="ov-met"><div class="lb">เวลาตอบกลาง</div><div class="v ${tx(L1.m)}">${fmtDur(c.med)}</div><div class="c">${pv && c.med != null && p.med != null ? ovDelta(c.med, p.med, -1, 'dur') : ''}</div></div>
       </div>
       <div class="ov-mix"><div class="lb">ทีมตอบผ่านช่องทางไหน · ข้อความที่ส่งในช่วงนี้ ${nf(tot)}</div>
         ${tot ? `<div class="ov-mixbar">${seg.filter(s => s[1]).map(s => `<i class="mx" style="width:${s[1] / tot * 100}%;background:var(${s[2]})" data-t="${esc(s[0])} ${nf(s[1])} ข้อความ (${Math.round(s[1] / tot * 100)}%)"></i>`).join('')}</div>
@@ -4333,6 +4456,9 @@ function renderOverview(){
   }).join('');
   bindTips($('ovAccts'), '.mx', el => esc(el.dataset.t));
 
+  C.people.filter(p => LV.sla(p.cur.sla, p.cur.ans) === 'crit').forEach(p =>
+    ovItems.push({ lv:'crit', go:'ovRank', text:`<b>${esc(p.name)}</b> (${esc(ovName(p.acct))}): ตอบทัน SLA ${ovPctTxt(p.cur.sla)} · ช้ากว่า SLA ${nf(p.cur.late)} งาน` }));
+  $('ovAlerts').innerHTML = lvBoxHtml(ovItems);
   renderOvDaily(C);
   renderOvRank(C);
   renderOvTable(C);
@@ -4404,7 +4530,7 @@ function renderOvRank(C){
       <div class="ov-track"><div class="base"></div>
         ${sP != null ? `<div class="seg" style="left:${lo}%;width:${hi - lo}%"></div><div class="p last" style="left:${sP}%" data-t="${esc(p.name)} · ${esc(R.prevName)}: ตอบทัน ${ovPctTxt(sP)} (${nf(p.prev.ok)}/${nf(p.prev.ans)}) · เวลาตอบกลาง ${fmtDur(p.prev.med)}"></div>` : ''}
         <div class="p" style="left:${sT}%;background:${ovCol(p.acct)}" data-t="${esc(p.name)} · ช่วงนี้: ตอบทัน ${ovPctTxt(sT)} (${nf(p.cur.ok)}/${nf(p.cur.ans)}) · เวลาตอบกลาง ${fmtDur(p.cur.med)} · ช้ากว่า SLA ${nf(p.cur.late)} งาน"></div></div>
-      <div class="side"><b>${ovPctTxt(sT)}</b><br>ช้า ${nf(p.cur.late)} งาน</div></div>`;
+      <div class="side"><b class="${LV.sla(sT, p.cur.ans) ? 'lv-' + LV.sla(sT, p.cur.ans) + '-txt' : ''}">${ovPctTxt(sT)}</b><br>ช้า ${nf(p.cur.late)} งาน</div></div>`;
   }).join('') : '<div class="ov-empty">ยังไม่มีใครตอบงานในช่วงนี้</div>';
   bindTips($('ovRank'), '.p', el => esc(el.dataset.t));
 
@@ -4440,7 +4566,7 @@ function renderOvTable(C){
       <td><span class="ac"><i style="background:${ovCol(p.acct)}"></i>${esc(ovName(p.acct))}</span></td>
       <td>${nf(p.cur.ans)} <span class="sub">(${nf(p.prev.ans)})</span></td>
       <td>${fmtDur(p.cur.med)}</td><td>${fmtDur(p.cur.p90)}</td>
-      <td>${p.cur.sla == null ? '–' : `<span class="ov-pct">${ovPctTxt(p.cur.sla)}<span class="bar"><i style="width:${p.cur.sla}%"></i></span></span>`}</td>
+      <td>${p.cur.sla == null ? '–' : `<span class="ov-pct ${LV.sla(p.cur.sla, p.cur.ans) ? 'lv-' + LV.sla(p.cur.sla, p.cur.ans) + '-txt' : ''}"><b>${ovPctTxt(p.cur.sla)}</b><span class="bar"><i style="width:${p.cur.sla}%;${LV.sla(p.cur.sla, p.cur.ans) === 'crit' ? 'background:var(--st-crit)' : ''}"></i></span></span>`}</td>
       <td>${p.cur.late ? `<span class="pill bad">${nf(p.cur.late)}</span>` : '0'}</td>
       <td>${p.cur.open ? `<span class="pill warn">${nf(p.cur.open)}</span>` : '0'}</td>
       <td>${p.cur.sla != null && p.prev.ans ? ovDelta(p.cur.sla, p.prev.sla, 1, 'pt') : '<span class="sub">–</span>'}</td>
