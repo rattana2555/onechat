@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.11">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.12">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.11">
-<title>Rattana One Chat v2.11</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.12">
+<title>Rattana One Chat v2.12</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -242,6 +242,26 @@ button.older-bar:hover{border-color:var(--gold);color:var(--text)}
 .round-btn:active{transform:scale(.9)}
 .round-btn:disabled{opacity:.35;cursor:not-allowed}
 .attach-btn{background:var(--bg);border:1.5px solid var(--border);color:var(--text)}
+.emo-btn{background:var(--bg);border:1.5px solid var(--border);color:var(--text)}
+.emo-btn.on{border-color:var(--gold);color:var(--gold)}
+.emo-panel{background:var(--card-bg);border-top:1px solid var(--border);height:min(290px,42vh);display:flex;flex-direction:column;flex-shrink:0}
+.emo-panel[hidden]{display:none}
+.emo-tabs{display:flex;gap:4px;padding:6px 8px;border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;flex-shrink:0;align-items:center}
+.emo-tabs::-webkit-scrollbar{display:none}
+.emo-tabs button{flex:0 0 auto;height:36px;min-width:36px;padding:0 8px;border-radius:10px;border:1.5px solid transparent;background:none;color:var(--muted);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.emo-tabs button.on{background:var(--bg);border-color:var(--gold);color:var(--text)}
+.emo-tabs button .ic{width:18px;height:18px}
+.emo-tabs img{width:28px;height:28px;object-fit:contain}
+.emo-tabs .sep{width:1px;height:22px;background:var(--border);margin:0 3px;flex:0 0 auto}
+.emo-body{flex:1;overflow-y:auto;padding:6px 8px 10px;-webkit-overflow-scrolling:touch}
+.emo-h{font-size:11.5px;color:var(--muted);font-weight:600;margin:6px 2px 4px}
+.emo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(42px,1fr));gap:2px}
+.emo-grid button{font-size:25px;line-height:1;height:44px;border:0;background:none;border-radius:8px;cursor:pointer;font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif}
+.emo-grid button:hover,.stk-grid button:hover{background:var(--bg)}
+.stk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:4px}
+.stk-grid button{border:0;background:none;padding:6px;border-radius:12px;cursor:pointer;aspect-ratio:1;min-width:0}
+.stk-grid img{width:100%;height:100%;object-fit:contain;display:block}
+.emo-empty{color:var(--muted);font-size:13px;padding:18px 8px;text-align:center;line-height:1.6}
 .send-btn{background:var(--navy);color:#fff;box-shadow:var(--shadow-gold)}
 .send-btn.lit{background:var(--gold);color:var(--navy)}
 
@@ -765,7 +785,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
     </button>
     <div class="lg-note">ใช้อีเมลบริษัทที่หัวหน้าเพิ่มไว้ในทีม · ล็อกอินครั้งเดียวแล้วเลือกบัญชี LINE<br>ยังไม่มีสิทธิ์? ติดต่อหัวหน้าแผนกหรือผู้ดูแลระบบ</div>
     <div class="lg-err" id="lgErr"></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.11 · 26/09/2569</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.12 · 26/09/2569</div>
   </div>
 </div>
 
@@ -814,7 +834,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.11</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.12</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -887,8 +907,13 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
         <div class="reply-bar">
           <input type="file" id="imgInp" accept="image/*" hidden onchange="onPickImage(this)">
           <button class="round-btn attach-btn" id="attachBtn" title="ส่งรูป" onclick="document.getElementById('imgInp').click()"><span data-ic="image"></span></button>
-          <textarea class="reply-inp" id="replyInp" placeholder="พิมพ์ข้อความ…" rows="1" onkeydown="onKey(event)" oninput="grow(this);syncSend();warmSend()"></textarea>
+          <button class="round-btn emo-btn" id="emoBtn" title="อิโมจิ / สติกเกอร์" aria-label="อิโมจิ / สติกเกอร์" onclick="toggleEmo()"><span data-ic="smile"></span></button>
+          <textarea class="reply-inp" id="replyInp" placeholder="พิมพ์ข้อความ…" rows="1" onkeydown="onKey(event)" oninput="grow(this);syncSend();warmSend()" onfocus="if(window.innerWidth<768)emoHide()"></textarea>
           <button class="round-btn send-btn" id="sendBtn" onclick="sendText()" title="ส่ง"><span data-ic="send"></span></button>
+        </div>
+        <div class="emo-panel" id="emoPanel" hidden>
+          <div class="emo-tabs" id="emoTabs" role="tablist"></div>
+          <div class="emo-body" id="emoBody"></div>
         </div>
       </div>
     </div>
@@ -1053,7 +1078,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.11 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.12 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1066,6 +1091,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
 //  v2.09: หน้าภาพรวม — อันดับเรียง % ตอบทัน SLA มากไปน้อย · ตารางรายคนเรียงจำนวนงานที่ตอบมากไปน้อย (ไม่แบ่งตามบัญชี)
 //  v2.10: ป้ายที่หมายถึง "ปริมาณ" เปลี่ยนจาก "งานรอตอบ" เป็น "ข้อความที่ทักเข้ามา" (หน่วย ครั้ง) — ผู้ใช้อ่านแล้วนึกว่าเป็นงานค้าง · งานค้างจริงคือ "ค้างตอนนี้"
 //  v2.11: บนเว็บแอพอยู่ที่ index.html (ลิงก์ = โฟลเดอร์ ไม่มีชื่อไฟล์) · rattana-purchase-chat.html เหลือเป็นหน้าเด้งมาที่นี่ (คง ?… และ #… ไว้)
+//  v2.12: ปุ่มอิโมจิ/สติกเกอร์ในช่องตอบ (แบบแป้นสติกเกอร์ของ LINE) — สติกเกอร์ส่งได้เฉพาะชุดฟรีทางการของ LINE (pur-send v2.2)
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
@@ -1081,6 +1107,7 @@ const APP_VERSION   = (/(?:Rattana One Chat|RTN Chat Hub) v([0-9.]+)/.exec(docum
 // วาดด้วย SVG ในตัว (ลายเส้นแบบ Lucide, MIT) ไม่โหลดอะไรจากข้างนอก สีตามตัวอักษรของที่ที่มันอยู่
 // อิโมจิหน้าตาเปลี่ยนตามเครื่อง (iPhone/Android/Windows ไม่เหมือนกัน) — ไอคอนชุดนี้เหมือนกันทุกเครื่อง
 const ICON_PATHS = {
+  smile:     '<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01M15 9h.01"/>',
   bell:      '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
   belloff:   '<path d="M8.7 3A6 6 0 0 1 18 8a21.3 21.3 0 0 0 .6 5"/><path d="M17 17H3s3-2 3-9a4.67 4.67 0 0 1 .3-1.7"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/><path d="m2 2 20 20"/>',
   moon:      '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
@@ -1556,7 +1583,7 @@ function setAppBadge(n){
 // ── OPEN CHAT ──
 async function openChat(id){
   const c = chatById.get(id); if(!c) return;
-  activeId = id; openedAt = Date.now(); clearQuote(); forceReply.delete(id); $('newPill').classList.remove('show');
+  activeId = id; openedAt = Date.now(); clearQuote(); emoHide(); forceReply.delete(id); $('newPill').classList.remove('show');
   if(c.unread_count > 0){
     c.unread_count = 0; renderList();
     if(!DEMO){ rpc('pur_mark_read', { p_chat:id }).catch(e => console.warn('mark read:', e.message)); if(c.kind === 'user') callFn({ action:'markRead', chatId:id }); }
@@ -1628,7 +1655,7 @@ function applyReplyState(c){
   note.innerHTML = oaOnly ? `<span>⚠️ ${OA_ONLY_MSG} <span class="txt-muted">(ระบบจะได้รหัสเองเมื่อ${peer()}ทักเข้ามา${acct?.id === 1 ? 'หรือมีการส่งใบสั่งสินค้า' : ' แล้วตอบจากแอพได้ทันที'})</span></span>`
     : blocked ? `⚠️ ส่งจากหน้านี้ไม่ได้ในตอนนี้ <button class="btn btn-outline btn-sm" style="margin-left:auto" onclick="forceReply.add(activeId);applyReplyState(chatById.get(activeId))">ลองส่งดูอยู่ดี</button>` : '';
   note.classList.toggle('show', blocked);
-  $('replyInp').disabled = blocked; $('sendBtn').disabled = blocked; $('attachBtn').disabled = blocked;
+  $('replyInp').disabled = blocked; $('sendBtn').disabled = blocked; $('attachBtn').disabled = blocked; $('emoBtn').disabled = blocked; if(blocked) emoHide();
   $('replyInp').placeholder = oaOnly ? 'ตอบใน LINE OA Manager' : blocked ? 'ส่งไม่ได้ในตอนนี้' : 'พิมพ์ข้อความ…';
 }
 function renderQuick(){
@@ -2062,6 +2089,87 @@ async function sendImage(file){
   if(r.path) signedCache.set(r.path, { url:blobUrl, exp:Date.now() + 30*60*1000 });   // ใช้รูปในเครื่องแสดงต่อได้เลย
   reconcile(local, r);
 }
+// ── อิโมจิ / สติกเกอร์ (v2.12) ──
+// อิโมจิ = ตัวอักษรธรรมดา แทรกลงช่องพิมพ์ · สติกเกอร์ = กดแล้วส่งทันทีแบบ LINE
+// LINE ให้ระบบภายนอกส่งได้เฉพาะชุดฟรีทางการ (ตรวจกับเอกสาร LINE 26/09/2569 · ฝั่ง pur-send ตรวจซ้ำ)
+// ชุดที่เป็นรูปเดียวกันแต่ต่างภาษา (6325/6362/6370/6632/8525) ไม่ใส่ในแผง — ใช้ฉบับไทย/ไม่มีตัวหนังสือแทน
+const STICKER_PACKS = [
+  { id:6359,  first:11069848, n:24, name:'บราวน์ & โคนี่ (ไทย)' },
+  { id:11537, first:52002734, n:40, name:'บราวน์ โคนี่ แซลลี่ (ขยับได้)' },
+  { id:11538, first:51626494, n:40, name:'ช็อกโก้ & เพื่อน (ขยับได้)' },
+  { id:11539, first:52114110, n:40, name:'BT21 (ขยับได้)' },
+  { id:446,   first:1988,     n:40, name:'มูน' },
+  { id:1070,  first:17839,    n:40, name:'มูน 2' },
+  { id:789,   first:10855,    n:40, name:'แซลลี่' },
+  { id:6136,  first:10551376, n:24, name:'ขอโทษ (ญี่ปุ่น)' },
+  { id:8515,  first:16581242, n:24, name:'คำสุภาพ (ญี่ปุ่น)' },
+  { id:8522,  first:16581266, n:24, name:'คำสุภาพ 2 (ญี่ปุ่น)' },
+];
+const EMOJI_SETS = [
+  ['ใช้บ่อยในงาน', '🙏 😊 😄 👍 👌 ✅ ❤️ 🙇 😅 🥰 🤗 🤝 👏 💪 🎉 ✨ ⭐ ⏰ ⌛ 📦 🚚 🛒 💰 🧾 📄 📌 📍 📞 📷 ❗ ❓ ⚠️ ❌ 🆗 🆕'],
+  ['หน้า', '😀 😃 😁 😆 😂 🤣 😉 😇 🙂 🙃 😋 😌 😍 😘 😎 🤩 🥳 🤔 🤨 😐 😑 😶 🙄 😏 😴 😪 😮 😯 😲 🥺 😢 😭 😤 😠 😡 🤯 😳 😱 😨 😰 😓 🤒 🤧 😷'],
+  ['มือ', '👋 🤚 ✋ 👌 🤌 ✌️ 🤞 🤟 🤙 👈 👉 👆 👇 ☝️ 👍 👎 ✊ 👊 👏 🙌 🤲 🙏 ✍️ 💪'],
+  ['ของกิน / สินค้า', '🍚 🍜 🍲 🍳 🥚 🥛 ☕ 🍵 🧃 🥤 🍞 🍰 🍫 🍬 🍎 🍊 🍌 🍉 🍇 🍓 🥭 🍍 🥥 🥬 🥕 🌽 🌶️ 🧄 🧅 🥩 🍗 🍤 🐟 🦐 🧂 🧴 🧻 🧼'],
+  ['สัญลักษณ์', '💯 ☑️ ✔️ ⭕ ‼️ ⁉️ 🔴 🟠 🟡 🟢 🔵 ⬆️ ⬇️ ➡️ ⬅️ 🔄 🆓 💲 💵 🏷️ 📅 🗓️ 🕘 🔔 📢 💡 🔥 🧡 💛 💚 💙 💜 🖤 🤍'],
+].map(([h, t]) => [h, t.split(' ')]);
+const stkUrl = id => `https://stickershop.line-scdn.net/stickershop/v1/sticker/${id}/android/sticker.png`;
+const stkBtn = (p, i) => `<button type="button" data-s="${+p}:${+i}" title="กดเพื่อส่งสติกเกอร์"><img src="${stkUrl(+i)}" alt="สติกเกอร์" loading="lazy"></button>`;
+let emoTab = LS.get('pur.emoTab') || 'emoji';
+function lsList(k){ try{ const a = JSON.parse(LS.get(k) || '[]'); return Array.isArray(a) ? a : []; }catch(_){ return []; } }
+function pushRecent(k, v, max){ LS.set(k, JSON.stringify([v, ...lsList(k).filter(x => x !== v)].slice(0, max))); }
+function toggleEmo(){
+  const p = $('emoPanel');
+  if(!p.hidden){ emoHide(); return; }
+  p.hidden = false; $('emoBtn').classList.add('on');
+  if(window.innerWidth < 768) $('replyInp').blur();          // มือถือ: ซ่อนคีย์บอร์ด ให้แผงขึ้นแทนแบบ LINE
+  renderEmo();
+  if(activeId && (msgCache[activeId] || []).length) scrollBottom();
+}
+function emoHide(){ const p = $('emoPanel'); if(!p || p.hidden) return; p.hidden = true; $('emoBtn').classList.remove('on'); }
+function setEmoTab(t){ emoTab = String(t); LS.set('pur.emoTab', emoTab); renderEmo(); }
+function renderEmo(){
+  const on = t => emoTab === String(t) ? 'on' : '';
+  $('emoTabs').innerHTML = `<button class="${on('recent')}" onclick="setEmoTab('recent')" title="ใช้ล่าสุด" aria-label="ใช้ล่าสุด">${ic('clock')}</button>`
+    + `<button class="${on('emoji')}" onclick="setEmoTab('emoji')" title="อิโมจิ" aria-label="อิโมจิ">😊</button><span class="sep"></span>`
+    + STICKER_PACKS.map(p => `<button class="${on(p.id)}" onclick="setEmoTab(${p.id})" title="${esc(p.name)}" aria-label="${esc(p.name)}"><img src="${stkUrl(p.first)}" alt="" loading="lazy"></button>`).join('');
+  let h;
+  if(emoTab === 'emoji'){
+    h = EMOJI_SETS.map(([t, list]) => `<div class="emo-h">${t}</div><div class="emo-grid">${list.map(e => `<button type="button" data-e="${esc(e)}">${esc(e)}</button>`).join('')}</div>`).join('');
+  } else if(emoTab === 'recent'){
+    const e = lsList('pur.emjRecent'), st = lsList('pur.stkRecent');
+    h = !e.length && !st.length ? '<div class="emo-empty">ยังไม่มีที่ใช้ล่าสุด<br>เลือกอิโมจิ 😊 หรือสติกเกอร์จากแถบด้านบน</div>'
+      : (st.length ? `<div class="emo-h">สติกเกอร์ · กดเพื่อส่งทันที</div><div class="stk-grid">${st.map(k => { const [p, i] = String(k).split(':'); return stkBtn(p, i); }).join('')}</div>` : '')
+      + (e.length ? `<div class="emo-h">อิโมจิ</div><div class="emo-grid">${e.map(x => `<button type="button" data-e="${esc(x)}">${esc(x)}</button>`).join('')}</div>` : '');
+  } else {
+    const p = STICKER_PACKS.find(x => String(x.id) === emoTab) || STICKER_PACKS[0];
+    h = `<div class="emo-h">${esc(p.name)} · กดเพื่อส่งทันที</div><div class="stk-grid">${Array.from({ length:p.n }, (_, k) => stkBtn(p.id, p.first + k)).join('')}</div>`;
+  }
+  $('emoBody').innerHTML = h; $('emoBody').scrollTop = 0;
+}
+function insEmoji(e){
+  const i = $('replyInp'); if(i.disabled) return;
+  const a = i.selectionStart ?? i.value.length, b = i.selectionEnd ?? i.value.length;
+  i.value = i.value.slice(0, a) + e + i.value.slice(b);
+  try{ i.setSelectionRange(a + e.length, a + e.length); }catch(_){}
+  if(window.innerWidth >= 768) i.focus();                     // มือถือไม่โฟกัส — คีย์บอร์ดจะเด้งทับแผง
+  grow(i); syncSend(); warmSend(); pushRecent('pur.emjRecent', e, 24);
+}
+async function sendSticker(pkg, id){
+  if(!activeId) return; const chatId = activeId; const c = chatById.get(chatId); if(!c) return;
+  if(DEMO){ demoBlock(); return; }
+  if(isOaOnly(c)){ showToast(OA_ONLY_MSG, 'warning', 4500); return; }
+  pushRecent('pur.stkRecent', `${pkg}:${id}`, 24);
+  const local = { id:'tmp-' + Date.now(), tmp:true, chat_id:chatId, via:'app', direction:'out', sender_type:'staff', staff_email:me.email,
+                  sender_name:me.nick, msg_type:'sticker', content:stkUrl(id), status:'sending', sent_at:new Date().toISOString() };
+  (msgCache[chatId] || (msgCache[chatId] = [])).push(local);
+  if(activeId === chatId){ renderMsgs(msgCache[chatId]); scrollBottom(); }
+  reconcile(local, await callFn({ action:'sticker', chatId, packageId:pkg, stickerId:id }));
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('#emoBody [data-e], #emoBody [data-s]'); if(!b) return;
+  if(b.dataset.e) insEmoji(b.dataset.e);
+  else { const [p, i] = b.dataset.s.split(':').map(Number); sendSticker(p, i); }
+});
 function onKey(e){ if(e.key === 'Enter' && !e.shiftKey && window.innerWidth >= 768){ e.preventDefault(); sendText(); } }
 function grow(el){ el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
 function syncSend(){ $('sendBtn').classList.toggle('lit', $('replyInp').value.trim().length > 0); }
