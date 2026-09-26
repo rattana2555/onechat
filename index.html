@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.15">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.16">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.15">
-<title>Rattana One Chat v2.15</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.16">
+<title>Rattana One Chat v2.16</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -821,7 +821,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
     </button>
     <div class="lg-note">ใช้อีเมลบริษัทที่หัวหน้าเพิ่มไว้ในทีม · ล็อกอินครั้งเดียวแล้วเลือกบัญชี LINE<br>ยังไม่มีสิทธิ์? ติดต่อหัวหน้าแผนกหรือผู้ดูแลระบบ</div>
     <div class="lg-err" id="lgErr"></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.15 · 26/09/2569</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.16 · 26/09/2569</div>
   </div>
 </div>
 
@@ -871,7 +871,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.15</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.16</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -1117,7 +1117,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.15 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.16 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1134,6 +1134,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
 //  v2.13: จุดวิกฤต — ตัวเลขที่เข้าเกณฑ์ (LV) เป็นตัวแดง/ส้มเด่น + กล่อง "ต้องแก้ด่วน" บนสุดของแดชบอร์ดและหน้าภาพรวม · เกณฑ์ตายตัวเทียบกับ SLA ของบัญชี
 //  v2.14: เช็คส่วนขยาย OA จากเวลาที่ส่วนขยายติดต่อเข้ามาล่าสุด (RPC pur_oa_heartbeat) ไม่ใช่ข้อความล่าสุดที่ทีมพิมพ์ — บัญชีที่เงียบ (มาร์ท) ไม่ถูกเตือนผิดอีก
 //  v2.15: เครดิตคนตอบ = owner_email → ถ้าว่างใช้คนที่ตอบ (closed_by) · ข้อสังเกตหน้าภาพรวมเรียงแน่นอน (เสมอกันตัดสินด้วยชื่อ) และไม่ขัดกันเอง
+//  v2.16: มือถือแตะแชทแล้วไม่เข้า — รายการแชทถูกวาดใหม่ระหว่างนิ้วแตะ (realtime/รอบ 30–60 วิ) เบราว์เซอร์เลยทิ้งการแตะ · จำแชทตั้งแต่ touchstart แล้วเปิดเองตอน touchend + งดวาดรายการระหว่างแตะ
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
@@ -1563,9 +1564,35 @@ function avatarHtml(c, size){
 }
 const LIST_STEP = 80;            // วาดทีละเท่านี้ เลื่อนถึงท้ายค่อยต่อ — 438 รายการรวดเดียวหนักเกินไปสำหรับมือถือ
 let listShown = LIST_STEP;
+// v2.16 แตะรายการบนมือถือ: รายการถูกวาดใหม่บ่อย (realtime ทุกข้อความ · ส่วนขยายทุก 30 วิ · รอบ 60 วิ)
+// ถ้าวาดใหม่ตอนนิ้วยังแตะอยู่ องค์ประกอบใต้นิ้วถูกแทนที่ → มือถือทิ้ง "คลิก" นั้น ผู้ใช้ต้องแตะซ้ำหลายรอบ
+// → จำแชทที่แตะตั้งแต่ touchstart แล้วเปิดเองตอน touchend · ระหว่างแตะเลื่อนการวาดไว้ก่อน วาดทันทีที่ยกนิ้ว
+let listTouch = null, listDeferred = false;
+function bindListTouch(){
+  const el = $('convList'); if(!el) return;
+  const flush = () => { if(listDeferred){ listDeferred = false; setTimeout(renderList, 0); } };
+  el.addEventListener('touchstart', e => {
+    const it = e.target.closest('.conv-item[data-id]'), t = e.touches[0];
+    listTouch = { id:it ? it.dataset.id : null, x:t.clientX, y:t.clientY, at:Date.now() };
+  }, { passive:true });
+  el.addEventListener('touchmove', e => {
+    if(!listTouch || !listTouch.id) return; const t = e.touches[0];
+    if(Math.abs(t.clientX - listTouch.x) > 10 || Math.abs(t.clientY - listTouch.y) > 10) listTouch.id = null;   // เลื่อนรายการ ไม่ใช่แตะ
+  }, { passive:true });
+  el.addEventListener('touchend', e => {
+    const tt = listTouch; listTouch = null;
+    if(tt && tt.id && Date.now() - tt.at < 800 && chatById.get(tt.id)){
+      e.preventDefault();            // เปิดเองแล้ว — กันคลิกจากเบราว์เซอร์เปิดซ้ำ
+      openChat(tt.id);
+    }
+    flush();
+  }, { passive:false });
+  el.addEventListener('touchcancel', () => { listTouch = null; flush(); });
+}
 function moreChats(){ listShown += LIST_STEP; renderList(); }
 function resetList(){ listShown = LIST_STEP; }
 function renderList(){
+  if(listTouch){ listDeferred = true; return; }       // นิ้วกำลังแตะรายการอยู่ — วาดหลังยกนิ้ว (ดู bindListTouch)
   const list = filteredChats(); const el = $('convList');
   const n = chipCounts();
   for(const k in n){ const e = $('cn-' + k); if(e) e.textContent = n[k] || ''; }
@@ -1583,7 +1610,7 @@ function renderList(){
     if(age != null) tags.push(`<span class="tag wait ${over ? 'over' : ''}">⏱ รอ ${fmtDur(age)}${over ? ' · เกิน SLA' : ''}</span>`);
     if(!c.is_active) tags.push(`<span class="tag off">${c.kind === 'user' ? 'ถูกบล็อก' : 'ไม่อยู่ในกลุ่ม'}</span>`);
     if(c.status === 'resolved') tags.push(`<span class="tag done">✓ เสร็จแล้ว</span>`);
-    return `<div class="${cls}" onclick="openChat('${c.id}')">
+    return `<div class="${cls}" data-id="${c.id}" onclick="openChat('${c.id}')">
       <div class="av-wrap">${avatarHtml(c)}<div class="pdot">L</div></div>
       <div class="conv-info">
         <div class="conv-row1"><div class="conv-name">${esc(chatName(c))}</div><div class="conv-time">${timeAgo(c.last_message_at)}</div></div>
@@ -4949,6 +4976,7 @@ function demoDash(){
 
 // ── เริ่มทำงาน (ต้องอยู่ท้ายสุด หลังประกาศตัวแปรทั้งหมด) ──
 (function init(){
+  bindListTouch();
   document.documentElement.style.setProperty('--mark', `url("${MARK}")`); $('favicon').href = MARK; $('chartTip').style.position = 'fixed';
   const pref = LS.get('pur.dark');
   if(pref === '1' || (pref === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) document.body.classList.add('dark');
