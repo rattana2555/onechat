@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.14">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.15">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.14">
-<title>Rattana One Chat v2.14</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.15">
+<title>Rattana One Chat v2.15</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -821,7 +821,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
     </button>
     <div class="lg-note">ใช้อีเมลบริษัทที่หัวหน้าเพิ่มไว้ในทีม · ล็อกอินครั้งเดียวแล้วเลือกบัญชี LINE<br>ยังไม่มีสิทธิ์? ติดต่อหัวหน้าแผนกหรือผู้ดูแลระบบ</div>
     <div class="lg-err" id="lgErr"></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.14 · 26/09/2569</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.15 · 26/09/2569</div>
   </div>
 </div>
 
@@ -871,7 +871,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.14</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.15</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -1117,7 +1117,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.14 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.15 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1133,6 +1133,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
 //  v2.12: ปุ่มอิโมจิ/สติกเกอร์ในช่องตอบ (แบบแป้นสติกเกอร์ของ LINE) — สติกเกอร์ส่งได้เฉพาะชุดฟรีทางการของ LINE (pur-send v2.2)
 //  v2.13: จุดวิกฤต — ตัวเลขที่เข้าเกณฑ์ (LV) เป็นตัวแดง/ส้มเด่น + กล่อง "ต้องแก้ด่วน" บนสุดของแดชบอร์ดและหน้าภาพรวม · เกณฑ์ตายตัวเทียบกับ SLA ของบัญชี
 //  v2.14: เช็คส่วนขยาย OA จากเวลาที่ส่วนขยายติดต่อเข้ามาล่าสุด (RPC pur_oa_heartbeat) ไม่ใช่ข้อความล่าสุดที่ทีมพิมพ์ — บัญชีที่เงียบ (มาร์ท) ไม่ถูกเตือนผิดอีก
+//  v2.15: เครดิตคนตอบ = owner_email → ถ้าว่างใช้คนที่ตอบ (closed_by) · ข้อสังเกตหน้าภาพรวมเรียงแน่นอน (เสมอกันตัดสินด้วยชื่อ) และไม่ขัดกันเอง
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
@@ -2829,6 +2830,9 @@ function renderRangeLabel(){
   $('dashRangeLabel').textContent = `ช่วง ${thDate(from)} – ${thDate(addDays(to, -1))} · นับตาม${clockMode === 'biz' ? 'เวลาทำการ' : 'เวลาจริง 24 ชม.'} · SLA ${settings?.sla_minutes ?? '–'} นาที`;
 }
 let dashLoadedAt = 0;
+// เจ้าของงาน (เครดิตในผลงานรายคน): ผู้รับผิดชอบของงาน → ถ้าว่างใช้คนที่ตอบ (ตรงกับกติกาในฐานข้อมูล)
+// v2.15: เคยมีงานที่รู้ว่าใครตอบแต่ owner_email ว่าง (rebuild คืนค่าว่างทับ) แดชบอร์ดเลยขึ้น "ยังไม่รู้ว่าใครตอบ"
+const withOwner = w => w.owner_email || w.closed_reason !== 'answered' || !w.closed_by ? w : { ...w, owner_email:w.closed_by };
 async function loadDash(){
   dashLoadedAt = Date.now();
   // เลขลำดับคำขอ — เดิมทิ้งคำขอที่ซ้อนกันทั้งก้อน แต่ปุ่มช่วงเวลา/dash.preset เปลี่ยนไปแล้ว → ข้อมูลช่วงเก่าถูกวาดบนแกนช่วงใหม่
@@ -2847,7 +2851,7 @@ async function loadDash(){
       ]);
       if(seq !== dash.seq) return;                          // มีคำขอใหม่กว่าแล้ว — ทิ้งผลชุดนี้
       if(rc.error) throw new Error(rc.error.message);
-      const map = new Map(); [...w1, ...w2].forEach(w => map.set(w.id, w));
+      const map = new Map(); [...w1, ...w2].forEach(w => map.set(w.id, withOwner(w)));
       dash.data = { waits:[...map.values()], replies:rc.data || [] };
     }
     dashLoadedOnce = true; renderDash(); checkOaFresh();
@@ -4356,7 +4360,8 @@ function ovCompute(){
     return P.get(k);
   };
   const w0 = +R.week, wp = w0 - 7 * 86400000;
-  for(const w of data.waits){
+  for(const w0 of data.waits){
+    const w = withOwner(w0);
     const x = acc.get(w.account_id); if(!x || data.excl.has(w.chat_id)) continue;
     const s = Date.parse(w.started_at);
     const di = Math.floor((s - w0) / 86400000), dp = Math.floor((s - wp) / 86400000);
@@ -4529,7 +4534,7 @@ function renderOvChips(){
 function renderOvRank(C){
   const R = ov.R, ppl = C.people.filter(p => ov.filter === 'all' || String(p.acct) === ov.filter);
   const shown = ppl.filter(p => p.cur.ans > 0).sort((a, b) =>
-    ((b.cur.ans >= OV_MIN) - (a.cur.ans >= OV_MIN)) || (b.cur.sla - a.cur.sla) || (a.cur.late - b.cur.late) || (b.cur.ans - a.cur.ans));
+    ((b.cur.ans >= OV_MIN) - (a.cur.ans >= OV_MIN)) || (b.cur.sla - a.cur.sla) || (a.cur.late - b.cur.late) || (b.cur.ans - a.cur.ans) || String(a.name).localeCompare(String(b.name), 'th'));
   let no = 0;
   $('ovRank').innerHTML = shown.length ? shown.map(p => {
     const low = p.cur.ans < OV_MIN, sT = p.cur.sla, sP = p.prev.ans >= 3 ? p.prev.sla : null;
@@ -4546,15 +4551,20 @@ function renderOvRank(C){
 
   // ข้อสังเกต — กติกาตายตัว อธิบายได้ ไม่ใช้คะแนนลับ
   const who = p => `<b>${esc(p.name)}</b>${supAccts().length > 1 ? ` <span class="txt-muted">(${esc(ovName(p.acct))})</span>` : ''}`;
-  const ranked = ppl.filter(p => p.cur.ans >= OV_MIN), both = ranked.filter(p => p.prev.ans >= OV_MIN).map(p => ({ p, d:p.cur.sla - p.prev.sla }));
+  // v2.15: ทุกข้อเลือกคนแบบแน่นอน (เสมอกัน → ชื่อ) ไม่งั้นเปิดทีไรชื่อสลับไปมาเมื่อตัวเลขใกล้กัน
+  //        "ต้องจับตา" = คนที่ตอบทัน SLA ต่ำสุด (ท้ายอันดับด้านซ้าย) ไม่ใช่คนที่ช้ามากสุดแบบนับจำนวน — คนตอบเยอะจะช้าเยอะตามไปด้วย
+  const byName = (a, b) => String(a.name).localeCompare(String(b.name), 'th') || (a.acct - b.acct);
+  const ranked = ppl.filter(p => p.cur.ans >= OV_MIN).sort(byName);
+  const both = ranked.filter(p => p.prev.ans >= OV_MIN).map(p => ({ p, d:p.cur.sla - p.prev.sla }));
+  const pick = (arr, better) => arr.reduce((m, t) => !m || better(t, m) ? t : m, null);   // เสมอกัน = ตัวแรกตามชื่อ
   const out = [];
-  const best = both.reduce((m, t) => !m || t.d > m.d ? t : m, null), worst = both.reduce((m, t) => !m || t.d < m.d ? t : m, null);
+  const best = pick(both, (t, m) => t.d > m.d), worst = pick(both, (t, m) => t.d < m.d);
+  const low = pick(ranked, (t, m) => t.cur.sla < m.cur.sla || (t.cur.sla === m.cur.sla && t.cur.late > m.cur.late));
+  const slow = pick(ranked, (t, m) => t.cur.med > m.cur.med);
   if(best && best.d >= 5) out.push(['good', '▲', `${who(best.p)} ตอบทันขึ้นมากที่สุด จาก ${ovPctTxt(best.p.prev.sla)} เป็น ${ovPctTxt(best.p.cur.sla)} · เวลาตอบกลาง ${fmtDur(best.p.prev.med)} → ${fmtDur(best.p.cur.med)}`]);
-  if(worst && worst.d <= -5) out.push(['bad', '▼', `${who(worst.p)} ตอบทันลดลงจาก ${ovPctTxt(worst.p.prev.sla)} เป็น ${ovPctTxt(worst.p.cur.sla)}`]);
-  const late = ranked.reduce((m, p) => !m || p.cur.late > m.cur.late ? p : m, null);
-  if(late && late.cur.late) out.push(['bad', '!', `${who(late)} ช้ากว่า SLA มากที่สุด ${nf(late.cur.late)} งาน (${Math.round(late.cur.late / late.cur.ans * 100)}% ของงานที่ตอบ) · เวลาตอบกลาง ${fmtDur(late.cur.med)}`]);
-  const slow = ranked.reduce((m, p) => !m || p.cur.med > m.cur.med ? p : m, null);
-  if(slow && slow !== late && ranked.length > 1) out.push(['info', 'i', `เวลาตอบกลางช้าสุด: ${who(slow)} ${fmtDur(slow.cur.med)} · 90% ของงานตอบภายใน ${fmtDur(slow.cur.p90)}`]);
+  if(worst && worst.d <= -5 && worst.p !== best?.p) out.push(['bad', '▼', `${who(worst.p)} ตอบทันลดลงจาก ${ovPctTxt(worst.p.prev.sla)} เป็น ${ovPctTxt(worst.p.cur.sla)}`]);
+  if(low && ranked.length > 1 && low.cur.late) out.push(['bad', '!', `${who(low)} ตอบทัน SLA ต่ำสุดในช่วงนี้ ${ovPctTxt(low.cur.sla)} — ช้ากว่า SLA ${nf(low.cur.late)} จาก ${nf(low.cur.ans)} งาน${low === best?.p ? ' (ดีขึ้นแล้วแต่ยังต่ำสุด)' : ''}`]);
+  if(slow && ranked.length > 1 && slow !== low) out.push(['info', 'i', `เวลาตอบกลางช้าสุด: ${who(slow)} ${fmtDur(slow.cur.med)} · 90% ของงานตอบภายใน ${fmtDur(slow.cur.p90)}`]);
   C.acc.filter(x => ov.filter === 'all' || String(x.a.id) === ov.filter).forEach(x => {
     const oaLast = ov.data.oaLast[x.a.id];
     if(oaLast && Date.now() - oaLast >= OA_STALE_MIN * 60000) out.push(['bad', '!', `<b>${esc(x.a.name)}</b>: ส่วนขยาย OA Manager ไม่ได้ส่งข้อมูลมา ${fmtDur((Date.now() - oaLast) / 1000)} ตัวเลขค้าง/ช้าอาจสูงเกินจริง`]);
@@ -4934,7 +4944,7 @@ function demoDash(){
   const [from, to] = currentRange(); const agg = new Map();
   demoWaits.forEach(w => { if(w.closed_reason !== 'answered' || !w.closed_by) return; const s = Date.parse(w.started_at); if(s < from || s >= to) return; const k = w.closed_by + '|' + w.answer_via + '|' + (w.chat_kind || 'group'); agg.set(k, (agg.get(k) || 0) + 1 + (Math.random() < .6 ? 1 : 0)); });
   // มี kind ด้วย — ให้ตัวกรอง "กลุ่ม / 1:1" ของการ์ด "ข้อความที่ทีมส่ง" ทำงานในโหมดตัวอย่างเหมือนของจริง
-  return { waits:demoWaits, replies:[...agg.entries()].map(([k, n]) => { const [e, v, kd] = k.split('|'); return { staff_email:e, via:v, kind:kd, replies:n }; }) };
+  return { waits:demoWaits.map(withOwner), replies:[...agg.entries()].map(([k, n]) => { const [e, v, kd] = k.split('|'); return { staff_email:e, via:v, kind:kd, replies:n }; }) };
 }
 
 // ── เริ่มทำงาน (ต้องอยู่ท้ายสุด หลังประกาศตัวแปรทั้งหมด) ──
