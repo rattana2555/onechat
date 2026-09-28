@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.16">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.17">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.16">
-<title>Rattana One Chat v2.16</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.17">
+<title>Rattana One Chat v2.17</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -821,7 +821,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
     </button>
     <div class="lg-note">ใช้อีเมลบริษัทที่หัวหน้าเพิ่มไว้ในทีม · ล็อกอินครั้งเดียวแล้วเลือกบัญชี LINE<br>ยังไม่มีสิทธิ์? ติดต่อหัวหน้าแผนกหรือผู้ดูแลระบบ</div>
     <div class="lg-err" id="lgErr"></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.16 · 26/09/2569</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.17 · 28/09/2569</div>
   </div>
 </div>
 
@@ -871,7 +871,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.16</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.17</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -889,7 +889,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
 <nav class="top-tabs">
   <button class="tab-btn active" data-v="chat" onclick="setView('chat')"><span data-ic="chat"></span>แชท <span class="nbadge" id="tb-chat"></span></button>
   <button class="tab-btn" data-v="dash" onclick="setView('dash')"><span data-ic="chart"></span>แดชบอร์ด</button>
-  <button class="tab-btn" data-v="blast" onclick="setView('blast')"><span data-ic="send"></span>ส่งข้อความ</button>
+  <button class="tab-btn" data-v="blast" onclick="setView('blast')"><span data-ic="send"></span>บรอดแคสต์</button>
   <button class="tab-btn" data-v="set" onclick="setView('set')"><span data-ic="settings"></span>ตั้งค่า</button>
 </nav>
 
@@ -1097,7 +1097,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
 <nav class="bottom-nav">
   <button class="bni active" data-v="chat" onclick="setView('chat')"><div class="bni-icon"><span data-ic="chat"></span></div><span class="bni-label">แชท</span><span class="nbadge" id="bn-chat"></span></button>
   <button class="bni" data-v="dash" onclick="setView('dash')"><div class="bni-icon"><span data-ic="chart"></span></div><span class="bni-label">แดชบอร์ด</span></button>
-  <button class="bni" data-v="blast" onclick="setView('blast')"><div class="bni-icon"><span data-ic="send"></span></div><span class="bni-label">ส่งข้อความ</span></button>
+  <button class="bni" data-v="blast" onclick="setView('blast')"><div class="bni-icon"><span data-ic="send"></span></div><span class="bni-label">บรอดแคสต์</span></button>
   <button class="bni" data-v="set" onclick="setView('set')"><div class="bni-icon"><span data-ic="settings"></span></div><span class="bni-label">ตั้งค่า</span></button>
 </nav>
 
@@ -1117,7 +1117,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.16 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.17 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1135,6 +1135,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
 //  v2.14: เช็คส่วนขยาย OA จากเวลาที่ส่วนขยายติดต่อเข้ามาล่าสุด (RPC pur_oa_heartbeat) ไม่ใช่ข้อความล่าสุดที่ทีมพิมพ์ — บัญชีที่เงียบ (มาร์ท) ไม่ถูกเตือนผิดอีก
 //  v2.15: เครดิตคนตอบ = owner_email → ถ้าว่างใช้คนที่ตอบ (closed_by) · ข้อสังเกตหน้าภาพรวมเรียงแน่นอน (เสมอกันตัดสินด้วยชื่อ) และไม่ขัดกันเอง
 //  v2.16: มือถือแตะแชทแล้วไม่เข้า — รายการแชทถูกวาดใหม่ระหว่างนิ้วแตะ (realtime/รอบ 30–60 วิ) เบราว์เซอร์เลยทิ้งการแตะ · จำแชทตั้งแต่ touchstart แล้วเปิดเองตอน touchend + งดวาดรายการระหว่างแตะ
+//  v2.17: แท็บ "ส่งข้อความ" เปลี่ยนชื่อเป็น "บรอดแคสต์"
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
@@ -3570,7 +3571,7 @@ function renderBlast(){
   const S = blast, sheetOn = BLAST_SHEET && S.mode === 'sheet';
   let step = 0; const no = () => ++step;               // เลขข้อรันเอง — ข้อที่ซ่อนอยู่ไม่กินเลข
   $('blastContent').innerHTML = `
-    <div class="card card-gold"><div class="card-head"><h3><span class="hb">${ic('send')}</span>ส่งข้อความหา${peer()}หลายเจ้า</h3>
+    <div class="card card-gold"><div class="card-head"><h3><span class="hb">${ic('send')}</span>บรอดแคสต์ · ส่งข้อความหา${peer()}หลายเจ้า</h3>
       <div class="hint">ส่งผ่านบัญชี LINE ${esc(acctName())} เหมือนพิมพ์ในแชทเอง · ข้อความจะไปอยู่ในแชทนั้นให้ทีมเห็นด้วย ·
         <b>ส่งแล้วเรียกคืนไม่ได้</b> ทุกครั้งจะมีหน้าตรวจก่อนส่งให้อ่านก่อนเสมอ</div></div>
       <div class="card-body">
