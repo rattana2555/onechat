@@ -3847,7 +3847,7 @@ function refreshPeopleCards(){
 function avatarSm(p){ return p.avatar_url ? `<img class="avs" src="${esc(p.avatar_url)}" alt="" loading="lazy">` : `<span class="avs" style="background:${avCol(p.display_name || p.line_user_id)}">${esc((p.display_name || '?').charAt(0))}</span>`; }
 
 // ── บัญชี LINE (ผู้ดูแลระบบ) — สถานะการเชื่อมต่อ + ลิงก์ webhook ของแต่ละบัญชี ──
-let acctStatus = null, accessMx = null;
+let acctStatus = null, accessMx = null, accessShowRemoved = false;
 const WEBHOOK_BASE = `${SUPABASE_URL}/functions/v1/pur-webhook-line`;
 const webhookUrl = a => a.id === 1 ? WEBHOOK_BASE : `${WEBHOOK_BASE}?a=${encodeURIComponent(a.slug)}`;
 async function loadAcctStatus(){
@@ -3916,12 +3916,16 @@ function accessCardHtml(){
   });
   const has = p => p.admin || Object.keys(p.acc).length > 0;   // ไม่มีสิทธิ์บัญชีไหนเลย → ท้ายตาราง แสดงจาง
   const list = [...byEmail.values()].sort((a, b) => (b.admin - a.admin) || (has(b) - has(a)) || (b.active - a.active) || String(a.nick || a.name || a.email).localeCompare(String(b.nick || b.name || b.email), 'th'));
-  // v2.22 จัดการทั้งแถว: ถอดออกทุกบัญชี · ตั้ง/ลดผู้ดูแลระบบ (ตัวเองแก้ไม่ได้ กันล็อกตัวเองออก)
+  // v2.22 จัดการทั้งแถว: ลบออกจากระบบ · ตั้ง/ลดผู้ดูแลระบบ (ตัวเองแก้ไม่ได้ กันล็อกตัวเองออก)
+  // คนที่ลบออกแล้ว (ปิดใช้งาน + ไม่มีสิทธิ์บัญชีไหน) ซ่อนไว้ใต้ปุ่ม "แสดงคนที่ลบออกแล้ว" — ให้สิทธิ์บัญชีไหนคืน = กลับมาใช้งาน
+  const removed = p => !p.admin && !p.active && !has(p);
+  const gone = list.filter(removed), shown = accessShowRemoved ? list : list.filter(p => !removed(p));
   const manage = p => {
     if(me && p.email === me.email) return '<span class="mini txt-muted">คุณเอง</span>';
-    const opts = p.admin ? [['demote', 'ลดเป็นสมาชิกทั่วไป']]
-      : [...(Object.keys(p.acc).length ? [['removeAll', 'ถอดออกทุกบัญชี']] : []), ['promote', 'ตั้งเป็นผู้ดูแลระบบ']];
-    return `<select class="input input-sm" style="min-width:120px" data-e="${esc(p.email)}" data-n="${esc(p.nick || p.name || p.email)}" data-acc="${esc(Object.keys(p.acc).join(','))}" onchange="accessAction(this)">
+    if(removed(p)) return '<span class="mini txt-muted">ลบออกแล้ว · เลือกบัญชีเพื่อให้กลับมา</span>';
+    const opts = p.admin ? [['demote', 'ลดเป็นสมาชิกทั่วไป'], ['remove', 'ลบออกจากระบบ']]
+      : [['promote', 'ตั้งเป็นผู้ดูแลระบบ'], ['remove', 'ลบออกจากระบบ']];
+    return `<select class="input input-sm" style="min-width:120px" data-e="${esc(p.email)}" data-n="${esc(p.nick || p.name || p.email)}" ${p.admin ? 'data-admin="1"' : ''} onchange="accessAction(this)">
       <option value="">จัดการ…</option>${opts.map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select>`;
   };
   const cell = (p, a) => p.admin ? '<span class="pill bad" title="ผู้ดูแลระบบเข้าได้ทุกบัญชี">ทุกบัญชี</span>'
@@ -3929,18 +3933,20 @@ function accessCardHtml(){
         .map(([v, l]) => `<option value="${v}" ${(p.acc[a.id] || '') === v ? 'selected' : ''}>${l}</option>`).join('')}</select>`;
   return `<div class="card card-gold" id="accessCard"><div class="card-head"><h3><span class="hb">${ic('users')}</span>สิทธิ์เข้าบัญชี</h3>
     <div class="hint">ใครเข้าบัญชีไหนได้ และเป็นหัวหน้าหรือพนักงานของบัญชีนั้น · ผู้ดูแลระบบเข้าได้ทุกบัญชีเสมอ · คนที่ได้บัญชีเดียวจะเข้าบัญชีนั้นเลยไม่ต้องผ่านหน้าเลือก ·
-      คนใหม่ให้เพิ่มที่การ์ด "ทีม" ของบัญชีนั้นก่อน (สลับบัญชีที่หัวแอพ) · เลือก <b>—</b> = ถอดออกจากบัญชีนั้น · ช่อง <b>จัดการ</b> = ถอดออกทุกบัญชี หรือตั้ง/ลดผู้ดูแลระบบ · ถอดสิทธิ์แล้วสถิติเดิมของคนนั้นยังอยู่</div></div>
+      คนใหม่ให้เพิ่มที่การ์ด "ทีม" ของบัญชีนั้นก่อน (สลับบัญชีที่หัวแอพ) · เลือก <b>—</b> = ถอดออกจากบัญชีนั้น · ช่อง <b>จัดการ</b> = ลบออกจากระบบ หรือตั้ง/ลดผู้ดูแลระบบ · ถอดสิทธิ์แล้วสถิติเดิมของคนนั้นยังอยู่</div></div>
     <div class="tbl-wrap"><table class="tbl"><thead><tr><th style="cursor:default">สมาชิก</th>${accounts.map(a => `<th style="cursor:default">${esc(a.name)}</th>`).join('')}<th style="cursor:default">จัดการ</th></tr></thead><tbody>
-    ${list.length ? list.map(p => `<tr class="${p.active && has(p) ? '' : 'dim'}"><td><b>${esc(p.nick || p.name || p.email)}</b><div class="mini">${esc(p.email)}${has(p) ? '' : ' · ไม่มีสิทธิ์เข้าบัญชีไหน'}</div></td>${accounts.map(a => `<td>${cell(p, a)}</td>`).join('')}<td>${manage(p)}</td></tr>`).join('')
+    ${shown.length ? shown.map(p => `<tr class="${p.active && has(p) ? '' : 'dim'}"><td><b>${esc(p.nick || p.name || p.email)}</b><div class="mini">${esc(p.email)}${has(p) ? '' : ' · ไม่มีสิทธิ์เข้าบัญชีไหน'}</div></td>${accounts.map(a => `<td>${cell(p, a)}</td>`).join('')}<td>${manage(p)}</td></tr>`).join('')
       : `<tr class="empty-row"><td colspan="${accounts.length + 2}">${accessMx === null ? 'กำลังโหลด…' : 'ยังไม่มีสมาชิก'}</td></tr>`}
-    </tbody></table></div></div>`;
+    </tbody></table></div>
+    ${gone.length ? `<div class="card-body" style="padding-top:8px"><button class="btn btn-outline btn-sm" onclick="accessShowRemoved=!accessShowRemoved;$('accessCard').outerHTML=accessCardHtml()">${accessShowRemoved ? 'ซ่อนคนที่ลบออกแล้ว' : `แสดงคนที่ลบออกแล้ว (${nf(gone.length)})`}</button></div>` : ''}</div>`;
 }
 async function accessAction(sel){
   const act = sel.value, email = sel.dataset.e, name = sel.dataset.n; sel.value = '';
   if(!act) return;
-  const ask = { removeAll:`ถอด ${name} ออกจากทุกบัญชี?
+  const ask = { remove:`ลบ ${name} ออกจากระบบ?
 
-เข้าแอพแล้วจะไม่เห็นบัญชีไหนเลย · สถิติเดิมยังอยู่ · ให้สิทธิ์คืนได้ในตารางนี้`,
+ถอดออกทุกบัญชี${sel.dataset.admin ? ' และเลิกเป็นผู้ดูแลระบบ' : ''} · เข้าแอพไม่ได้อีก · ข้อความและสถิติเดิมยังอยู่
+ให้กลับมาได้: กด "แสดงคนที่ลบออกแล้ว" แล้วเลือกบัญชีให้`,
                 promote:`ตั้ง ${name} เป็นผู้ดูแลระบบ?
 
 ผู้ดูแลระบบเห็นทุกบัญชี แก้สิทธิ์คนอื่นได้ และเห็นภาพรวมทุกบัญชี`,
@@ -3949,10 +3955,9 @@ async function accessAction(sel){
 จะยังไม่มีสิทธิ์เข้าบัญชีไหน — เลือกบัญชีที่ให้เข้าในตารางนี้ต่อได้เลย` }[act];
   if(!confirm(ask)) return;
   try{
-    if(act === 'removeAll'){
-      for(const id of (sel.dataset.acc || '').split(',').filter(Boolean)) await rpc('pur_set_access', { p_account:+id, p_email:email, p_role:null });
-    } else await rpc('pur_set_admin', { p_email:email, p_admin:act === 'promote' });
-    showToast(act === 'removeAll' ? `ถอด ${name} ออกทุกบัญชีแล้ว ✓` : act === 'promote' ? `ตั้ง ${name} เป็นผู้ดูแลระบบแล้ว ✓` : `ลด ${name} เป็นสมาชิกทั่วไปแล้ว ✓`, 'success');
+    if(act === 'remove') await rpc('pur_remove_member', { p_email:email });
+    else await rpc('pur_set_admin', { p_email:email, p_admin:act === 'promote' });
+    showToast(act === 'remove' ? `ลบ ${name} ออกจากระบบแล้ว ✓` : act === 'promote' ? `ตั้ง ${name} เป็นผู้ดูแลระบบแล้ว ✓` : `ลด ${name} เป็นสมาชิกทั่วไปแล้ว ✓`, 'success');
     await loadMembers(); const el = $('teamCard'); if(el) el.outerHTML = teamCardHtml();
   }catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
   accessMx = null; await loadAccessMx();
