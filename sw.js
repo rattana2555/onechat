@@ -7,7 +7,7 @@ self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
 
 const ICON = 'icon-192.png';
 // ไอคอนของแจ้งเตือน = รูปประจำบัญชีที่แชทนั้นอยู่ (badge ยังเป็นไอคอนแอพ — Android ใช้ทำสัญลักษณ์ขาวดำบนแถบสถานะ)
-const ACCT_ICON = { 1:'acct-purchase.png', 2:'acct-rpbsale.jpg', 3:'acct-rattanamart.jpg' };
+const ACCT_ICON = { 1:'acct-purchase.png', 2:'acct-rpbsale.jpg', 3:'acct-rattanamart.jpg', 4:'acct-hr.jpg' };
 
 self.addEventListener('push', event => {
   let d = {};
