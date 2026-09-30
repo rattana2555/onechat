@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.18">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.19">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.18">
-<title>Rattana One Chat v2.18</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.19">
+<title>Rattana One Chat v2.19</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -821,7 +821,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
     </button>
     <div class="lg-note">ใช้อีเมลบริษัทที่หัวหน้าเพิ่มไว้ในทีม · ล็อกอินครั้งเดียวแล้วเลือกบัญชี LINE<br>ยังไม่มีสิทธิ์? ติดต่อหัวหน้าแผนกหรือผู้ดูแลระบบ</div>
     <div class="lg-err" id="lgErr"></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.18 · 30/09/2569</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.19 · 30/09/2569</div>
   </div>
 </div>
 
@@ -871,7 +871,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.18</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.19</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -1117,7 +1117,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.18 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.19 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1137,6 +1137,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
 //  v2.16: มือถือแตะแชทแล้วไม่เข้า — รายการแชทถูกวาดใหม่ระหว่างนิ้วแตะ (realtime/รอบ 30–60 วิ) เบราว์เซอร์เลยทิ้งการแตะ · จำแชทตั้งแต่ touchstart แล้วเปิดเองตอน touchend + งดวาดรายการระหว่างแตะ
 //  v2.17: แท็บ "ส่งข้อความ" เปลี่ยนชื่อเป็น "บรอดแคสต์"
 //  v2.18: บัญชีที่ 4 HR Rattana — สีประจำบัญชีช่องที่ 4 ในหน้าภาพรวม
+//  v2.19: "เลือกจากทะเบียนพนักงาน" อ่านจากชีททะเบียนพนักงาน (pur-sheet action staff) · แสดงแผนก · พนักงานแผนกเดียวกับบัญชีขึ้นก่อน
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
@@ -4067,9 +4068,30 @@ async function applyPu(){
 }
 async function loadStaffDir(){
   const ul = $('ddStaffList'); if(!ul) return;
-  if(!staffDir){ if(DEMO) staffDir = []; else { try{ staffDir = (await rpc('pur_staff_directory')) || []; }catch(e){ staffDir = []; } } }
-  ul.innerHTML = staffDir.length
-    ? staffDir.map(s => `<li data-e="${esc(s.email)}" data-n="${esc(s.nick || '')}" data-f="${esc(s.name || '')}" onclick="pickStaff(this)">${esc(s.nick || s.name || s.email)}<small>${esc(s.email)}</small></li>`).join('')
+  if(!staffDir){
+    ul.innerHTML = '<li class="no-result">กำลังโหลดทะเบียนพนักงาน…</li>';
+    if(DEMO) staffDir = [];
+    else {
+      // v2.19: ทะเบียนจากชีทพนักงาน (ผ่าน pur-sheet — ส่งกลับแค่ อีเมล/ชื่อเล่น/ชื่อ/แผนก) + ตาราง staff เดิมถ้ามี
+      const [sheet, old] = await Promise.all([
+        (async () => { try{
+          const { data:{ session } } = await sb.auth.getSession();
+          const res = await fetch(`${SUPABASE_URL}/functions/v1/pur-sheet`, { method:'POST',
+            headers:{ 'Content-Type':'application/json', apikey:SUPABASE_ANON, Authorization:`Bearer ${session?.access_token || ''}` },
+            body:JSON.stringify({ action:'staff' }) });
+          const r = await res.json(); return r.ok ? (r.staff || []) : [];
+        }catch(_){ return []; } })(),
+        rpc('pur_staff_directory').then(r => r || []).catch(() => []),
+      ]);
+      const seen = new Set(); staffDir = [...sheet, ...old].filter(s => s.email && !seen.has(s.email) && seen.add(s.email));
+    }
+  }
+  // พนักงานแผนกเดียวกับบัญชีที่เปิดอยู่ขึ้นก่อน (เช่น บัญชี HR → ทรัพยากรบุคคล) · คนที่อยู่ในทีมแล้วไม่ต้องแสดง
+  const dept = String(acct?.dept || '').replace(/^แผนก|^ฝ่าย/, '');
+  const near = s => dept && s.dept && (dept.includes(s.dept) || s.dept.includes(dept) || (/บุคคล/.test(dept) && /บุคคล/.test(s.dept))) ? 0 : 1;
+  const list = staffDir.filter(s => !members.get(s.email)?.in_account).sort((a, b) => near(a) - near(b));
+  ul.innerHTML = list.length
+    ? list.map(s => `<li data-e="${esc(s.email)}" data-n="${esc(s.nick || '')}" data-f="${esc(s.name || '')}" onclick="pickStaff(this)">${esc(s.nick || s.name || s.email)}${s.nick && s.name ? ` <span class="txt-muted">· ${esc(s.name)}</span>` : ''}<small>${esc(s.email)}${s.dept ? ' · ' + esc(s.dept) : ''}</small></li>`).join('')
     : '<li class="no-result">ไม่มีทะเบียนพนักงานให้เลือก — กรอกเองด้านล่าง</li>';
 }
 function pickStaff(li){
