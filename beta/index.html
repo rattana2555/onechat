@@ -4475,7 +4475,9 @@ function ovCompute(){
     if(w.closed_reason === 'answered'){
       const d = elapsedSec(w.started_at, w.closed_at, x.st);
       for(const t of [g, p]) if(t){ t.ans++; t.durs.push(d); if(d <= sla) t.ok++; else t.late++; }
-      if(!w.owner_email) g.unknown++;
+      // v2.22 "ยังไม่รู้ว่าใครตอบ" = ตอบใน OA Manager โดยแอดมินที่ยังไม่ผูกชื่อเท่านั้น
+      // ตอบทาง LINE แต่ไม่มีเจ้าของ = คนในบริษัทนอกทีม (เช่น ฝ่ายบัญชีตอบในกลุ่ม) — นับว่าตอบแล้ว ไม่ต้องให้เครดิตใคร
+      if(!w.owner_email && w.answer_via === 'oa') g.unknown++;
     } else if(w.closed_reason === 'no_reply_needed'){ g.dis++; if(p) p.dis++; }
     else { g.open++; if(p) p.open++; }
   }
@@ -4553,7 +4555,7 @@ function renderOverview(){
     const flags = [];
     if(oaMin != null && oaMin >= OA_STALE_MIN) flags.push(`<div class="ov-flag bad">ส่วนขยาย OA Manager ไม่ได้ส่งข้อมูลมา ${fmtDur(oaMin * 60)} — ตัวเลขค้าง/เกิน SLA อาจสูงเกินจริง (เปิด Chrome เครื่องที่ติดส่วนขยาย)</div>`);
     if(!team) flags.push('<div class="ov-flag">ยังไม่ได้เพิ่มทีมของบัญชีนี้ ผลงานรายคนจึงยังว่าง</div>');
-    if(c.unknown) flags.push(`<div class="ov-flag">ยังไม่รู้ว่าใครตอบ ${nf(c.unknown)} งาน · ผูกชื่อแอดมิน OA / ตั้ง "คนในบริษัท" ในหน้าตั้งค่าของบัญชีนี้ แล้วระบบนับให้ย้อนหลัง</div>`);
+    if(c.unknown) flags.push(`<div class="ov-flag">ยังไม่รู้ว่าใครตอบใน OA Manager ${nf(c.unknown)} งาน · ผูกชื่อแอดมิน OA ในหน้าตั้งค่าของบัญชีนี้ แล้วระบบนับให้ย้อนหลัง</div>`);
     if(!pv && c.waits) flags.push(`<div class="ov-flag info">ยังไม่มีข้อมูล${esc(ov.R.prevName)}ให้เทียบ</div>`);
     const tx = lv => lv ? `lv-${lv}-txt` : '';
     return `<article class="ov-panel ov-acct ${lvA ? 'lv-' + lvA : ''}" id="${cid}">
@@ -4671,7 +4673,7 @@ function renderOvRank(C){
   C.acc.filter(x => ov.filter === 'all' || String(x.a.id) === ov.filter).forEach(x => {
     const oaLast = ov.data.oaLast[x.a.id];
     if(oaLast && Date.now() - oaLast >= OA_STALE_MIN * 60000) out.push(['bad', '!', `<b>${esc(x.a.name)}</b>: ส่วนขยาย OA Manager ไม่ได้ส่งข้อมูลมา ${fmtDur((Date.now() - oaLast) / 1000)} ตัวเลขค้าง/ช้าอาจสูงเกินจริง`]);
-    if(x.cur.unknown) out.push(['info', 'i', `<b>${esc(x.a.name)}</b>: ยังไม่รู้ว่าใครตอบ ${nf(x.cur.unknown)} งาน — ผูกชื่อแอดมิน OA และตั้งคนในบริษัทแล้วอันดับจะแม่นขึ้น`]);
+    if(x.cur.unknown) out.push(['info', 'i', `<b>${esc(x.a.name)}</b>: ยังไม่รู้ว่าใครตอบใน OA Manager ${nf(x.cur.unknown)} งาน — ผูกชื่อแอดมิน OA แล้วอันดับจะแม่นขึ้น`]);
   });
   if(!out.length) out.push(['good', '✓', 'ไม่มีเรื่องต้องจับตาในช่วงนี้']);
   $('ovIns').innerHTML = out.slice(0, 6).map(([k, i, t]) => `<div class="ov-i"><div class="ic ${k}">${i}</div><div>${t}</div></div>`).join('') + ovGrowthHtml(ppl);
