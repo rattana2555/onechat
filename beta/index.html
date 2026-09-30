@@ -158,6 +158,27 @@ a{color:inherit}
 .tag.assg{background:rgba(201,168,76,.15);border-color:rgba(201,168,76,.4);color:var(--text)}
 .tag.none{border-style:dashed}
 .tag.wait{background:rgba(250,178,25,.18);border-color:rgba(250,178,25,.5);color:var(--text)}
+.tag.lbl{background:rgba(46,110,201,.12);border-color:rgba(46,110,201,.4);color:#1f5aa8}
+body.dark .tag.lbl{background:rgba(110,160,240,.16);border-color:rgba(110,160,240,.45);color:#9cc2ff}
+.tagchips{padding-top:0;gap:5px}
+.tagchips .chip{min-height:26px;padding:3px 10px;font-size:11.5px}
+.tagchips .chip.active{background:#2e6ec9;border-color:#2e6ec9;color:#fff}
+.tagchips .lb{font-size:11px;color:var(--muted);align-self:center;flex-shrink:0}
+.msr-head{padding:10px 14px 6px;font-size:11.5px;font-weight:700;color:var(--muted);border-top:1px solid var(--border);background:var(--row-alt)}
+.msr{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--grid);background:var(--card-bg);padding:9px 14px;cursor:pointer;font:inherit;color:inherit}
+.msr:hover{background:var(--row-alt)}
+.msr .r1{display:flex;justify-content:space-between;gap:8px;font-size:12.5px}
+.msr .r1 b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.msr .r1 i{font-style:normal;font-size:11px;color:var(--muted);flex-shrink:0}
+.msr .r2{font-size:12.5px;color:var(--sub);margin-top:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.msr mark{background:rgba(250,178,25,.45);color:inherit;border-radius:3px;padding:0 1px}
+.msr-note{padding:8px 14px;font-size:11.5px;color:var(--muted)}
+@keyframes msgFlash{0%,60%{box-shadow:0 0 0 3px rgba(250,178,25,.9)}100%{box-shadow:0 0 0 3px rgba(250,178,25,0)}}
+.msg-grp.flash .bubble{animation:msgFlash 2.4s ease-out}
+.tagpick{display:flex;flex-wrap:wrap;gap:8px}
+.tagpick label{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:16px;border:1.5px solid var(--border);cursor:pointer;font-size:13px;font-weight:600}
+.tagpick label.on{background:rgba(46,110,201,.12);border-color:#2e6ec9;color:#1f5aa8}
+body.dark .tagpick label.on{color:#9cc2ff}
 .tag.wait.over{background:rgba(208,59,59,.14);border-color:rgba(208,59,59,.5);color:var(--st-crit);font-weight:700}
 .tag.off{background:rgba(208,59,59,.08);color:var(--st-crit);border-color:rgba(208,59,59,.3)}
 .tag.done{color:#1e8449;background:#e8f7ee;border-color:#bfe8cd}
@@ -910,7 +931,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
   <section class="view active" id="viewChat">
     <div class="list-pane" id="listPane">
       <div class="search-wrap">
-        <input class="search-inp" type="search" placeholder="ค้นหาซัพพลายเออร์ / กลุ่ม / ข้อความ" oninput="filterConv(this.value)" autocomplete="off">
+        <input class="search-inp" type="search" placeholder="ค้นหาชื่อแชท / ข้อความ / เลข PO" oninput="filterConv(this.value)" autocomplete="off">
         <button class="sort-btn" id="sortBtn" onclick="toggleSort()">⇅ ล่าสุด</button>
       </div>
       <div class="chips" id="listChips">
@@ -922,6 +943,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
         <button class="chip" data-f="user" onclick="setListFilter('user')">1:1 <span class="n" id="cn-user"></span></button>
         <button class="chip" data-f="resolved" onclick="setListFilter('resolved')"><span data-ic="check"></span>เสร็จแล้ว <span class="n" id="cn-resolved"></span></button>
       </div>
+      <div class="chips tagchips" id="tagChips" style="display:none"></div>
       <div class="conv-list" id="convList"><div class="conv-empty">กำลังโหลด…</div></div>
     </div>
 
@@ -1242,6 +1264,7 @@ let people  = new Map();              // line_user_id → person
 let chats = [], chatById = new Map(), msgCache = {};
 let settings = null;
 let activeId = null, listFilter = 'all', searchQ = '', view = 'chat', quoting = null, started = false;
+let listTag = '';                   // v2.23 กรองตามป้ายสถานะแชท ('' = ไม่กรอง)
 const LS = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let clockMode = LS.get('pur.clock') || 'biz';          // biz = เวลาทำการ · raw = 24 ชม.
 // ค่าตั้งแจ้งเตือนอยู่ในบล็อก "การแจ้งเตือน" ด้านล่าง (notiPrefs)
@@ -1266,7 +1289,8 @@ const viaLabel  = v => v === 'app' ? 'แอป' : v === 'oa' ? 'OA Manager' : '
 
 function defaultSettings(){
   return { work_days:[1,2,3,4,5,6], work_start:'08:00', work_end:'17:00', holidays:[], sla_minutes:60,
-           ack_words:[], quick_replies:['สวัสดีค่ะ 🙏','รับทราบค่ะ ✓','ขอบคุณค่ะ 🙏'], auto_assign:false, use_assignee:true };
+           ack_words:[], quick_replies:['สวัสดีค่ะ 🙏','รับทราบค่ะ ✓','ขอบคุณค่ะ 🙏'], auto_assign:false, use_assignee:true,
+           chat_tags:['รอของ','รอราคา','รอเอกสาร','เคลมสินค้า'] };
 }
 // ค่าตั้งของบัญชี → รูปแบบที่คำนวณเวลาทำการใช้ (ใช้กับบัญชีที่เปิดอยู่ และกับตัวเลขของบัญชีอื่นในหน้าเลือกบัญชี)
 function normSettings(s){
@@ -1559,7 +1583,8 @@ function filteredChats(){
       case 'user':       if(!open || c.kind !== 'user') return false; break;
       case 'resolved':   if(open) return false; break;
     }
-    if(q){ const hay = [c.supplier_name, c.title, c.last_message, c.note, c.assignee_email && memberName(c.assignee_email)].join(' ').toLowerCase(); if(!hay.includes(q)) return false; }
+    if(listTag && !(c.tags || []).includes(listTag)) return false;
+    if(q){ const hay = [c.supplier_name, c.title, c.last_message, c.note, c.assignee_email && memberName(c.assignee_email), ...(c.tags || [])].join(' ').toLowerCase(); if(!hay.includes(q)) return false; }
     return true;
   }).sort((a, b) => {
     const recent = (Date.parse(b.last_message_at || 0) || 0) - (Date.parse(a.last_message_at || 0) || 0);
@@ -1613,7 +1638,9 @@ function renderList(){
   const list = filteredChats(); const el = $('convList');
   const n = chipCounts();
   for(const k in n){ const e = $('cn-' + k); if(e) e.textContent = n[k] || ''; }
-  if(!list.length){ el.innerHTML = `<div class="conv-empty">${chats.length ? 'ไม่มีแชทในหมวดนี้' : `ยังไม่มีแชทเข้ามา<br><span class="txt-sm">เชิญบัญชี LINE ${esc(acctName())} เข้ากลุ่ม${peer()} หรือรอให้${peer()}ทักเข้ามา</span>`}</div>`; return; }
+  renderTagChips();
+  const msrBlock = msrHtml();
+  if(!list.length){ el.innerHTML = `<div class="conv-empty">${chats.length ? (searchQ.trim() ? 'ไม่พบชื่อแชทที่ตรงกัน' : 'ไม่มีแชทในหมวดนี้') : `ยังไม่มีแชทเข้ามา<br><span class="txt-sm">เชิญบัญชี LINE ${esc(acctName())} เข้ากลุ่ม${peer()} หรือรอให้${peer()}ทักเข้ามา</span>`}</div>` + msrBlock; return; }
   const sla = slaSec();
   if(listShown > LIST_STEP && listShown > list.length) listShown = Math.max(LIST_STEP, Math.ceil(list.length / LIST_STEP) * LIST_STEP);
   const shown = list.slice(0, listShown), rest = list.length - shown.length;
@@ -1627,6 +1654,7 @@ function renderList(){
     if(age != null) tags.push(`<span class="tag wait ${over ? 'over' : ''}">⏱ รอ ${fmtDur(age)}${over ? ' · เกิน SLA' : ''}</span>`);
     if(!c.is_active) tags.push(`<span class="tag off">${c.kind === 'user' ? 'ถูกบล็อก' : 'ไม่อยู่ในกลุ่ม'}</span>`);
     if(c.status === 'resolved') tags.push(`<span class="tag done">✓ เสร็จแล้ว</span>`);
+    (c.tags || []).forEach(t => tags.push(`<span class="tag lbl">🏷 ${esc(t)}</span>`));
     return `<div class="${cls}" data-id="${c.id}" onclick="openChat('${c.id}')">
       <div class="av-wrap">${avatarHtml(c)}<div class="pdot">L</div></div>
       <div class="conv-info">
@@ -1635,7 +1663,80 @@ function renderList(){
         <div class="conv-row3">${tags.join('')}</div>
       </div></div>`;
   }).join('') + (rest > 0
-    ? `<button class="older-bar" style="display:block;margin:10px auto" onclick="moreChats()">แสดงเพิ่ม (เหลืออีก ${nf(rest)} แชท)</button>` : '');
+    ? `<button class="older-bar" style="display:block;margin:10px auto" onclick="moreChats()">แสดงเพิ่ม (เหลืออีก ${nf(rest)} แชท)</button>` : '') + msrBlock;
+}
+// ── v2.23 ป้ายสถานะแชท: แถบกรองใต้ชิป (ซ่อนเมื่อบัญชีไม่มีป้าย) ──
+function renderTagChips(){
+  const el = $('tagChips'); if(!el) return;
+  const pal = (settings && settings.chat_tags) || [];
+  if(listTag && !pal.includes(listTag)) listTag = '';
+  if(!pal.length){ el.style.display = 'none'; el.innerHTML = ''; return; }
+  const cnt = t => chats.filter(c => c.status !== 'resolved' && (c.tags || []).includes(t)).length;
+  el.style.display = '';
+  el.innerHTML = `<span class="lb">🏷 ป้าย</span>` + pal.map(t => `<button class="chip ${listTag === t ? 'active' : ''}" data-t="${esc(t)}" onclick="setListTag(this.dataset.t)">${esc(t)} <span class="n">${cnt(t) || ''}</span></button>`).join('');
+}
+function setListTag(t){ listTag = listTag === t ? '' : t; resetList(); renderList(); $('convList').scrollTop = 0; }
+
+// ── v2.23 ค้นหาในเนื้อข้อความ (เลข PO / ชื่อสินค้า / บาร์โค้ด) ──
+// ค้นในฐานข้อมูลของบัญชีที่เปิดอยู่ (สิทธิ์เดียวกับการอ่านแชท) · พิมพ์ 2 ตัวขึ้นไป รอหยุดพิมพ์ 0.35 วิ · แสดง 40 ข้อความล่าสุดที่ตรง
+const MSR_LIMIT = 40;
+let msr = { q:'', rows:[], loading:false, err:'' }, msrTimer = null, msrSeq = 0;
+function queueMsgSearch(){
+  clearTimeout(msrTimer);
+  const q = searchQ.trim();
+  if(q.length < 2){ msr = { q:'', rows:[], loading:false, err:'' }; return; }
+  if(q === msr.q && !msr.err) return;
+  msr = { q, rows:[], loading:true, err:'' };
+  msrTimer = setTimeout(() => runMsgSearch(q), 350);
+}
+async function runMsgSearch(q){
+  const seq = ++msrSeq;
+  let rows = [], err = '';
+  try{
+    if(DEMO){
+      const lq = q.toLowerCase();
+      rows = Object.values(msgCache).flat().filter(m => !m.tmp && String(m.content || '').toLowerCase().includes(lq))
+        .sort((a, b) => Date.parse(b.sent_at) - Date.parse(a.sent_at)).slice(0, MSR_LIMIT);
+    } else {
+      const pat = '%' + q.replace(/[\\%_]/g, m => '\\' + m) + '%';
+      const { data, error } = await sb.from('pur_messages').select('id,chat_id,content,sent_at,direction,sender_name,staff_email,via')
+        .eq('account_id', acct.id).ilike('content', pat).order('sent_at', { ascending:false }).limit(MSR_LIMIT);
+      if(error) throw new Error(error.message);
+      rows = data || [];
+    }
+  }catch(e){ err = e.message; }
+  if(seq !== msrSeq || q !== searchQ.trim()) return;          // พิมพ์ต่อระหว่างรอ — ทิ้งผลเก่า
+  msr = { q, rows, loading:false, err };
+  renderList();
+}
+function markHit(text, q){
+  const t = String(text || ''), i = t.toLowerCase().indexOf(q.toLowerCase());
+  if(i < 0) return esc(t.slice(0, 140));
+  const from = Math.max(0, i - 40), pre = from ? '…' : '';
+  return pre + esc(t.slice(from, i)) + '<mark>' + esc(t.slice(i, i + q.length)) + '</mark>' + esc(t.slice(i + q.length, i + q.length + 90));
+}
+function msrHtml(){
+  if(!msr.q || msr.q !== searchQ.trim()) return '';
+  if(msr.loading) return '<div class="msr-head">ค้นหาในข้อความ…</div>';
+  if(msr.err) return `<div class="msr-head">ค้นหาในข้อความไม่สำเร็จ</div><div class="msr-note">${esc(msr.err)}</div>`;
+  if(!msr.rows.length) return `<div class="msr-head">ไม่พบ "${esc(msr.q)}" ในข้อความ</div>`;
+  return `<div class="msr-head">พบในข้อความ ${nf(msr.rows.length)}${msr.rows.length >= MSR_LIMIT ? '+ (แสดงล่าสุด ' + MSR_LIMIT + ')' : ''}</div>` + msr.rows.map(m => {
+    const c = chatById.get(m.chat_id);
+    const who = m.direction === 'out' ? (m.staff_email ? memberName(m.staff_email) : (m.sender_name || 'ทีม')) : (m.sender_name || (c ? chatName(c) : ''));
+    return `<button class="msr" onclick="jumpToMsg('${m.chat_id}','${m.id}')">
+      <span class="r1"><b>${esc(c ? chatName(c) : 'แชทนี้ไม่อยู่ในรายการแล้ว')}</b><i>${thDateShort(new Date(m.sent_at))} ${thTime(m.sent_at)}</i></span>
+      <span class="r2">${who ? `<span class="txt-muted">${esc(who)}:</span> ` : ''}${markHit(m.content, msr.q)}</span></button>`;
+  }).join('');
+}
+// เปิดแชทแล้วเลื่อนไปที่ข้อความนั้น — ข้อความเก่าเกินหน้าแรก (120 ข้อความ) โหลดหน้าเก่าต่อให้เองจนเจอ
+async function jumpToMsg(chatId, msgId){
+  if(!chatById.get(chatId)) return showToast('ไม่พบแชทนี้ในรายการแล้ว', 'info');
+  await openChat(chatId);
+  const find = () => $('msgsArea').querySelector(`[data-mid="${msgId}"]`);
+  for(let i = 0; i < 25 && !find() && activeId === chatId && msgMeta[chatId]?.hasMore; i++) await loadOlder();
+  const el = find();
+  if(!el || activeId !== chatId) return showToast('ไม่พบข้อความนี้ในแชท (อาจเก่ามาก) — เลื่อนขึ้นดูเองได้', 'info');
+  setTimeout(() => { el.scrollIntoView({ block:'center' }); el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); }, 150);
 }
 function setListFilter(f){ listFilter = f; resetList(); document.querySelectorAll('#listChips .chip').forEach(b => b.classList.toggle('active', b.dataset.f === f)); renderList(); }
 function toggleSort(){ listSort = listSort === 'wait' ? 'recent' : 'wait'; resetList(); LS.set('pur.sort', listSort); renderSortBtn(); renderList(); $('convList').scrollTop = 0; }
@@ -1646,7 +1747,7 @@ function renderSortBtn(){
   b.title = w ? 'ตอนนี้: แชทที่รอตอบนานสุดอยู่บนสุด — กดเพื่อเรียงแบบ LINE (ข้อความล่าสุดบนสุด)'
               : 'ตอนนี้: เรียงแบบ LINE ข้อความล่าสุดบนสุด — กดเพื่อให้แชทที่รอตอบนานสุดขึ้นก่อน';
 }
-function filterConv(q){ searchQ = q; resetList(); renderList(); }
+function filterConv(q){ searchQ = q; resetList(); queueMsgSearch(); renderList(); }
 function updateBadges(){
   const n = chats.filter(isWaiting).length;
   ['tb-chat', 'bn-chat'].forEach(id => { const e = $(id); if(e) e.textContent = n || ''; });
@@ -1707,6 +1808,8 @@ function renderTools(c){
     h += `<button class="tool-btn ${a ? 'gold' : ''}" onclick="openAssignee()">👤 ${a ? esc(memberName(a)) : 'ยังไม่มีผู้รับผิดชอบ'} ▾</button>`;
   if(!a) h += `<button class="tool-btn" onclick="claimChat()">✋ รับเรื่องเอง</button>`;
   h += `<button class="tool-btn ${c.status === 'resolved' ? 'done' : ''}" onclick="toggleResolve()">${c.status === 'resolved' ? '✓ เสร็จแล้ว · เปิดใหม่' : '✓ ทำเครื่องหมายเสร็จ'}</button>`;
+  const pal = settings?.chat_tags || [];
+  if(pal.length || (c.tags || []).length) h += `<button class="tool-btn" onclick="openTagMenu()" title="ป้ายสถานะแชท — ใช้กรองรายการแชท ไม่เกี่ยวกับสถิติ">🏷 ${(c.tags || []).length ? esc(c.tags.join(' · ')) : 'ติดป้าย'}</button>`;
   if(c.awaiting_since) h += `<button class="tool-btn danger" onclick="dismissWait()" title="ปิดงานรอตอบโดยไม่ตอบ เช่น ข้อความไม่เกี่ยวกับเรา">🚫 ไม่ต้องตอบ</button>`;
   if(isSup()) h += `<span class="tool-sp"></span><button class="tool-btn ${c.exclude_kpi ? 'danger' : ''}" onclick="toggleExclude()" title="แชททดสอบ/แชทภายใน ไม่ควรนับสถิติ">${c.exclude_kpi ? '📵 ไม่นับสถิติ' : '📊 นับสถิติ'}</button>`;
   $('chatTools').innerHTML = h;
@@ -2030,7 +2133,7 @@ function renderMsgs(msgs){
     const ds = thDayLong(m.sent_at);
     if(ds !== lastDate){ html += `<div class="date-sep">${ds}</div>`; lastDate = ds; }
     if(m.sender_type === 'system' || m.via === 'system'){
-      html += `<div class="sys-msg">${esc(m.content)}${m.staff_email ? ' · ' + esc(memberName(m.staff_email)) : ''} · ${thTime(m.sent_at)}</div>`; return;
+      html += `<div class="sys-msg" data-mid="${m.id}">${esc(m.content)}${m.staff_email ? ' · ' + esc(memberName(m.staff_email)) : ''} · ${thTime(m.sent_at)}</div>`; return;
     }
     const out = m.direction === 'out';
     const quoted = m.quoted_line_msg_id && byLine.get(m.quoted_line_msg_id);
@@ -2040,7 +2143,7 @@ function renderMsgs(msgs){
     else { const [inner, media] = bubbleBody(m); bubble = `<div class="bubble ${media ? 'media' : ''}">${qHtml}${inner}</div>`; }
     const who = out ? `${m.staff_email ? memberName(m.staff_email) : (m.sender_name || sysCardOf(m) || (m.via === 'oa' ? 'แอดมิน OA' : 'คนในบริษัท'))} · ${viaLabel(m.via)}` : (c && c.kind !== 'user' ? (m.sender_name || 'สมาชิกกลุ่ม') : '');
     const canQuote = !out && m.quote_token && !m.unsent && c && c.is_active;
-    html += `<div class="msg-grp ${out ? 'fa' : 'fc'}">
+    html += `<div class="msg-grp ${out ? 'fa' : 'fc'}" data-mid="${m.id}">
       ${!out && who ? `<div class="sender">${esc(who)}</div>` : ''}
       <div class="bubble-row">${bubble}${canQuote ? `<button class="rq" onclick="startQuote('${m.id}')" title="ตอบกลับข้อความนี้">↩</button>` : ''}</div>
       <div class="msg-time">${thTime(m.sent_at)}${out ? ` · ${esc(who)} ${sendMark(m)}` : (m.is_ack ? ' · <span title="ข้อความรับทราบ ไม่นับเป็นข้อความที่ต้องตอบ">รับทราบ</span>' : '')}</div>
@@ -2303,6 +2406,23 @@ async function toggleResolve(){
 async function toggleExclude(){
   const c = chatById.get(activeId); if(!c) return; const id = c.id; const ex = !c.exclude_kpi;
   try{ await rpc('pur_set_exclude', { p_chat:id, p_exclude:ex }); patchChat(id, { exclude_kpi:ex }); showToast(ex ? 'แชทนี้จะไม่ถูกนับในสถิติ' : 'แชทนี้กลับมานับสถิติแล้ว', 'success'); }
+  catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
+}
+// v2.23 ติด/ถอดป้ายสถานะแชท — ทุกคนในบัญชีทำได้ · ชุดป้ายหัวหน้าตั้งในหน้าตั้งค่า
+function openTagMenu(){
+  const c = chatById.get(activeId); if(!c) return;
+  const pal = settings?.chat_tags || [], cur = new Set(c.tags || []);
+  const all = [...pal, ...[...cur].filter(t => !pal.includes(t))];
+  openModal('🏷 ป้ายสถานะแชท', `
+    <div class="txt-sm txt-muted mb-12">เลือกได้หลายป้าย · ใช้กรองรายการแชท (แถบ "🏷 ป้าย" ใต้ตัวกรอง) · ไม่เกี่ยวกับสถิติ/งานรอตอบ</div>
+    ${all.length ? `<div class="tagpick" id="tagPick">${all.map(t => `<label class="${cur.has(t) ? 'on' : ''}"><input type="checkbox" value="${esc(t)}" ${cur.has(t) ? 'checked' : ''} onchange="this.parentElement.classList.toggle('on',this.checked)"> ${esc(t)}</label>`).join('')}</div>`
+      : '<div class="txt-sm">บัญชีนี้ยังไม่มีป้าย — หัวหน้าเพิ่มได้ที่ ตั้งค่า › ป้ายสถานะแชท</div>'}`,
+    `<button class="btn btn-outline" onclick="closeModal()">ยกเลิก</button>${all.length ? '<button class="btn btn-gold" onclick="saveChatTags()">บันทึก</button>' : ''}`);
+}
+async function saveChatTags(){
+  const id = activeId, tags = [...document.querySelectorAll('#tagPick input:checked')].map(i => i.value); closeModal();
+  if(DEMO){ patchChat(id, { tags }); showToast('ติดป้ายแล้ว (โหมดตัวอย่าง)', 'success'); return; }
+  try{ const saved = await rpc('pur_set_chat_tags', { p_chat:id, p_tags:tags }); patchChat(id, { tags:saved || [] }); showToast((saved || []).length ? 'ติดป้ายแล้ว ✓' : 'ถอดป้ายแล้ว ✓', 'success'); }
   catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
 }
 function openEditChat(){
@@ -3828,7 +3948,7 @@ let peopleQ = '';
 function renderSettings(){
   if(view !== 'set') return;
   const sup = isSup();
-  $('setContent').innerHTML = linkCardHtml() + notiCardHtml() + (isAdmin() ? accountsCardHtml() + accessCardHtml() : '') + (sup ? teamCardHtml() + peopleCardHtml() + hoursCardHtml() : '') + quickCardHtml(sup) + (sup ? ackCardHtml() + quotaCardHtml() : '') + (isAdmin() ? adminCardHtml() : '') + (sup ? aboutCardHtml() : '');   // v2.22 พนักงานเห็นแค่ของตัวเอง (ผูก LINE · แจ้งเตือน · ข้อความตอบด่วน)
+  $('setContent').innerHTML = linkCardHtml() + notiCardHtml() + (isAdmin() ? accountsCardHtml() + accessCardHtml() : '') + (sup ? teamCardHtml() + peopleCardHtml() + hoursCardHtml() : '') + quickCardHtml(sup) + (sup ? tagsCardHtml() + ackCardHtml() + quotaCardHtml() : '') + (isAdmin() ? adminCardHtml() : '') + (sup ? aboutCardHtml() : '');   // v2.22 พนักงานเห็นแค่ของตัวเอง (ผูก LINE · แจ้งเตือน · ข้อความตอบด่วน)
   if(sup && peopleOpen) renderPeopleRows();
   if(sup && oaAdmins === null && !DEMO) loadOaAdmins();
 }
@@ -4240,6 +4360,17 @@ function quickCardHtml(sup){
 async function saveQuick(){
   const arr = $('qrText').value.split('\n').map(s => s.trim()).filter(Boolean);
   try{ await rpc('pur_save_settings', { p:{ quick_replies:arr }, p_account:acct.id }); await loadSettings(); showToast('บันทึกแล้ว ✓', 'success'); }
+  catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
+}
+function tagsCardHtml(){
+  const t = settings.chat_tags || [];
+  return `<div class="card card-gold"><div class="card-head"><h3>🏷 ป้ายสถานะแชท · ${esc(acctName())}</h3>
+    <div class="hint">ป้ายที่ทีมติดให้แชทได้ เช่น รอของ / รอราคา / รอเอกสาร · ใช้กรองรายการแชท ไม่เกี่ยวกับสถิติ · หนึ่งบรรทัดต่อป้าย (ไม่เกิน 12 ป้าย ป้ายละ 20 ตัวอักษร) · ลบป้ายออก = ถอดป้ายนั้นจากทุกแชท</div></div>
+    <div class="card-body"><textarea class="input" id="tagText" rows="5">${esc(t.join('\n'))}</textarea><div class="mt-8"><button class="btn btn-gold" onclick="saveTagPalette()">💾 บันทึก</button></div></div></div>`;
+}
+async function saveTagPalette(){
+  const arr = $('tagText').value.split('\n').map(s => s.trim()).filter(Boolean);
+  try{ await rpc('pur_save_chat_tags', { p_account:acct.id, p_tags:arr }); await loadSettings(); await loadChats(); showToast('บันทึกป้ายแล้ว ✓', 'success'); }
   catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
 }
 function ackCardHtml(){
