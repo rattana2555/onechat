@@ -59,7 +59,7 @@ a{color:inherit}
 .hdr-btn:hover{background:rgba(255,255,255,.12)}
 /* ── ศูนย์แจ้งเตือน ── */
 .noti-wrap{position:relative;display:flex}
-.noti-dot{position:absolute;top:-5px;right:-5px;min-width:15px;height:15px;padding:0 3px;border-radius:8px;background:var(--danger);color:#fff;font-size:9.5px;font-weight:800;line-height:15px;text-align:center;border:2px solid var(--navy);pointer-events:none;z-index:2;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+.noti-dot{position:absolute;top:-7px;right:-7px;min-width:19px;height:19px;padding:0 4px;border-radius:10px;background:#e0271a;color:#fff;font-size:11.5px;font-weight:800;line-height:15px;text-align:center;border:2px solid var(--navy);pointer-events:none;z-index:2;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
 .noti-panel{display:none;position:fixed;top:64px;right:10px;left:auto;width:min(calc(100vw - 20px),370px);max-height:min(74vh,540px);background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:0 14px 36px rgba(0,0,0,.24);z-index:120;overflow:hidden;flex-direction:column}
 .noti-panel.open{display:flex}
 .noti-head{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border);background:linear-gradient(to right,rgba(201,168,76,.16),transparent);font-size:13px;flex-shrink:0}
@@ -745,6 +745,16 @@ body.dark .ov-chips button.on{background:var(--gold);border-color:var(--gold);co
 .ov-i .ic{font-weight:700;text-align:center;border-radius:6px;height:22px;line-height:22px;font-size:12px}
 .ov-i .ic.good{color:#1e8449;background:#e8f7ee}.ov-i .ic.bad{color:#c0392b;background:#ffe3df}.ov-i .ic.info{color:#8a5a00;background:#fef3d7}
 body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.bad{background:#3a1a17;color:#ff8a7e}body.dark .ov-i .ic.info{background:#3a2e15;color:#e8c86a}
+.ov-g-head{margin-top:6px;padding-top:12px;border-top:1px solid var(--border);font-weight:700;font-size:14px}
+.ov-g-head span{font-weight:400;font-size:12px;color:var(--muted);margin-left:4px}
+.ov-g{display:grid;grid-template-columns:22px 1fr;gap:8px;font-size:13px;line-height:1.5}
+.ov-g .ic{font-weight:700;text-align:center;border-radius:6px;height:22px;line-height:22px;font-size:11px;color:var(--muted);background:var(--row-alt)}
+.ov-g.good .ic{color:#1e8449;background:#e8f7ee}.ov-g.bad .ic{color:#c0392b;background:#ffe3df}
+body.dark .ov-g.good .ic{background:#1a3a25;color:#7be0a3}body.dark .ov-g.bad .ic{background:#3a1a17;color:#ff8a7e}
+.ov-g .w{font-size:11.5px;font-weight:600;color:var(--muted)}.ov-g.good .w{color:#1e8449}.ov-g.bad .w{color:#c0392b}
+body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
+.ov-g .m{font-size:12px;color:var(--sub);font-variant-numeric:tabular-nums}.ov-g .m b{color:var(--text);font-weight:600}
+.ov-g-note,.ov-g-none{font-size:12px;color:var(--muted);line-height:1.55}
 .ov-tbl{overflow-x:auto}
 .ov-tbl table{width:100%;border-collapse:collapse;font-size:13px;min-width:860px;font-variant-numeric:tabular-nums}
 .ov-tbl th{font-size:11.5px;color:var(--muted);font-weight:600;text-align:right;padding:9px 11px;border-bottom:1px solid var(--border);white-space:nowrap;background:var(--row-alt)}
@@ -2423,8 +2433,8 @@ function onMsgUpdate(m){
 const NOTI_MAX = 60;                                    // เก็บรายการล่าสุดกี่รายการ
 const NOTI_KINDS = {
   msg:    { icon:'💬', label:'ข้อความใหม่',                   tone:[880, .12, .34] },
-  warn:   { icon:'🟠', label:'ใกล้ครบ SLA',                  tone:[660, .10, .30] },
-  sla:    { icon:'🔴', label:'เกิน SLA แล้ว',                 tone:[520, .16, .34] },
+  warn:   { icon:'⏳', label:'ใกล้ครบ SLA',                  tone:[660, .10, .30] },   // v2.22 เดิม 🟠/🔴 วงกลมสีล้วน ดูเหมือนจุดบั๊ก ไม่รู้ว่าหมายถึงอะไร
+  sla:    { icon:'⏰', label:'เกิน SLA แล้ว',                 tone:[520, .16, .34] },
   assign: { icon:'👤', label:'คุณเป็นผู้รับผิดชอบ',              tone:[740, .11, .30] },
   orphan: { icon:'❓', label:'แชทใหม่ ยังไม่มีผู้รับผิดชอบ',      tone:[600, .10, .30] },
 };
@@ -2483,7 +2493,7 @@ function renderBell(){
   const b = $('bellBtn'); if(!b) return;
   b.innerHTML = ic(notiPrefs.on ? 'bell' : 'belloff');
   const n = notiUnread(), e = $('bellDot');
-  if(e){ e.textContent = n > 99 ? '99+' : String(n || ''); e.style.display = n ? '' : 'none'; }
+  if(e){ e.textContent = n >= NOTI_MAX ? NOTI_MAX + '+' : String(n || ''); e.style.display = n ? '' : 'none'; }   // นับขึ้นได้ถึง 60 (รายการเก็บสูงสุด 60)
   b.title = `ศูนย์แจ้งเตือน${n ? ` · ใหม่ ${n}` : ''}${notiPrefs.on ? '' : ' (ปิดอยู่)'}`;
 }
 function notiPanelHtml(){
@@ -2520,6 +2530,9 @@ function toggleNoti(){ notiOpen ? closeNoti() : openNotiPanel(); }
 function openNotiPanel(){
   document.querySelectorAll('.dd-panel.open').forEach(x => x.classList.remove('open'));
   notiOpen = true; renderNotiPanel(); placeNotiPanel(); $('notiPanel').classList.add('open'); askNotifyPermission();
+  // v2.22 เปิดดูแล้ว = เห็นแล้ว → ตัวเลขบนกระดิ่งกลับเป็น 0 ทันที (เดิมต้องกดทีละรายการ ตัวเลขเลยค้าง/ไม่ตรงกับที่เห็น)
+  // รายการที่เพิ่งเข้ามายังไฮไลต์ไว้ตลอดรอบที่เปิดนี้ ให้รู้ว่าอันไหนใหม่
+  if(notiUnread()){ notiList.forEach(n => n.read = true); notiSaveList(); renderBell(); }
 }
 function closeNoti(){ notiOpen = false; $('notiPanel')?.classList.remove('open'); }
 function openNoti(id){
@@ -3814,7 +3827,7 @@ let peopleQ = '';
 function renderSettings(){
   if(view !== 'set') return;
   const sup = isSup();
-  $('setContent').innerHTML = linkCardHtml() + notiCardHtml() + (isAdmin() ? accountsCardHtml() + accessCardHtml() : '') + (sup ? teamCardHtml() + peopleCardHtml() + hoursCardHtml() : '') + quickCardHtml(sup) + (sup ? ackCardHtml() : '') + quotaCardHtml() + (isAdmin() ? adminCardHtml() : '') + aboutCardHtml();
+  $('setContent').innerHTML = linkCardHtml() + notiCardHtml() + (isAdmin() ? accountsCardHtml() + accessCardHtml() : '') + (sup ? teamCardHtml() + peopleCardHtml() + hoursCardHtml() : '') + quickCardHtml(sup) + (sup ? ackCardHtml() + quotaCardHtml() : '') + (isAdmin() ? adminCardHtml() : '') + (sup ? aboutCardHtml() : '');   // v2.22 พนักงานเห็นแค่ของตัวเอง (ผูก LINE · แจ้งเตือน · ข้อความตอบด่วน)
   if(sup && peopleOpen) renderPeopleRows();
   if(sup && oaAdmins === null && !DEMO) loadOaAdmins();
 }
@@ -3901,17 +3914,48 @@ function accessCardHtml(){
     if(r.account_id) p.acc[r.account_id] = r.role;
     byEmail.set(r.email, p);
   });
-  const list = [...byEmail.values()].sort((a, b) => (b.admin - a.admin) || (b.active - a.active) || String(a.nick || a.name || a.email).localeCompare(String(b.nick || b.name || b.email), 'th'));
+  const has = p => p.admin || Object.keys(p.acc).length > 0;   // ไม่มีสิทธิ์บัญชีไหนเลย → ท้ายตาราง แสดงจาง
+  const list = [...byEmail.values()].sort((a, b) => (b.admin - a.admin) || (has(b) - has(a)) || (b.active - a.active) || String(a.nick || a.name || a.email).localeCompare(String(b.nick || b.name || b.email), 'th'));
+  // v2.22 จัดการทั้งแถว: ถอดออกทุกบัญชี · ตั้ง/ลดผู้ดูแลระบบ (ตัวเองแก้ไม่ได้ กันล็อกตัวเองออก)
+  const manage = p => {
+    if(me && p.email === me.email) return '<span class="mini txt-muted">คุณเอง</span>';
+    const opts = p.admin ? [['demote', 'ลดเป็นสมาชิกทั่วไป']]
+      : [...(Object.keys(p.acc).length ? [['removeAll', 'ถอดออกทุกบัญชี']] : []), ['promote', 'ตั้งเป็นผู้ดูแลระบบ']];
+    return `<select class="input input-sm" style="min-width:120px" data-e="${esc(p.email)}" data-n="${esc(p.nick || p.name || p.email)}" data-acc="${esc(Object.keys(p.acc).join(','))}" onchange="accessAction(this)">
+      <option value="">จัดการ…</option>${opts.map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select>`;
+  };
   const cell = (p, a) => p.admin ? '<span class="pill bad" title="ผู้ดูแลระบบเข้าได้ทุกบัญชี">ทุกบัญชี</span>'
     : `<select class="input input-sm" style="min-width:110px" data-e="${esc(p.email)}" data-a="${a.id}" onchange="setAccess(this)">${[['', '—'], ['staff', 'พนักงาน'], ['supervisor', 'หัวหน้า']]
         .map(([v, l]) => `<option value="${v}" ${(p.acc[a.id] || '') === v ? 'selected' : ''}>${l}</option>`).join('')}</select>`;
   return `<div class="card card-gold" id="accessCard"><div class="card-head"><h3><span class="hb">${ic('users')}</span>สิทธิ์เข้าบัญชี</h3>
     <div class="hint">ใครเข้าบัญชีไหนได้ และเป็นหัวหน้าหรือพนักงานของบัญชีนั้น · ผู้ดูแลระบบเข้าได้ทุกบัญชีเสมอ · คนที่ได้บัญชีเดียวจะเข้าบัญชีนั้นเลยไม่ต้องผ่านหน้าเลือก ·
-      คนใหม่ให้เพิ่มที่การ์ด "ทีม" ของบัญชีนั้นก่อน (สลับบัญชีที่หัวแอพ) · ถอดสิทธิ์แล้วสถิติเดิมของคนนั้นยังอยู่</div></div>
-    <div class="tbl-wrap"><table class="tbl"><thead><tr><th style="cursor:default">สมาชิก</th>${accounts.map(a => `<th style="cursor:default">${esc(a.name)}</th>`).join('')}</tr></thead><tbody>
-    ${list.length ? list.map(p => `<tr class="${p.active ? '' : 'dim'}"><td><b>${esc(p.nick || p.name || p.email)}</b><div class="mini">${esc(p.email)}</div></td>${accounts.map(a => `<td>${cell(p, a)}</td>`).join('')}</tr>`).join('')
-      : `<tr class="empty-row"><td colspan="${accounts.length + 1}">${accessMx === null ? 'กำลังโหลด…' : 'ยังไม่มีสมาชิก'}</td></tr>`}
+      คนใหม่ให้เพิ่มที่การ์ด "ทีม" ของบัญชีนั้นก่อน (สลับบัญชีที่หัวแอพ) · เลือก <b>—</b> = ถอดออกจากบัญชีนั้น · ช่อง <b>จัดการ</b> = ถอดออกทุกบัญชี หรือตั้ง/ลดผู้ดูแลระบบ · ถอดสิทธิ์แล้วสถิติเดิมของคนนั้นยังอยู่</div></div>
+    <div class="tbl-wrap"><table class="tbl"><thead><tr><th style="cursor:default">สมาชิก</th>${accounts.map(a => `<th style="cursor:default">${esc(a.name)}</th>`).join('')}<th style="cursor:default">จัดการ</th></tr></thead><tbody>
+    ${list.length ? list.map(p => `<tr class="${p.active && has(p) ? '' : 'dim'}"><td><b>${esc(p.nick || p.name || p.email)}</b><div class="mini">${esc(p.email)}${has(p) ? '' : ' · ไม่มีสิทธิ์เข้าบัญชีไหน'}</div></td>${accounts.map(a => `<td>${cell(p, a)}</td>`).join('')}<td>${manage(p)}</td></tr>`).join('')
+      : `<tr class="empty-row"><td colspan="${accounts.length + 2}">${accessMx === null ? 'กำลังโหลด…' : 'ยังไม่มีสมาชิก'}</td></tr>`}
     </tbody></table></div></div>`;
+}
+async function accessAction(sel){
+  const act = sel.value, email = sel.dataset.e, name = sel.dataset.n; sel.value = '';
+  if(!act) return;
+  const ask = { removeAll:`ถอด ${name} ออกจากทุกบัญชี?
+
+เข้าแอพแล้วจะไม่เห็นบัญชีไหนเลย · สถิติเดิมยังอยู่ · ให้สิทธิ์คืนได้ในตารางนี้`,
+                promote:`ตั้ง ${name} เป็นผู้ดูแลระบบ?
+
+ผู้ดูแลระบบเห็นทุกบัญชี แก้สิทธิ์คนอื่นได้ และเห็นภาพรวมทุกบัญชี`,
+                demote:`ลด ${name} จากผู้ดูแลระบบเป็นสมาชิกทั่วไป?
+
+จะยังไม่มีสิทธิ์เข้าบัญชีไหน — เลือกบัญชีที่ให้เข้าในตารางนี้ต่อได้เลย` }[act];
+  if(!confirm(ask)) return;
+  try{
+    if(act === 'removeAll'){
+      for(const id of (sel.dataset.acc || '').split(',').filter(Boolean)) await rpc('pur_set_access', { p_account:+id, p_email:email, p_role:null });
+    } else await rpc('pur_set_admin', { p_email:email, p_admin:act === 'promote' });
+    showToast(act === 'removeAll' ? `ถอด ${name} ออกทุกบัญชีแล้ว ✓` : act === 'promote' ? `ตั้ง ${name} เป็นผู้ดูแลระบบแล้ว ✓` : `ลด ${name} เป็นสมาชิกทั่วไปแล้ว ✓`, 'success');
+    await loadMembers(); const el = $('teamCard'); if(el) el.outerHTML = teamCardHtml();
+  }catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
+  accessMx = null; await loadAccessMx();
 }
 async function setAccess(sel){
   const acctId = +sel.dataset.a;
@@ -4625,7 +4669,37 @@ function renderOvRank(C){
     if(x.cur.unknown) out.push(['info', 'i', `<b>${esc(x.a.name)}</b>: ยังไม่รู้ว่าใครตอบ ${nf(x.cur.unknown)} งาน — ผูกชื่อแอดมิน OA และตั้งคนในบริษัทแล้วอันดับจะแม่นขึ้น`]);
   });
   if(!out.length) out.push(['good', '✓', 'ไม่มีเรื่องต้องจับตาในช่วงนี้']);
-  $('ovIns').innerHTML = out.slice(0, 6).map(([k, i, t]) => `<div class="ov-i"><div class="ic ${k}">${i}</div><div>${t}</div></div>`).join('');
+  $('ovIns').innerHTML = out.slice(0, 6).map(([k, i, t]) => `<div class="ov-i"><div class="ic ${k}">${i}</div><div>${t}</div></div>`).join('') + ovGrowthHtml(ppl);
+}
+// v2.22 พัฒนาการรายคน — ทุกคนที่ตอบถึง OV_MIN งานทั้งสองช่วง เรียงจากดีขึ้นมากสุด · กติกาตายตัว:
+//   ดีขึ้น = ตอบทัน SLA +5 จุดขึ้นไป หรือ (% เท่าเดิม ±5 และเวลาตอบกลางเร็วขึ้น ≥20% และ ≥1 นาที) · แย่ลง = กลับกัน · นอกนั้น = คงที่
+function ovGrowthHtml(ppl){
+  const R = ov.R, both = [], fresh = [], few = [];
+  ppl.forEach(p => {
+    if(p.cur.ans >= OV_MIN && p.prev.ans >= OV_MIN) both.push(p);
+    else if(p.cur.ans >= OV_MIN) fresh.push(p);
+    else if(p.cur.ans > 0) few.push(p);
+  });
+  const trend = p => {
+    const d = p.cur.sla - p.prev.sla, dm = (p.cur.med ?? 0) - (p.prev.med ?? 0), big = p.prev.med && Math.abs(dm) >= 60 && Math.abs(dm) >= p.prev.med * .2;
+    return d >= 5 ? 1 : d <= -5 ? -1 : big ? (dm < 0 ? 1 : -1) : 0;
+  };
+  both.sort((a, b) => (trend(b) - trend(a)) || ((b.cur.sla - b.prev.sla) - (a.cur.sla - a.prev.sla)) || String(a.name).localeCompare(String(b.name), 'th') || (a.acct - b.acct));
+  const acctTag = p => supAccts().length > 1 ? ` <span class="txt-muted">(${esc(ovName(p.acct))})</span>` : '';
+  const pts = d => `${d > 0 ? '+' : d < 0 ? '−' : '±'}${Math.abs(Math.round(d))} จุด`;
+  const rows = both.map(p => {
+    const t = trend(p), d = p.cur.sla - p.prev.sla;
+    const [k, ic, word] = t > 0 ? ['good', '▲', 'ดีขึ้น'] : t < 0 ? ['bad', '▼', 'แย่ลง'] : ['flat', '•', 'คงที่'];
+    return `<div class="ov-g ${k}"><div class="ic">${ic}</div><div><b>${esc(p.name)}</b>${acctTag(p)} <span class="w">${word}</span>
+      <div class="m">ตอบทัน ${ovPctTxt(p.prev.sla)} → <b>${ovPctTxt(p.cur.sla)}</b> (${pts(d)}) · เวลาตอบกลาง ${fmtDur(p.prev.med)} → <b>${fmtDur(p.cur.med)}</b> · ตอบ ${nf(p.prev.ans)} → ${nf(p.cur.ans)} งาน</div></div></div>`;
+  });
+  const up = both.filter(p => trend(p) > 0).length, down = both.filter(p => trend(p) < 0).length;
+  const sum = both.length ? `ดีขึ้น ${nf(up)} · แย่ลง ${nf(down)} · คงที่ ${nf(both.length - up - down)} คน` : '';
+  const names = arr => arr.sort((a, b) => b.cur.ans - a.cur.ans).map(p => esc(p.name) + acctTag(p)).join(', ');
+  return `<div class="ov-g-head">พัฒนาการรายคน <span>เทียบ${esc(R.prevName)}${sum ? ' · ' + sum : ''}</span></div>`
+    + (rows.join('') || `<div class="ov-g-none">ยังไม่มีใครตอบถึง ${OV_MIN} งานทั้งสองช่วงให้เทียบ</div>`)
+    + (fresh.length ? `<div class="ov-g-note"><b>ยังไม่มีข้อมูล${esc(R.prevName)}ให้เทียบ:</b> ${names(fresh)}</div>` : '')
+    + (few.length ? `<div class="ov-g-note"><b>ตอบไม่ถึง ${OV_MIN} งาน (ยังไม่สรุป):</b> ${names(few)}</div>` : '');
 }
 
 // ── ตารางรายคน ──
