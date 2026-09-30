@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.17">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.18">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.17">
-<title>Rattana One Chat v2.17</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.18">
+<title>Rattana One Chat v2.18</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -655,8 +655,8 @@ select.input{appearance:auto}
 .acct-item:hover{border-color:var(--gold)}
 /* ───────────── ภาพรวมทุกบัญชี (v2.07) ───────────── */
 /* สีประจำบัญชี = ช่อง 1–3 ของชุดสี dataviz (ผ่านการตรวจแยกสีทั้ง 3 คู่ทั้งโหมดสว่าง/มืด) · สีตามบัญชีเสมอ ไม่ตามลำดับที่แสดง */
-:root{--ac1:#2a78d6;--ac2:#eb6834;--ac3:#1baf7a;--ov-last:#b9c2d6;--ch1:#1c5cab;--ch2:#5598e7;--ch3:#b7d3f6}
-body.dark{--ac1:#3987e5;--ac2:#d95926;--ac3:#199e70;--ov-last:#3a4b73;--ch1:#86b6ef;--ch2:#3987e5;--ch3:#1c5cab}
+:root{--ac1:#2a78d6;--ac2:#eb6834;--ac3:#1baf7a;--ac4:#eda100;--ov-last:#b9c2d6;--ch1:#1c5cab;--ch2:#5598e7;--ch3:#b7d3f6}
+body.dark{--ac1:#3987e5;--ac2:#d95926;--ac3:#199e70;--ac4:#c98500;--ov-last:#3a4b73;--ch1:#86b6ef;--ch2:#3987e5;--ch3:#1c5cab}
 #chartTip{z-index:9700}
 #ovGate{position:fixed;inset:0;z-index:9350;background:var(--bg);display:flex;flex-direction:column;color:var(--text)}
 #ovGate.hide{display:none}
@@ -821,7 +821,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
     </button>
     <div class="lg-note">ใช้อีเมลบริษัทที่หัวหน้าเพิ่มไว้ในทีม · ล็อกอินครั้งเดียวแล้วเลือกบัญชี LINE<br>ยังไม่มีสิทธิ์? ติดต่อหัวหน้าแผนกหรือผู้ดูแลระบบ</div>
     <div class="lg-err" id="lgErr"></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.17 · 28/09/2569</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.18 · 30/09/2569</div>
   </div>
 </div>
 
@@ -871,7 +871,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.17</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.18</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -1117,7 +1117,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.17 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.18 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1136,6 +1136,7 @@ body.dark .ov-i .ic.good{background:#1a3a25;color:#7be0a3}body.dark .ov-i .ic.ba
 //  v2.15: เครดิตคนตอบ = owner_email → ถ้าว่างใช้คนที่ตอบ (closed_by) · ข้อสังเกตหน้าภาพรวมเรียงแน่นอน (เสมอกันตัดสินด้วยชื่อ) และไม่ขัดกันเอง
 //  v2.16: มือถือแตะแชทแล้วไม่เข้า — รายการแชทถูกวาดใหม่ระหว่างนิ้วแตะ (realtime/รอบ 30–60 วิ) เบราว์เซอร์เลยทิ้งการแตะ · จำแชทตั้งแต่ touchstart แล้วเปิดเองตอน touchend + งดวาดรายการระหว่างแตะ
 //  v2.17: แท็บ "ส่งข้อความ" เปลี่ยนชื่อเป็น "บรอดแคสต์"
+//  v2.18: บัญชีที่ 4 HR Rattana — สีประจำบัญชีช่องที่ 4 ในหน้าภาพรวม
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
@@ -4284,7 +4285,7 @@ const ov = { period:'this', filter:'all', data:null, R:null, list:[], seq:0, bac
 const OV_MIN = 10;                  // ตอบไม่ถึงเท่านี้ในช่วงนั้น = ไม่จัดอันดับ (% จากไม่กี่งานแกว่งเกินไป)
 const OV_DAYS = ['จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.', 'อา.'];
 const supAccts = () => accounts.filter(a => a.role === 'admin' || a.role === 'supervisor');
-const ovCol  = id => id >= 1 && id <= 3 ? `var(--ac${id})` : 'var(--muted)';     // สีตามบัญชี ไม่ตามลำดับที่แสดง
+const ovCol  = id => id >= 1 && id <= 4 ? `var(--ac${id})` : 'var(--muted)';     // สีตามบัญชี ไม่ตามลำดับที่แสดง
 const ovName = id => accounts.find(a => a.id === id)?.name || 'บัญชี ' + id;
 const ovPct  = g => g && g.ans ? g.ok / g.ans * 100 : null;
 
