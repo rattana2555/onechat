@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.25">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.26">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.25">
-<title>Rattana One Chat v2.25</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.26">
+<title>Rattana One Chat v2.26</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -99,8 +99,8 @@ a{color:inherit}
 /* ───────────── BOTTOM NAV (mobile) ───────────── */
 /* v2.24 แถบล่างแบบลอย "กระจกฝ้า" (แบบ LINE ใหม่) — ลอยเหนือเนื้อหา มองทะลุเห็นรายการด้านหลัง · ซ่อนตอนเปิดแชท (ไม่ทับช่องพิมพ์)
    เนื้อหาที่เลื่อนได้เผื่อที่ด้านล่าง (--nav-space) ให้รายการสุดท้ายเลื่อนพ้นแถบได้ */
-:root{--nav-h:62px;--nav-space:calc(var(--nav-h) + 22px + env(safe-area-inset-bottom))}
-.bottom-nav{display:flex;position:fixed;left:14px;right:14px;bottom:calc(10px + env(safe-area-inset-bottom));height:var(--nav-h);padding:5px;border-radius:31px;z-index:60;
+:root{--nav-h:62px;--nav-space:calc(var(--nav-h) + 20px + max(0px,env(safe-area-inset-bottom) - 12px))}
+.bottom-nav{display:flex;position:fixed;left:14px;right:14px;bottom:max(8px,calc(env(safe-area-inset-bottom) - 12px));height:var(--nav-h);padding:5px;border-radius:31px;z-index:60;
   background:rgba(255,255,255,.72);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);
   border:1px solid rgba(255,255,255,.75);box-shadow:0 10px 30px rgba(13,27,62,.18),0 1px 3px rgba(13,27,62,.08),inset 0 1px 0 rgba(255,255,255,.9);
   transition:transform .28s cubic-bezier(.4,0,.2,1),opacity .2s}
@@ -200,6 +200,7 @@ body.dark .tagchips .tchip:hover{color:#9cc2ff}body.dark .tagchips .tchip .n{col
 .swipe-act.read{background:#1e8449}
 .swipe-act .dot{width:10px;height:10px;border-radius:50%;background:#fff}
 .swipe-act svg{width:18px;height:18px}
+#chatContent.drop-on{outline:3px dashed var(--gold);outline-offset:-8px}
 .ctx-menu{position:fixed;z-index:9000;min-width:190px;padding:4px;background:var(--card-bg);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-lg);display:none}
 .ctx-menu.open{display:block}
 .ctx-menu button{display:flex;align-items:center;gap:9px;width:100%;padding:9px 12px;border:0;border-radius:7px;background:none;font:inherit;font-size:13.5px;font-weight:600;color:var(--text);cursor:pointer;text-align:left}
@@ -685,6 +686,28 @@ select.input{appearance:auto}
 /* iOS: height:100% บางรุ่นไม่ตรงกับพื้นที่แสดงผลจริง เหลือช่องว่างท้ายจอ — ยึดขอบจอด้วย inset แทน */
 @media(max-width:767px){
   body{position:fixed;inset:0;height:auto;width:auto}
+  /* v2.26 หัวแอพแบบ LINE: ชื่อบัญชีตัวใหญ่ซ้าย · ปุ่มรวมในแคปซูลกระจกฝ้าขวา · เลื่อนลง = หัวหลบ เลื่อนขึ้น = กลับมา */
+  .app-hdr{--hdr-h:calc(58px + max(0px,env(safe-area-inset-top)));height:var(--hdr-h);background:rgba(244,246,251,.86);
+    -webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);color:var(--navy);
+    border-bottom:1px solid rgba(13,27,62,.07);padding-left:16px;padding-right:12px;transition:margin-top .26s cubic-bezier(.4,0,.2,1)}
+  body.dark .app-hdr{background:rgba(10,16,32,.86);color:#e8eaf0;border-bottom-color:rgba(255,255,255,.06)}
+  body.hdr-hidden .app-hdr{margin-top:calc(-1 * var(--hdr-h))}
+  .app-hdr .brand-mark,.app-hdr .logo-text,.app-hdr .ht-role{display:none}
+  #hdrAcct{min-width:0;flex:1}
+  .app-hdr .logo-sub{font-size:22px;font-weight:800;color:inherit;max-width:none;margin:0;display:flex;align-items:center;letter-spacing:.1px}
+  .app-hdr .logo-sub .hdr-av{width:30px;height:30px;border-radius:9px;margin-right:9px;vertical-align:middle;flex-shrink:0}
+  .app-hdr .ht-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;min-width:0}
+  .app-hdr .ht-name .ic{width:16px;height:16px;flex-shrink:0;opacity:.75}
+  .hdr-r{gap:0;padding:3px 4px;border-radius:24px;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.85);
+    -webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);
+    box-shadow:0 4px 16px rgba(13,27,62,.12),inset 0 1px 0 rgba(255,255,255,.9)}
+  body.dark .hdr-r{background:rgba(17,28,53,.72);border-color:rgba(255,255,255,.09);box-shadow:0 4px 16px rgba(0,0,0,.4)}
+  .app-hdr .hdr-btn{width:38px;height:36px;border:0;border-radius:18px;color:inherit;font-size:18px;font-weight:700}
+  .app-hdr .hdr-btn:active{background:rgba(13,27,62,.08)}
+  .app-hdr .hdr-btn .ic{width:21px;height:21px;stroke-width:1.9}
+  .app-hdr .hdr-wide{display:none}
+  .app-hdr .noti-dot{border-color:#fff;top:-3px;right:-2px}
+  body.dark .app-hdr .noti-dot{border-color:#1a2744}
   .conv-list,.scroll-view{padding-bottom:var(--nav-space)}            /* เลื่อนรายการสุดท้ายพ้นแถบลอยได้ */
   .reply-bar{padding-bottom:max(8px,env(safe-area-inset-bottom))}    /* เปิดแชท = แถบล่างหลบ ช่องพิมพ์ติดขอบจอจริง */
   .upd-bar{bottom:calc(var(--nav-h) + 20px + env(safe-area-inset-bottom))}
@@ -701,6 +724,7 @@ select.input{appearance:auto}
   .logo-sub{font-size:10px}
 }
 @media(min-width:768px){
+  .hdr-more{display:none}
   .app-hdr{padding:0 16px;gap:11px}
   .top-tabs{display:flex}
   .bottom-nav{display:none}
@@ -901,7 +925,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
     <div class="lg-err" id="lgErr"></div>
     <div class="lg-wait" role="status"><div class="lg-spin"></div><b id="lgWaitMsg">กำลังเปิดแอพ…</b><div class="sub" id="lgWaitSub"></div>
       <div class="acts"><button class="btn btn-gold" type="button" onclick="retryGate()">ลองใหม่เดี๋ยวนี้</button><button class="btn btn-outline" type="button" onclick="doLogout()">ออกจากระบบ</button></div></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.25 · 01/10/2569</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.26 · 01/10/2569</div>
   </div>
 </div>
 
@@ -951,7 +975,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.25</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.26</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -960,10 +984,15 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
       <div class="noti-panel" id="notiPanel"></div>
     </div>
     <button class="hdr-btn" id="refreshBtn" onclick="refreshAll()" title="โหลดข้อมูลใหม่"><span data-ic="refresh"></span></button>
-    <button class="hdr-btn" onclick="toggleDark()" title="โหมดมืด/สว่าง"><span data-ic="moon"></span></button>
-    <button class="hdr-btn" onclick="doLogout()" title="ออกจากระบบ"><span data-ic="logout"></span></button>
+    <button class="hdr-btn hdr-wide" onclick="toggleDark()" title="โหมดมืด/สว่าง"><span data-ic="moon"></span></button>
+    <button class="hdr-btn hdr-wide" onclick="doLogout()" title="ออกจากระบบ"><span data-ic="logout"></span></button>
+    <button class="hdr-btn hdr-more" id="hdrMoreBtn" onclick="toggleHdrMore(event)" title="เมนูเพิ่มเติม">⋯</button>
   </div>
 </header>
+<div class="ctx-menu" id="hdrMore" role="menu">
+  <button onclick="closeHdrMore();toggleDark()"><span data-ic="moon"></span> โหมดมืด / สว่าง</button>
+  <button onclick="closeHdrMore();doLogout()"><span data-ic="logout"></span> ออกจากระบบ</button>
+</div>
 
 <!-- DESKTOP TABS -->
 <nav class="top-tabs">
@@ -1027,7 +1056,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
           <input type="file" id="imgInp" accept="image/*" hidden onchange="onPickImage(this)">
           <button class="round-btn attach-btn" id="attachBtn" title="ส่งรูป" onclick="document.getElementById('imgInp').click()"><span data-ic="image"></span></button>
           <button class="round-btn emo-btn" id="emoBtn" title="อิโมจิ / สติกเกอร์" aria-label="อิโมจิ / สติกเกอร์" onclick="toggleEmo()"><span data-ic="smile"></span></button>
-          <textarea class="reply-inp" id="replyInp" placeholder="พิมพ์ข้อความ…" rows="1" onkeydown="onKey(event)" oninput="grow(this);syncSend();warmSend()" onfocus="if(window.innerWidth<768)emoHide()"></textarea>
+          <textarea class="reply-inp" id="replyInp" placeholder="พิมพ์ข้อความ… (วางรูปได้ด้วย Ctrl+V)" rows="1" onkeydown="onKey(event)" oninput="grow(this);syncSend();warmSend()" onfocus="if(window.innerWidth<768)emoHide()"></textarea>
           <button class="round-btn send-btn" id="sendBtn" onclick="sendText()" title="ส่ง"><span data-ic="send"></span></button>
         </div>
         <div class="emo-panel" id="emoPanel" hidden>
@@ -1199,7 +1228,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.25 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.26 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1226,6 +1255,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 //  v2.23: ค้นหาในเนื้อข้อความ + กระโดดไปที่ข้อความ · ป้ายสถานะแชท (pur-chat-tags.sql) · ทำเป็นยังไม่อ่าน/อ่านแล้ว แบบ Facebook (pur-mark-unread.sql) · เปิดแอพเริ่มที่ธีมสว่างเสมอ · (คู่กับ ingest v2.4 + ส่วนขยาย 3.1: อ่านใน OA = อ่านในแอพ)
 //  v2.24: มือถือ — ปัดซ้ายที่แชท = ยังไม่อ่าน/อ่านแล้ว (แทนกดค้างที่ iPhone เด้งเมนูคัดลอก) · แถบเมนูล่างแบบลอยกระจกฝ้า (แบบ LINE) ซ่อนตอนเปิดแชท
 //  v2.25: แก้ "เด้งออก ให้ล็อกอินใหม่บ่อย" — โหลดสิทธิ์ตอนเปิดแอพไม่สำเร็จไม่ signOut แล้ว (ลองใหม่เอง) · ออกจากระบบ/ไม่มีสิทธิ์ = เฉพาะเครื่องนี้ (scope local) · เปิดแอพขึ้น "กำลังเปิดแอพ…" แทนปุ่มล็อกอิน
+//  v2.26: วางรูปจากคลิปบอร์ด/ลากรูปมาวาง (ดูตัวอย่างก่อนส่ง) · มือถือ: หัวแอพแบบ LINE (ชื่อบัญชีตัวใหญ่ + แคปซูลกระจกฝ้า) หลบตอนเลื่อน · แถบล่างลอยต่ำลง
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
@@ -1993,7 +2023,7 @@ function applyReplyState(c){
     : blocked ? `⚠️ ส่งจากหน้านี้ไม่ได้ในตอนนี้ <button class="btn btn-outline btn-sm" style="margin-left:auto" onclick="forceReply.add(activeId);applyReplyState(chatById.get(activeId))">ลองส่งดูอยู่ดี</button>` : '';
   note.classList.toggle('show', blocked);
   $('replyInp').disabled = blocked; $('sendBtn').disabled = blocked; $('attachBtn').disabled = blocked; $('emoBtn').disabled = blocked; if(blocked) emoHide();
-  $('replyInp').placeholder = oaOnly ? 'ตอบใน LINE OA Manager' : blocked ? 'ส่งไม่ได้ในตอนนี้' : 'พิมพ์ข้อความ…';
+  $('replyInp').placeholder = oaOnly ? 'ตอบใน LINE OA Manager' : blocked ? 'ส่งไม่ได้ในตอนนี้' : 'พิมพ์ข้อความ… (วางรูปได้ด้วย Ctrl+V)';
 }
 function renderQuick(){
   const el = $('qrWrap'); if(!el) return;
@@ -2391,6 +2421,69 @@ async function sendText(){
   reconcile(local, await callFn({ action:'text', chatId, text, quoteToken:q?.token || null }));
 }
 function onPickImage(inp){ const f = inp.files && inp.files[0]; inp.value = ''; if(f) sendImage(f); }
+// ── v2.26 วางรูปจากคลิปบอร์ด (Ctrl+V) / ลากรูปมาวางในแชท → ดูตัวอย่างแล้วกดส่ง (กันวางผิดแล้วส่งถึงซัพทันที) ──
+// คลิปบอร์ดมีทั้งข้อความและรูป (เช่น คัดลอกจาก Excel/เว็บ) → ให้เลือกว่าจะส่งเป็นรูป หรือวางเป็นข้อความ
+let pasteFiles = [], pasteText = '', pasteUrls = [];
+function imagesFrom(dt){
+  const out = [];
+  for(const it of (dt && dt.items) ? [...dt.items] : []) if(it.kind === 'file' && /^image\//.test(it.type)){ const f = it.getAsFile(); if(f) out.push(f); }
+  if(!out.length && dt && dt.files) for(const f of dt.files) if(/^image\//.test(f.type)) out.push(f);
+  return out.slice(0, 5);
+}
+function onPasteImage(e){
+  if(view !== 'chat' || !activeId) return;
+  const t = e.target, inReply = t && t.id === 'replyInp';
+  if(!inReply && t && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;     // วางในช่องอื่น (ค้นหา ฯลฯ) — ไม่ยุ่ง
+  const files = imagesFrom(e.clipboardData);
+  if(!files.length) return;                                                   // ตัวหนังสือล้วน → วางตามปกติ
+  e.preventDefault();
+  openPastePreview(files, inReply ? (e.clipboardData.getData('text/plain') || '') : '');
+}
+document.addEventListener('paste', onPasteImage);
+function openPastePreview(files, text){
+  const c = chatById.get(activeId); if(!c) return;
+  if(isOaOnly(c)){ showToast(OA_ONLY_MSG, 'warning', 4500); return; }
+  pasteUrls.forEach(u => URL.revokeObjectURL(u));
+  pasteFiles = files; pasteText = String(text || '').trim(); pasteUrls = files.map(f => URL.createObjectURL(f));
+  openModal(`ส่งรูป${files.length > 1 ? ' ' + files.length + ' รูป' : ''} ถึง ${chatName(c)}`, `
+    <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">${pasteUrls.map(u => `<img src="${u}" alt="" style="max-width:${files.length > 1 ? '46%' : '100%'};max-height:300px;border-radius:10px;border:1px solid var(--border);object-fit:contain;background:var(--row-alt)">`).join('')}</div>
+    ${pasteText ? `<div class="txt-sm txt-muted mt-12">ที่คัดลอกมามีข้อความด้วย: "${esc(pasteText.slice(0, 80))}${pasteText.length > 80 ? '…' : ''}"</div>` : ''}
+    <div class="txt-sm txt-muted mt-8">กด Enter เพื่อส่ง · Esc เพื่อยกเลิก</div>`,
+    `<button class="btn btn-outline" onclick="closePastePreview()">ยกเลิก</button>
+     ${pasteText ? '<button class="btn btn-outline" onclick="pasteAsText()">วางเป็นข้อความแทน</button>' : ''}
+     <button class="btn btn-gold" id="pasteSendBtn" onclick="sendPasted()">ส่งรูป</button>`);
+  setTimeout(() => $('pasteSendBtn')?.focus(), 50);
+}
+function closePastePreview(){ closeModal(); pasteUrls.forEach(u => URL.revokeObjectURL(u)); pasteFiles = []; pasteUrls = []; pasteText = ''; $('replyInp')?.focus(); }
+function pasteAsText(){
+  const inp = $('replyInp'), t = pasteText; closePastePreview(); if(!inp || !t) return;
+  const a = inp.selectionStart ?? inp.value.length, b = inp.selectionEnd ?? inp.value.length;
+  inp.value = inp.value.slice(0, a) + t + inp.value.slice(b); inp.selectionStart = inp.selectionEnd = a + t.length;
+  grow(inp); syncSend();
+}
+async function sendPasted(){
+  const files = pasteFiles.slice(); closeModal(); pasteFiles = []; pasteText = '';
+  for(const f of files) await sendImage(f);                // ทีละรูปตามลำดับ
+  pasteUrls.forEach(u => URL.revokeObjectURL(u)); pasteUrls = [];
+  $('replyInp')?.focus();
+}
+document.addEventListener('keydown', e => {
+  if(!pasteFiles.length) return;
+  if(!$('modal').classList.contains('open') || !$('pasteSendBtn')){ pasteFiles = []; pasteText = ''; return; }   // ปิดหน้าต่างไปแล้ว (× / คลิกนอก) — ทิ้งรูปที่ค้าง
+  if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendPasted(); }
+  else if(e.key === 'Escape'){ e.preventDefault(); closePastePreview(); }
+}, true);
+// ลากรูปจากเครื่อง/หน้าเว็บมาวางในแชท
+function bindChatDrop(){
+  const pane = $('chatContent'); if(!pane) return;
+  pane.addEventListener('dragover', e => { if([...(e.dataTransfer?.types || [])].includes('Files')){ e.preventDefault(); pane.classList.add('drop-on'); } });
+  pane.addEventListener('dragleave', e => { if(e.target === pane || !pane.contains(e.relatedTarget)) pane.classList.remove('drop-on'); });
+  pane.addEventListener('drop', e => {
+    pane.classList.remove('drop-on');
+    const files = imagesFrom(e.dataTransfer); if(!files.length) return;
+    e.preventDefault(); openPastePreview(files, '');
+  });
+}
 const readAsDataURL = file => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result)); r.onerror = () => rej(new Error('อ่านไฟล์ไม่ได้')); r.readAsDataURL(file); });
 // ย่อรูปก่อนส่ง — LINE จำกัดพรีวิว 1MB และช่วยให้อัปโหลดเร็ว
 function downscaleImage(file){
@@ -4574,7 +4667,7 @@ function aboutCardHtml(){
 //  NAV / THEME / AUTH / INIT
 // ═══════════════════════════════════════════════════════════
 function setView(v){
-  view = v;
+  view = v; document.body.classList.remove('hdr-hidden');
   document.querySelectorAll('.tab-btn,.bni').forEach(b => b.classList.toggle('active', b.dataset.v === v));
   const ids = { chat:'viewChat', dash:'viewDash', blast:'viewBlast', set:'viewSet' };
   document.querySelectorAll('.view').forEach(s => s.classList.toggle('active', s.id === ids[v]));
@@ -5079,7 +5172,7 @@ function renderAcctHeader(){
   const multi = accounts.length > 1;
   // ลูกศรต่อท้ายชื่อบัญชีเลย (ไม่ใช่ท้ายบรรทัด) — จอแคบบรรทัดนี้ถูกตัดด้วย … แล้วลูกศรจะหาย · แผนกดูได้ในเมนู
   $('hdrGreet').innerHTML = acct
-    ? `${ACCT_LOGO[acct.slug] ? `<img class="hdr-av" src="${ACCT_LOGO[acct.slug]}" alt="">` : ''}${esc(acct.name)}${multi ? ic('chevdown') : ''} · ${esc(roleLabel(me.role))}`
+    ? `${ACCT_LOGO[acct.slug] ? `<img class="hdr-av" src="${ACCT_LOGO[acct.slug]}" alt="">` : ''}<span class="ht-name">${esc(acct.name)}${multi ? ic('chevdown') : ''}</span><span class="ht-role"> · ${esc(roleLabel(me.role))}</span>`
     : `แชท LINE · v${esc(APP_VERSION)}`;
   $('hdrAcct').classList.toggle('hdr-acct', multi);
   $('hdrAcct').title = multi ? 'สลับบัญชี LINE' : '';
@@ -5100,6 +5193,32 @@ function toggleAcctMenu(ev){
   refreshAccounts().then(() => { if(m.classList.contains('open')){ draw(); place(); } });
 }
 function closeAcctMenu(){ $('acctMenu')?.classList.remove('open'); }
+// v2.26 มือถือ: ปุ่ม ⋯ ในแคปซูลหัวแอพ (โหมดมืด/ออกจากระบบ)
+function toggleHdrMore(ev){
+  ev?.stopPropagation();
+  const m = $('hdrMore'); if(m.classList.contains('open')) return closeHdrMore();
+  m.classList.add('open');
+  const r = $('hdrMoreBtn').getBoundingClientRect();
+  m.style.top = Math.round(r.bottom + 8) + 'px'; m.style.left = Math.round(Math.max(8, r.right - m.offsetWidth)) + 'px';
+}
+function closeHdrMore(){ $('hdrMore')?.classList.remove('open'); }
+document.addEventListener('click', e => { if(!e.target.closest('#hdrMore') && !e.target.closest('#hdrMoreBtn')) closeHdrMore(); });
+// v2.26 มือถือ: เลื่อนรายการลง (ดูของเก่าลงไป) = หัวแอพหลบขึ้น · เลื่อนกลับขึ้น/ถึงบนสุด = หัวแอพกลับมา (แบบ Facebook/Safari)
+(function bindHdrAutoHide(){
+  const last = new WeakMap();
+  const SEL = '.conv-list,.scroll-view,#msgsArea';
+  document.addEventListener('scroll', e => {
+    const el = e.target; if(!(el instanceof Element) || !el.matches(SEL)) return;
+    if(window.innerWidth >= 768){ document.body.classList.remove('hdr-hidden'); return; }
+    const y = el.scrollTop, prev = last.get(el) ?? y; last.set(el, y);
+    if(notiOpen || $('acctMenu')?.classList.contains('open') || $('hdrMore')?.classList.contains('open')) return;
+    const atTop = y < 24, atEnd = y + el.clientHeight >= el.scrollHeight - 4;
+    if(atTop) document.body.classList.remove('hdr-hidden');
+    else if(y - prev > 6 && !atEnd) document.body.classList.add('hdr-hidden');
+    else if(prev - y > 6) document.body.classList.remove('hdr-hidden');
+  }, true);
+  window.addEventListener('resize', () => { if(window.innerWidth >= 768) document.body.classList.remove('hdr-hidden'); });
+})();
 document.addEventListener('click', e => { if(!e.target.closest('#acctMenu') && !e.target.closest('#hdrAcct')) closeAcctMenu(); });
 
 // ล้างข้อมูลของบัญชีเดิมทั้งหมดก่อนโหลดบัญชีใหม่ — ห้ามมีแชท/ตัวเลข/รายชื่อของอีกบัญชีค้างบนจอ
@@ -5385,7 +5504,7 @@ function demoDash(){
 
 // ── เริ่มทำงาน (ต้องอยู่ท้ายสุด หลังประกาศตัวแปรทั้งหมด) ──
 (function init(){
-  bindListTouch();
+  bindListTouch(); bindChatDrop();
   document.documentElement.style.setProperty('--mark', `url("${MARK}")`); $('favicon').href = MARK; $('chartTip').style.position = 'fixed';
   const pref = LS.get('pur.dark');
   if(pref === '1') document.body.classList.add('dark');   // v2.23 ค่าเริ่มต้น = สว่าง (ขาว) เสมอ ไม่ตามธีมของเครื่อง · เลือกมืดไว้เองยังเป็นมืด
