@@ -181,6 +181,12 @@ body.dark .tagchips .tchip:hover{color:#9cc2ff}body.dark .tagchips .tchip .n{col
 .msr-note{padding:8px 14px;font-size:11.5px;color:var(--muted)}
 @keyframes msgFlash{0%,60%{box-shadow:0 0 0 3px rgba(250,178,25,.9)}100%{box-shadow:0 0 0 3px rgba(250,178,25,0)}}
 .msg-grp.flash .bubble{animation:msgFlash 2.4s ease-out}
+.ctx-menu{position:fixed;z-index:9000;min-width:190px;padding:4px;background:var(--card-bg);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-lg);display:none}
+.ctx-menu.open{display:block}
+.ctx-menu button{display:flex;align-items:center;gap:9px;width:100%;padding:9px 12px;border:0;border-radius:7px;background:none;font:inherit;font-size:13.5px;font-weight:600;color:var(--text);cursor:pointer;text-align:left}
+.ctx-menu button:hover{background:var(--row-alt)}
+.ctx-menu .dot{width:9px;height:9px;border-radius:50%;background:var(--line);flex-shrink:0}
+.ctx-menu .hd{padding:6px 12px 4px;font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px}
 .tagpick{display:flex;flex-wrap:wrap;gap:8px}
 .tagpick label{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:16px;border:1.5px solid var(--border);cursor:pointer;font-size:13px;font-weight:600}
 .tagpick label.on{background:rgba(46,110,201,.12);border-color:#2e6ec9;color:#1f5aa8}
@@ -951,6 +957,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
       </div>
       <div class="chips tagchips" id="tagChips" style="display:none"></div>
       <div class="conv-list" id="convList"><div class="conv-empty">กำลังโหลด…</div></div>
+      <div class="ctx-menu" id="listMenu" role="menu"></div>
     </div>
 
     <div class="chat-pane" id="chatPane">
@@ -1619,23 +1626,77 @@ let listTouch = null, listDeferred = false;
 function bindListTouch(){
   const el = $('convList'); if(!el) return;
   const flush = () => { if(listDeferred){ listDeferred = false; setTimeout(renderList, 0); } };
+  let pressT = null;                  // v2.23 กดค้าง 0.55 วิ = เมนู (ยังไม่อ่าน/อ่านแล้ว) แบบ Facebook — ไม่เปิดแชท
+  const stopPress = () => { clearTimeout(pressT); pressT = null; };
   el.addEventListener('touchstart', e => {
     const it = e.target.closest('.conv-item[data-id]'), t = e.touches[0];
     listTouch = { id:it ? it.dataset.id : null, x:t.clientX, y:t.clientY, at:Date.now() };
+    stopPress();
+    if(listTouch.id) pressT = setTimeout(() => {
+      const tt = listTouch; if(!tt || !tt.id) return;
+      tt.id = null; tt.menu = true;    // ยกนิ้วแล้วไม่เปิดแชท
+      try{ navigator.vibrate?.(12); }catch(_){}
+      showListMenu(it.dataset.id, tt.x, tt.y);
+    }, 550);
   }, { passive:true });
+  el.addEventListener('contextmenu', e => {          // คลิกขวาบนคอม (Android กดค้างก็ยิงอันนี้ — เมนูเปิดอยู่แล้วไม่ต้องซ้ำ)
+    const it = e.target.closest('.conv-item[data-id]'); if(!it) return;
+    e.preventDefault();
+    if($('listMenu').classList.contains('open') && $('listMenu').dataset.id === it.dataset.id) return;
+    showListMenu(it.dataset.id, e.clientX, e.clientY);
+  });
   el.addEventListener('touchmove', e => {
     if(!listTouch || !listTouch.id) return; const t = e.touches[0];
-    if(Math.abs(t.clientX - listTouch.x) > 10 || Math.abs(t.clientY - listTouch.y) > 10) listTouch.id = null;   // เลื่อนรายการ ไม่ใช่แตะ
+    if(Math.abs(t.clientX - listTouch.x) > 10 || Math.abs(t.clientY - listTouch.y) > 10){ listTouch.id = null; stopPress(); }   // เลื่อนรายการ ไม่ใช่แตะ
   }, { passive:true });
   el.addEventListener('touchend', e => {
+    stopPress();
     const tt = listTouch; listTouch = null;
+    if(tt && tt.menu){ e.preventDefault(); flush(); return; }   // เพิ่งเปิดเมนูจากการกดค้าง — กันคลิกที่ตามมาปิดเมนูทิ้ง
     if(tt && tt.id && Date.now() - tt.at < 800 && chatById.get(tt.id)){
       e.preventDefault();            // เปิดเองแล้ว — กันคลิกจากเบราว์เซอร์เปิดซ้ำ
       openChat(tt.id);
     }
     flush();
   }, { passive:false });
-  el.addEventListener('touchcancel', () => { listTouch = null; flush(); });
+  el.addEventListener('touchcancel', () => { stopPress(); listTouch = null; flush(); });
+}
+// ── v2.23 ทำเป็นยังไม่อ่าน / อ่านแล้ว (แบบ Facebook) — คลิกขวา/กดค้างที่รายการ หรือปุ่มในแถบเครื่องมือแชท ──
+function showListMenu(id, x, y){
+  const c = chatById.get(id), m = $('listMenu'); if(!c || !m) return;
+  const unread = (c.unread_count || 0) > 0;
+  m.dataset.id = id;
+  m.innerHTML = `<div class="hd">${esc(chatName(c))}</div>
+    ${unread ? `<button onclick="closeListMenu();markReadNow('${id}')">${ic('check')} ทำเป็นอ่านแล้ว</button>`
+             : `<button onclick="closeListMenu();markUnread('${id}')"><span class="dot"></span> ทำเป็นยังไม่อ่าน</button>`}
+    <button onclick="closeListMenu();openChat('${id}')">${ic('chat')} เปิดแชท</button>`;
+  m.classList.add('open');
+  const w = m.offsetWidth, h = m.offsetHeight;
+  m.style.left = Math.max(8, Math.min(x, innerWidth - w - 8)) + 'px';
+  m.style.top = Math.max(8, Math.min(y, innerHeight - h - 8)) + 'px';
+}
+function closeListMenu(){ const m = $('listMenu'); if(m){ m.classList.remove('open'); m.dataset.id = ''; } }
+document.addEventListener('click', e => { if(!e.target.closest('#listMenu')) closeListMenu(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeListMenu(); });
+window.addEventListener('scroll', closeListMenu, true);
+// เผลอเปิดอ่าน → กลับเป็นตัวหนา + เลขแดง จนกว่าจะเปิดอีกครั้ง · ไม่เกี่ยวกับสถิติ/งานรอตอบ · ฝั่ง LINE ของลูกค้าไม่เปลี่ยน
+async function markUnread(id){
+  id = id || activeId; const c = chatById.get(id); if(!c) return;
+  let n = 1;
+  if(!DEMO){
+    try{ n = await rpc('pur_mark_unread', { p_chat:id }) || 1; }
+    catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); return; }
+  }
+  if(activeId === id) closeChat();             // ยังเปิดค้างอยู่ = เดี๋ยวก็ถูกนับว่าอ่านอีก → ปิดกลับไปที่รายการ
+  patchChat(id, { unread_count:Math.max(n, c.unread_count || 0) });
+  showToast('ทำเป็นยังไม่อ่านแล้ว — ขึ้นตัวหนาไว้จนกว่าจะเปิดแชทนี้อีกครั้ง', 'success');
+}
+async function markReadNow(id){
+  const c = chatById.get(id); if(!c) return;
+  patchChat(id, { unread_count:0 });
+  if(DEMO) return;
+  rpc('pur_mark_read', { p_chat:id }).catch(e => console.warn('mark read:', e.message));
+  if(c.kind === 'user') callFn({ action:'markRead', chatId:id });
 }
 function moreChats(){ listShown += LIST_STEP; renderList(); }
 function resetList(){ listShown = LIST_STEP; }
@@ -1818,6 +1879,7 @@ function renderTools(c){
   h += `<button class="tool-btn ${c.status === 'resolved' ? 'done' : ''}" onclick="toggleResolve()">${c.status === 'resolved' ? '✓ เสร็จแล้ว · เปิดใหม่' : '✓ ทำเครื่องหมายเสร็จ'}</button>`;
   const pal = settings?.chat_tags || [];
   if(pal.length || (c.tags || []).length) h += `<button class="tool-btn" onclick="openTagMenu()" title="ป้ายสถานะแชท — ใช้กรองรายการแชท ไม่เกี่ยวกับสถิติ">🏷 ${(c.tags || []).length ? esc(c.tags.join(' · ')) : 'ติดป้าย'}</button>`;
+  h += `<button class="tool-btn" onclick="markUnread()" title="เผลอเปิดอ่าน? ให้แชทนี้กลับไปขึ้นตัวหนาเหมือนยังไม่ได้อ่าน">● ยังไม่อ่าน</button>`;
   if(c.awaiting_since) h += `<button class="tool-btn danger" onclick="dismissWait()" title="ปิดงานรอตอบโดยไม่ตอบ เช่น ข้อความไม่เกี่ยวกับเรา">🚫 ไม่ต้องตอบ</button>`;
   if(isSup()) h += `<span class="tool-sp"></span><button class="tool-btn ${c.exclude_kpi ? 'danger' : ''}" onclick="toggleExclude()" title="แชททดสอบ/แชทภายใน ไม่ควรนับสถิติ">${c.exclude_kpi ? '📵 ไม่นับสถิติ' : '📊 นับสถิติ'}</button>`;
   $('chatTools').innerHTML = h;
