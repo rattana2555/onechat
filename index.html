@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.24">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.25">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.24">
-<title>Rattana One Chat v2.24</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.25">
+<title>Rattana One Chat v2.25</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -663,6 +663,17 @@ select.input{appearance:auto}
 .lg-btn:disabled{opacity:.5;cursor:not-allowed}
 .lg-note{font-size:11px;color:var(--muted);margin-top:12px;line-height:1.6}
 .lg-err{font-size:12px;color:var(--st-crit);margin-top:10px;min-height:16px;line-height:1.5}
+/* v2.25 ระหว่างเปิดแอพ (boot) / เชื่อมต่อไม่ได้ (retry) — ไม่โชว์ปุ่มล็อกอิน ไม่งั้นผู้ใช้นึกว่าโดนเด้งออกแล้วกดล็อกอินใหม่ */
+.lg-wait{display:none;padding:14px 0 4px}
+#loginGate.boot .lg-wait,#loginGate.retry .lg-wait{display:block}
+#loginGate.boot :is(h2,.lg-sub,.lg-btn,.lg-note,.lg-err),#loginGate.retry :is(h2,.lg-sub,.lg-btn,.lg-note,.lg-err){display:none}
+.lg-spin{width:30px;height:30px;margin:0 auto 12px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--gold);animation:lgspin .8s linear infinite}
+#loginGate.retry .lg-spin{display:none}
+@keyframes lgspin{to{transform:rotate(360deg)}}
+.lg-wait b{display:block;font-size:15px;margin-bottom:4px}
+.lg-wait .sub{font-size:12px;color:var(--muted);line-height:1.6}
+.lg-wait .acts{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+#loginGate.boot .lg-wait .acts{display:none}
 .demo-banner{background:linear-gradient(90deg,#d35400,#e67e22);color:#fff;text-align:center;padding:4px 12px;font-size:11px;font-weight:600;flex-shrink:0}
 
 /* ───────────── UTIL ───────────── */
@@ -868,7 +879,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 <body>
 
 <!-- LOGIN GATE -->
-<div id="loginGate">
+<div id="loginGate" class="boot">
   <div class="login-card">
     <div class="lg-logo">
       <i class="brand-mark" style="width:92px;height:92px" aria-hidden="true"></i>
@@ -888,7 +899,9 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
     </button>
     <div class="lg-note">ใช้อีเมลบริษัทที่หัวหน้าเพิ่มไว้ในทีม · ล็อกอินครั้งเดียวแล้วเลือกบัญชี LINE<br>ยังไม่มีสิทธิ์? ติดต่อหัวหน้าแผนกหรือผู้ดูแลระบบ</div>
     <div class="lg-err" id="lgErr"></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.24 · 01/10/2569</div>
+    <div class="lg-wait" role="status"><div class="lg-spin"></div><b id="lgWaitMsg">กำลังเปิดแอพ…</b><div class="sub" id="lgWaitSub"></div>
+      <div class="acts"><button class="btn btn-gold" type="button" onclick="retryGate()">ลองใหม่เดี๋ยวนี้</button><button class="btn btn-outline" type="button" onclick="doLogout()">ออกจากระบบ</button></div></div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.25 · 01/10/2569</div>
   </div>
 </div>
 
@@ -938,7 +951,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.24</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.25</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -1186,7 +1199,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.24 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.25 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1212,6 +1225,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 //  v2.22: ตารางสิทธิ์ช่อง "จัดการ" (ลบออกจากระบบ · ตั้ง/ลดผู้ดูแลระบบ) · พนักงานเห็นตั้งค่าเฉพาะของตัวเอง · กระดิ่งเปิดแล้วเป็น 0 + ไอคอน ⏳/⏰ · พัฒนาการรายคนในภาพรวม · คนในบริษัทนอกทีมตอบ ≠ ไม่รู้ว่าใครตอบ
 //  v2.23: ค้นหาในเนื้อข้อความ + กระโดดไปที่ข้อความ · ป้ายสถานะแชท (pur-chat-tags.sql) · ทำเป็นยังไม่อ่าน/อ่านแล้ว แบบ Facebook (pur-mark-unread.sql) · เปิดแอพเริ่มที่ธีมสว่างเสมอ · (คู่กับ ingest v2.4 + ส่วนขยาย 3.1: อ่านใน OA = อ่านในแอพ)
 //  v2.24: มือถือ — ปัดซ้ายที่แชท = ยังไม่อ่าน/อ่านแล้ว (แทนกดค้างที่ iPhone เด้งเมนูคัดลอก) · แถบเมนูล่างแบบลอยกระจกฝ้า (แบบ LINE) ซ่อนตอนเปิดแชท
+//  v2.25: แก้ "เด้งออก ให้ล็อกอินใหม่บ่อย" — โหลดสิทธิ์ตอนเปิดแอพไม่สำเร็จไม่ signOut แล้ว (ลองใหม่เอง) · ออกจากระบบ/ไม่มีสิทธิ์ = เฉพาะเครื่องนี้ (scope local) · เปิดแอพขึ้น "กำลังเปิดแอพ…" แทนปุ่มล็อกอิน
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
@@ -4587,13 +4601,33 @@ async function doLogin(){
   const { error } = await sb.auth.signInWithOAuth({ provider:'google', options:{ redirectTo:location.origin + location.pathname, queryParams:{ prompt:'select_account' } } });
   if(error){ showLogin(); err.textContent = 'เข้าสู่ระบบไม่สำเร็จ: ' + error.message; }
 }
-async function doLogout(){ if(DEMO){ location.href = location.pathname; return; } await sb.auth.signOut(); location.replace(location.origin + location.pathname); }
-function showLogin(){ const btn = $('lgBtn'); btn.disabled = false; btn.querySelector('span').textContent = 'เข้าสู่ระบบด้วย Google'; $('loginGate').classList.remove('hide'); }
+async function doLogout(){ if(DEMO){ location.href = location.pathname; return; } try{ await sb.auth.signOut({ scope:'local' }); }catch(_){} location.replace(location.origin + location.pathname); }   // v2.25 เฉพาะเครื่องนี้ (เดิม global = ทุกเครื่องหลุด)
+function showLogin(){ const btn = $('lgBtn'); btn.disabled = false; btn.querySelector('span').textContent = 'เข้าสู่ระบบด้วย Google'; clearTimeout(gateRetryT); $('loginGate').classList.remove('hide', 'boot', 'retry'); }
+// v2.25 เชื่อมต่อไม่ได้ตอนเปิดแอพ (เน็ตยังไม่มาตอนปลุกเครื่อง/มือถือ · เซิร์ฟเวอร์สะดุด) → ไม่ออกจากระบบ แค่รอแล้วลองใหม่เอง
+// เดิม signOut() ทันที = ต้องล็อกอินใหม่ และ signOut ค่าเริ่มต้นเป็น global → เครื่องอื่นของคนนั้นหลุดตามด้วย
+let gateRetryT = null, gateRetryN = 0;
+function showGateRetry(msg){
+  const g = $('loginGate'); g.classList.remove('hide', 'boot'); g.classList.add('retry');
+  const wait = Math.min(30, 3 * 2 ** gateRetryN++);          // 3 · 6 · 12 · 24 · 30 วิ
+  $('lgWaitMsg').textContent = navigator.onLine === false ? 'ยังไม่มีอินเทอร์เน็ต' : 'เชื่อมต่อระบบไม่ได้ชั่วคราว';
+  $('lgWaitSub').innerHTML = `ยังอยู่ในระบบ ไม่ต้องล็อกอินใหม่ · ลองใหม่อัตโนมัติใน ${wait} วินาที<br><span style="opacity:.7">${esc(String(msg || '').slice(0, 120))}</span>`;
+  clearTimeout(gateRetryT); gateRetryT = setTimeout(retryGate, wait * 1000);
+}
+async function retryGate(){
+  clearTimeout(gateRetryT);
+  if(started || gating) return;
+  const g = $('loginGate'); g.classList.remove('retry'); g.classList.add('boot'); $('lgWaitMsg').textContent = 'กำลังเชื่อมต่อ…';
+  let session = null;
+  try{ ({ data:{ session } } = await sb.auth.getSession()); }catch(e){ return showGateRetry(e.message); }
+  if(!session){ showLogin(); return; }
+  gating = true; try{ await gateSession(session); } finally{ gating = false; }
+}
+window.addEventListener('online', () => { if($('loginGate').classList.contains('retry')) retryGate(); });
 // ด่านจริงคือ RLS ในฐานข้อมูล — ตรงนี้แค่บอกผู้ใช้ให้รู้เรื่องว่าทำไมเข้าไม่ได้
 async function gateSession(session){
   const email = (session.user.email || '').toLowerCase();
   const deny = async () => {
-    await sb.auth.signOut(); showLogin();
+    await sb.auth.signOut({ scope:'local' }); showLogin();
     $('lgErr').innerHTML = `อีเมล <b>${esc(email)}</b> ยังไม่ได้รับสิทธิ์เข้าบัญชี LINE ไหน<br>ให้หัวหน้าแผนกหรือผู้ดูแลระบบเพิ่มอีเมลนี้ที่ ตั้งค่า › ทีม`;
   };
   try{
@@ -4610,8 +4644,9 @@ async function gateSession(session){
     const last = +(LS.get('pur.acct') || 0), remember = LS.get('pur.acctRemember') !== '0';
     const pick = accounts.length === 1 ? accounts[0]
                : accounts.find(a => a.id === fromHash) || (remember ? accounts.find(a => a.id === last && a.active) : null);
+    gateRetryN = 0;
     if(pick) await enterAccount(pick.id); else showAcctGate();
-  }catch(e){ await sb.auth.signOut(); showLogin(); $('lgErr').textContent = e.message + ' — กรุณาลองใหม่'; }
+  }catch(e){ console.warn('gate:', e.message); showGateRetry(e.message); }
 }
 
 // ═══════════════════════════════════════════════════════════
