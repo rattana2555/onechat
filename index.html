@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.23">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.24">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.23">
-<title>Rattana One Chat v2.23</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.24">
+<title>Rattana One Chat v2.24</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -97,13 +97,25 @@ a{color:inherit}
 .tab-btn.active .nbadge{background:var(--navy);color:#fff}
 
 /* ───────────── BOTTOM NAV (mobile) ───────────── */
-.bottom-nav{display:flex;background:var(--navy);border-top:2px solid var(--gold);padding-bottom:env(safe-area-inset-bottom);flex-shrink:0;z-index:50}
-.bni{flex:1;display:flex;flex-direction:column;align-items:center;padding:7px 2px 6px;gap:2px;color:rgba(255,255,255,.45);position:relative;transition:color .15s}
-.bni.active{color:var(--gold)}
-.bni-icon{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px}
-.bni.active .bni-icon{background:rgba(201,168,76,.18)}
-.bni-label{font-size:10px;font-weight:600}
-.bni .nbadge{position:absolute;top:4px;right:calc(50% - 22px);border:2px solid var(--navy);line-height:14px}
+/* v2.24 แถบล่างแบบลอย "กระจกฝ้า" (แบบ LINE ใหม่) — ลอยเหนือเนื้อหา มองทะลุเห็นรายการด้านหลัง · ซ่อนตอนเปิดแชท (ไม่ทับช่องพิมพ์)
+   เนื้อหาที่เลื่อนได้เผื่อที่ด้านล่าง (--nav-space) ให้รายการสุดท้ายเลื่อนพ้นแถบได้ */
+:root{--nav-h:62px;--nav-space:calc(var(--nav-h) + 22px + env(safe-area-inset-bottom))}
+.bottom-nav{display:flex;position:fixed;left:14px;right:14px;bottom:calc(10px + env(safe-area-inset-bottom));height:var(--nav-h);padding:5px;border-radius:31px;z-index:60;
+  background:rgba(255,255,255,.72);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);
+  border:1px solid rgba(255,255,255,.75);box-shadow:0 10px 30px rgba(13,27,62,.18),0 1px 3px rgba(13,27,62,.08),inset 0 1px 0 rgba(255,255,255,.9);
+  transition:transform .28s cubic-bezier(.4,0,.2,1),opacity .2s}
+body.dark .bottom-nav{background:rgba(17,28,53,.72);border-color:rgba(255,255,255,.09);box-shadow:0 10px 30px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.06)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.bottom-nav{background:var(--card-bg)}}
+body:has(.chat-pane.open) .bottom-nav{transform:translateY(calc(100% + 30px));opacity:0;pointer-events:none}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border-radius:26px;color:var(--navy);position:relative;transition:background .18s,color .15s}
+body.dark .bni{color:#e8eaf0}
+.bni.active{background:rgba(13,27,62,.08)}
+body.dark .bni.active{background:rgba(255,255,255,.11)}
+.bni-icon{width:30px;height:28px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.bni-label{font-size:11px;font-weight:600;opacity:.8}
+.bni.active .bni-label{font-weight:700;opacity:1}
+.bni .nbadge{position:absolute;top:1px;left:calc(50% + 4px);right:auto;min-width:22px;height:20px;line-height:16px;padding:0 6px;border-radius:10px;font-size:12px;font-weight:800;border:2px solid #fff}
+body.dark .bni .nbadge{border-color:#1a2744}
 
 /* ───────────── BODY / VIEWS ───────────── */
 .app-body{flex:1;position:relative;min-height:0;overflow:hidden}
@@ -180,6 +192,14 @@ body.dark .tagchips .tchip:hover{color:#9cc2ff}body.dark .tagchips .tchip .n{col
 .msr-note{padding:8px 14px;font-size:11.5px;color:var(--muted)}
 @keyframes msgFlash{0%,60%{box-shadow:0 0 0 3px rgba(250,178,25,.9)}100%{box-shadow:0 0 0 3px rgba(250,178,25,0)}}
 .msg-grp.flash .bubble{animation:msgFlash 2.4s ease-out}
+@media (hover:none){.conv-item{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}}
+.conv-item.swiping{overflow:hidden}
+.conv-item.swiping > *{transform:translateX(var(--sx,0px));transition:transform .2s ease}
+.conv-item.dragging > *{transition:none}
+.swipe-act{position:absolute;top:0;bottom:0;right:-96px;width:96px;border:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:#2e6ec9;color:#fff;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
+.swipe-act.read{background:#1e8449}
+.swipe-act .dot{width:10px;height:10px;border-radius:50%;background:#fff}
+.swipe-act svg{width:18px;height:18px}
 .ctx-menu{position:fixed;z-index:9000;min-width:190px;padding:4px;background:var(--card-bg);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-lg);display:none}
 .ctx-menu.open{display:block}
 .ctx-menu button{display:flex;align-items:center;gap:9px;width:100%;padding:9px 12px;border:0;border-radius:7px;background:none;font:inherit;font-size:13.5px;font-weight:600;color:var(--text);cursor:pointer;text-align:left}
@@ -266,7 +286,7 @@ button.older-bar:hover{border-color:var(--gold);color:var(--text)}
 .quoting .qtext{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-left:3px solid var(--gold);padding-left:8px;color:var(--text)}
 .reply-note{display:none;align-items:center;gap:8px;padding:9px 12px;background:rgba(243,156,18,.12);border-top:1px solid rgba(243,156,18,.35);font-size:12px;line-height:1.5}
 .reply-note.show{display:flex}
-/* safe-area ล่าง: บนมือถือ .bottom-nav รับไปแล้ว (ใส่ซ้ำ = ช่องว่างเกิน ~26px บน iPhone) — ใส่เฉพาะจอ ≥768px ที่ nav ถูกซ่อน (ดูบล็อก DESKTOP) */
+/* safe-area ล่าง: v2.24 แถบล่างลอยและหลบตอนเปิดแชท → มือถือก็ใส่ที่ช่องพิมพ์ (บล็อก max-width:767px) · จอ ≥768px ดูบล็อก DESKTOP */
 .reply-bar{padding:8px 10px;background:var(--card-bg);border-top:1px solid var(--border);display:flex;align-items:flex-end;gap:8px;flex-shrink:0}
 .reply-inp{flex:1;min-height:42px;max-height:120px;padding:10px 14px;border-radius:21px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:16px;line-height:1.4;resize:none;overflow-y:auto;transition:border-color .15s}
 .reply-inp:focus{border-color:var(--gold)}
@@ -614,14 +634,14 @@ select.input{appearance:auto}
 .modal-close{font-size:24px;color:var(--muted);padding:2px 8px;border-radius:var(--radius-sm);line-height:1}
 .modal-body{padding:18px}
 .modal-foot{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
-.toast{position:fixed;bottom:max(84px,calc(64px + env(safe-area-inset-bottom)));left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:22px;color:#fff;z-index:9999;animation:toastIn .3s ease;font-weight:500;font-size:13px;box-shadow:0 4px 20px rgba(0,0,0,.25);max-width:92vw;text-align:center}
+.toast{position:fixed;bottom:calc(var(--nav-h) + 24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:22px;color:#fff;z-index:9999;animation:toastIn .3s ease;font-weight:500;font-size:13px;box-shadow:0 4px 20px rgba(0,0,0,.25);max-width:92vw;text-align:center}
 .toast-success{background:#1e8449}.toast-error{background:var(--st-crit)}.toast-warning{background:var(--warning);color:var(--navy)}.toast-info{background:rgba(13,27,62,.92);border:1px solid var(--gold)}
 @media(min-width:768px){.toast{bottom:24px}}
 .spinner-overlay{display:none;position:fixed;inset:0;background:rgba(13,27,62,.55);align-items:center;justify-content:center;z-index:99999;backdrop-filter:blur(3px)}
 .spinner-overlay.show{display:flex}
 .spinner-box{background:var(--card-bg);border-radius:var(--radius-lg);padding:28px 36px;text-align:center;border-top:4px solid var(--gold);min-width:220px;font-size:13px}
 .spinner-ring{width:44px;height:44px;border:5px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
-#backToTop{position:fixed;bottom:max(80px,calc(64px + env(safe-area-inset-bottom)));right:max(16px,calc(12px + env(safe-area-inset-right)));background:var(--gold);color:var(--navy);border-radius:50%;width:44px;height:44px;display:none;align-items:center;justify-content:center;box-shadow:var(--shadow-gold);z-index:90;font-size:18px;font-weight:700}
+#backToTop{position:fixed;bottom:calc(var(--nav-h) + 22px + env(safe-area-inset-bottom));right:max(16px,calc(12px + env(safe-area-inset-right)));background:var(--gold);color:var(--navy);border-radius:50%;width:44px;height:44px;display:none;align-items:center;justify-content:center;box-shadow:var(--shadow-gold);z-index:90;font-size:18px;font-weight:700}
 #backToTop.show{display:flex}
 @media(min-width:768px){#backToTop{bottom:24px}}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -654,6 +674,10 @@ select.input{appearance:auto}
 /* iOS: height:100% บางรุ่นไม่ตรงกับพื้นที่แสดงผลจริง เหลือช่องว่างท้ายจอ — ยึดขอบจอด้วย inset แทน */
 @media(max-width:767px){
   body{position:fixed;inset:0;height:auto;width:auto}
+  .conv-list,.scroll-view{padding-bottom:var(--nav-space)}            /* เลื่อนรายการสุดท้ายพ้นแถบลอยได้ */
+  .reply-bar{padding-bottom:max(8px,env(safe-area-inset-bottom))}    /* เปิดแชท = แถบล่างหลบ ช่องพิมพ์ติดขอบจอจริง */
+  .upd-bar{bottom:calc(var(--nav-h) + 20px + env(safe-area-inset-bottom))}
+  body:has(.chat-pane.open) .upd-bar{bottom:calc(10px + env(safe-area-inset-bottom))}
 }
 @media(max-width:430px){
   .app-hdr{padding:0 10px;gap:8px}
@@ -864,7 +888,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
     </button>
     <div class="lg-note">ใช้อีเมลบริษัทที่หัวหน้าเพิ่มไว้ในทีม · ล็อกอินครั้งเดียวแล้วเลือกบัญชี LINE<br>ยังไม่มีสิทธิ์? ติดต่อหัวหน้าแผนกหรือผู้ดูแลระบบ</div>
     <div class="lg-err" id="lgErr"></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.23 · 01/10/2569</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.24 · 01/10/2569</div>
   </div>
 </div>
 
@@ -914,7 +938,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.23</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.24</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -1162,7 +1186,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.23 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.24 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1187,6 +1211,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 //  v2.21: กราฟ "ข้อความที่ทักเข้ามารายวัน" ในภาพรวม — แท่งสัปดาห์นี้เป็น 0 ทุกวัน (ตัวแปรลูปชื่อ w0 ทับต้นสัปดาห์ ตั้งแต่ v2.15)
 //  v2.22: ตารางสิทธิ์ช่อง "จัดการ" (ลบออกจากระบบ · ตั้ง/ลดผู้ดูแลระบบ) · พนักงานเห็นตั้งค่าเฉพาะของตัวเอง · กระดิ่งเปิดแล้วเป็น 0 + ไอคอน ⏳/⏰ · พัฒนาการรายคนในภาพรวม · คนในบริษัทนอกทีมตอบ ≠ ไม่รู้ว่าใครตอบ
 //  v2.23: ค้นหาในเนื้อข้อความ + กระโดดไปที่ข้อความ · ป้ายสถานะแชท (pur-chat-tags.sql) · ทำเป็นยังไม่อ่าน/อ่านแล้ว แบบ Facebook (pur-mark-unread.sql) · เปิดแอพเริ่มที่ธีมสว่างเสมอ · (คู่กับ ingest v2.4 + ส่วนขยาย 3.1: อ่านใน OA = อ่านในแอพ)
+//  v2.24: มือถือ — ปัดซ้ายที่แชท = ยังไม่อ่าน/อ่านแล้ว (แทนกดค้างที่ iPhone เด้งเมนูคัดลอก) · แถบเมนูล่างแบบลอยกระจกฝ้า (แบบ LINE) ซ่อนตอนเปิดแชท
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
@@ -1623,43 +1648,82 @@ let listShown = LIST_STEP;
 // ถ้าวาดใหม่ตอนนิ้วยังแตะอยู่ องค์ประกอบใต้นิ้วถูกแทนที่ → มือถือทิ้ง "คลิก" นั้น ผู้ใช้ต้องแตะซ้ำหลายรอบ
 // → จำแชทที่แตะตั้งแต่ touchstart แล้วเปิดเองตอน touchend · ระหว่างแตะเลื่อนการวาดไว้ก่อน วาดทันทีที่ยกนิ้ว
 let listTouch = null, listDeferred = false;
+// v2.23 ปัดซ้ายที่แชท (มือถือ) = ปุ่ม "ยังไม่อ่าน / อ่านแล้ว" แบบ LINE · iOS Mail — เดิมกดค้าง แต่ iPhone เด้งเมนูคัดลอก/ค้นดูของระบบทับ
+// ระหว่างปุ่มเปิดค้างอยู่ เลื่อนการวาดรายการไว้ (ไม่งั้นข้อความใหม่ที่เข้ามาวาดรายการทับ ปุ่มหายก่อนกดทัน) · ปิดเองใน 6 วิ
+const SWIPE_W = 96;
+let swipeOpen = null, swipeTimer = null;
+function swipeSet(it, x, drag){
+  it.classList.add('swiping'); it.classList.toggle('dragging', !!drag);
+  it.style.setProperty('--sx', x + 'px');
+}
+function swipeEnsureBtn(it){
+  if(it.querySelector('.swipe-act')) return;
+  const c = chatById.get(it.dataset.id); if(!c) return;
+  const unread = (c.unread_count || 0) > 0;
+  it.insertAdjacentHTML('beforeend', `<button class="swipe-act ${unread ? 'read' : ''}" onclick="event.stopPropagation();swipeAction('${c.id}')">${unread ? ic('check') + 'อ่านแล้ว' : '<span class="dot"></span>ยังไม่อ่าน'}</button>`);
+}
+function closeSwipe(now){
+  clearTimeout(swipeTimer);
+  const it = swipeOpen; swipeOpen = null;
+  if(it){
+    swipeSet(it, 0, false);
+    const done = () => { it.classList.remove('swiping', 'dragging'); it.querySelector('.swipe-act')?.remove(); };
+    now ? done() : setTimeout(done, 220);
+  }
+  if(listDeferred){ listDeferred = false; setTimeout(renderList, now ? 0 : 230); }
+}
+function swipeAction(id){
+  const c = chatById.get(id); closeSwipe(true);
+  if(!c) return;
+  (c.unread_count || 0) > 0 ? markReadNow(id) : markUnread(id);
+}
 function bindListTouch(){
   const el = $('convList'); if(!el) return;
-  const flush = () => { if(listDeferred){ listDeferred = false; setTimeout(renderList, 0); } };
-  let pressT = null;                  // v2.23 กดค้าง 0.55 วิ = เมนู (ยังไม่อ่าน/อ่านแล้ว) แบบ Facebook — ไม่เปิดแชท
-  const stopPress = () => { clearTimeout(pressT); pressT = null; };
+  const flush = () => { if(listDeferred && !swipeOpen){ listDeferred = false; setTimeout(renderList, 0); } };
   el.addEventListener('touchstart', e => {
+    if(e.target.closest('.swipe-act')){ listTouch = null; return; }   // กดปุ่มที่ปัดออกมา — ให้ onclick ของปุ่มทำงาน
     const it = e.target.closest('.conv-item[data-id]'), t = e.touches[0];
-    listTouch = { id:it ? it.dataset.id : null, x:t.clientX, y:t.clientY, at:Date.now() };
-    stopPress();
-    if(listTouch.id) pressT = setTimeout(() => {
-      const tt = listTouch; if(!tt || !tt.id) return;
-      tt.id = null; tt.menu = true;    // ยกนิ้วแล้วไม่เปิดแชท
-      try{ navigator.vibrate?.(12); }catch(_){}
-      showListMenu(it.dataset.id, tt.x, tt.y);
-    }, 550);
+    listTouch = { id:it ? it.dataset.id : null, el:it, x:t.clientX, y:t.clientY, at:Date.now(), swipe:false, base:0 };
+    if(swipeOpen){
+      if(swipeOpen === it){ listTouch.base = -SWIPE_W; listTouch.id = null; }   // ปัดต่อ/ปัดกลับแถวที่เปิดอยู่
+      else { closeSwipe(); listTouch.id = null; }                              // แตะที่อื่น = แค่ปิดปุ่ม ไม่เปิดแชท
+    }
   }, { passive:true });
-  el.addEventListener('contextmenu', e => {          // คลิกขวาบนคอม (Android กดค้างก็ยิงอันนี้ — เมนูเปิดอยู่แล้วไม่ต้องซ้ำ)
+  el.addEventListener('contextmenu', e => {          // คลิกขวาบนคอม = เมนู (มือถือใช้ปัดซ้าย)
     const it = e.target.closest('.conv-item[data-id]'); if(!it) return;
+    if(matchMedia('(hover: none)').matches){ e.preventDefault(); return; }
     e.preventDefault();
-    if($('listMenu').classList.contains('open') && $('listMenu').dataset.id === it.dataset.id) return;
     showListMenu(it.dataset.id, e.clientX, e.clientY);
   });
   el.addEventListener('touchmove', e => {
-    if(!listTouch || !listTouch.id) return; const t = e.touches[0];
-    if(Math.abs(t.clientX - listTouch.x) > 10 || Math.abs(t.clientY - listTouch.y) > 10){ listTouch.id = null; stopPress(); }   // เลื่อนรายการ ไม่ใช่แตะ
+    const tt = listTouch; if(!tt || !tt.el) return; const t = e.touches[0];
+    const dx = t.clientX - tt.x, dy = t.clientY - tt.y;
+    if(!tt.swipe){
+      if(Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy) * 1.5 && (dx < 0 || tt.base)){
+        tt.swipe = true; tt.id = null; swipeEnsureBtn(tt.el);
+      } else if(Math.abs(dx) > 10 || Math.abs(dy) > 10){ tt.id = null; tt.el = null; return; }   // เลื่อนรายการ ไม่ใช่แตะ
+      else return;
+    }
+    swipeSet(tt.el, Math.max(-SWIPE_W * 1.25, Math.min(0, tt.base + dx)), true);
   }, { passive:true });
   el.addEventListener('touchend', e => {
-    stopPress();
     const tt = listTouch; listTouch = null;
-    if(tt && tt.menu){ e.preventDefault(); flush(); return; }   // เพิ่งเปิดเมนูจากการกดค้าง — กันคลิกที่ตามมาปิดเมนูทิ้ง
+    if(tt && tt.swipe){
+      const x = parseFloat(tt.el.style.getPropertyValue('--sx')) || 0;
+      if(x < -SWIPE_W / 2){
+        swipeSet(tt.el, -SWIPE_W, false); swipeOpen = tt.el;
+        clearTimeout(swipeTimer); swipeTimer = setTimeout(() => closeSwipe(), 6000);
+      } else { swipeOpen = tt.el; closeSwipe(); }
+      return;
+    }
     if(tt && tt.id && Date.now() - tt.at < 800 && chatById.get(tt.id)){
       e.preventDefault();            // เปิดเองแล้ว — กันคลิกจากเบราว์เซอร์เปิดซ้ำ
       openChat(tt.id);
-    }
+    } else if(tt && !tt.id) e.preventDefault();   // แตะเพื่อปิดปุ่มที่ปัดค้างไว้ — ไม่ต้องเปิดแชท
     flush();
   }, { passive:false });
-  el.addEventListener('touchcancel', () => { stopPress(); listTouch = null; flush(); });
+  el.addEventListener('touchcancel', () => { listTouch = null; flush(); });
+  el.addEventListener('scroll', () => { if(swipeOpen) closeSwipe(); }, { passive:true });
 }
 // ── v2.23 ทำเป็นยังไม่อ่าน / อ่านแล้ว (แบบ Facebook) — คลิกขวา/กดค้างที่รายการ หรือปุ่มในแถบเครื่องมือแชท ──
 function showListMenu(id, x, y){
@@ -1701,7 +1765,7 @@ async function markReadNow(id){
 function moreChats(){ listShown += LIST_STEP; renderList(); }
 function resetList(){ listShown = LIST_STEP; }
 function renderList(){
-  if(listTouch){ listDeferred = true; return; }       // นิ้วกำลังแตะรายการอยู่ — วาดหลังยกนิ้ว (ดู bindListTouch)
+  if(listTouch || swipeOpen){ listDeferred = true; return; }   // นิ้วกำลังแตะ / ปุ่มที่ปัดออกมายังเปิดอยู่ — วาดทีหลัง (ดู bindListTouch)
   const list = filteredChats(); const el = $('convList');
   const n = chipCounts();
   for(const k in n){ const e = $('cn-' + k); if(e) e.textContent = n[k] || ''; }

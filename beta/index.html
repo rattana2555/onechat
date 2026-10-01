@@ -10,10 +10,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.23">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.24">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.23">
-<title>[ทดสอบ] Rattana One Chat v2.23</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.24">
+<title>[ทดสอบ] Rattana One Chat v2.24</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -889,7 +889,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
     </button>
     <div class="lg-note">ใช้อีเมลบริษัทที่หัวหน้าเพิ่มไว้ในทีม · ล็อกอินครั้งเดียวแล้วเลือกบัญชี LINE<br>ยังไม่มีสิทธิ์? ติดต่อหัวหน้าแผนกหรือผู้ดูแลระบบ</div>
     <div class="lg-err" id="lgErr"></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.23 · 01/10/2569</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.24 · 01/10/2569</div>
   </div>
 </div>
 
@@ -939,7 +939,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.23</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.24</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -1187,7 +1187,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.23 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.24 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1212,6 +1212,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 //  v2.21: กราฟ "ข้อความที่ทักเข้ามารายวัน" ในภาพรวม — แท่งสัปดาห์นี้เป็น 0 ทุกวัน (ตัวแปรลูปชื่อ w0 ทับต้นสัปดาห์ ตั้งแต่ v2.15)
 //  v2.22: ตารางสิทธิ์ช่อง "จัดการ" (ลบออกจากระบบ · ตั้ง/ลดผู้ดูแลระบบ) · พนักงานเห็นตั้งค่าเฉพาะของตัวเอง · กระดิ่งเปิดแล้วเป็น 0 + ไอคอน ⏳/⏰ · พัฒนาการรายคนในภาพรวม · คนในบริษัทนอกทีมตอบ ≠ ไม่รู้ว่าใครตอบ
 //  v2.23: ค้นหาในเนื้อข้อความ + กระโดดไปที่ข้อความ · ป้ายสถานะแชท (pur-chat-tags.sql) · ทำเป็นยังไม่อ่าน/อ่านแล้ว แบบ Facebook (pur-mark-unread.sql) · เปิดแอพเริ่มที่ธีมสว่างเสมอ · (คู่กับ ingest v2.4 + ส่วนขยาย 3.1: อ่านใน OA = อ่านในแอพ)
+//  v2.24: มือถือ — ปัดซ้ายที่แชท = ยังไม่อ่าน/อ่านแล้ว (แทนกดค้างที่ iPhone เด้งเมนูคัดลอก) · แถบเมนูล่างแบบลอยกระจกฝ้า (แบบ LINE) ซ่อนตอนเปิดแชท
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
