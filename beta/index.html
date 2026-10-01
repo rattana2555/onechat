@@ -100,8 +100,8 @@ a{color:inherit}
 /* ───────────── BOTTOM NAV (mobile) ───────────── */
 /* v2.24 แถบล่างแบบลอย "กระจกฝ้า" (แบบ LINE ใหม่) — ลอยเหนือเนื้อหา มองทะลุเห็นรายการด้านหลัง · ซ่อนตอนเปิดแชท (ไม่ทับช่องพิมพ์)
    เนื้อหาที่เลื่อนได้เผื่อที่ด้านล่าง (--nav-space) ให้รายการสุดท้ายเลื่อนพ้นแถบได้ */
-:root{--nav-h:62px;--nav-space:calc(var(--nav-h) + 22px + env(safe-area-inset-bottom))}
-.bottom-nav{display:flex;position:fixed;left:14px;right:14px;bottom:calc(10px + env(safe-area-inset-bottom));height:var(--nav-h);padding:5px;border-radius:31px;z-index:60;
+:root{--nav-h:62px;--nav-space:calc(var(--nav-h) + 20px + max(0px,env(safe-area-inset-bottom) - 12px))}
+.bottom-nav{display:flex;position:fixed;left:14px;right:14px;bottom:max(8px,calc(env(safe-area-inset-bottom) - 12px));height:var(--nav-h);padding:5px;border-radius:31px;z-index:60;
   background:rgba(255,255,255,.72);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);
   border:1px solid rgba(255,255,255,.75);box-shadow:0 10px 30px rgba(13,27,62,.18),0 1px 3px rgba(13,27,62,.08),inset 0 1px 0 rgba(255,255,255,.9);
   transition:transform .28s cubic-bezier(.4,0,.2,1),opacity .2s}
@@ -687,6 +687,28 @@ select.input{appearance:auto}
 /* iOS: height:100% บางรุ่นไม่ตรงกับพื้นที่แสดงผลจริง เหลือช่องว่างท้ายจอ — ยึดขอบจอด้วย inset แทน */
 @media(max-width:767px){
   body{position:fixed;inset:0;height:auto;width:auto}
+  /* v2.26 หัวแอพแบบ LINE: ชื่อบัญชีตัวใหญ่ซ้าย · ปุ่มรวมในแคปซูลกระจกฝ้าขวา · เลื่อนลง = หัวหลบ เลื่อนขึ้น = กลับมา */
+  .app-hdr{--hdr-h:calc(58px + max(0px,env(safe-area-inset-top)));height:var(--hdr-h);background:rgba(244,246,251,.86);
+    -webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);color:var(--navy);
+    border-bottom:1px solid rgba(13,27,62,.07);padding-left:16px;padding-right:12px;transition:margin-top .26s cubic-bezier(.4,0,.2,1)}
+  body.dark .app-hdr{background:rgba(10,16,32,.86);color:#e8eaf0;border-bottom-color:rgba(255,255,255,.06)}
+  body.hdr-hidden .app-hdr{margin-top:calc(-1 * var(--hdr-h))}
+  .app-hdr .brand-mark,.app-hdr .logo-text,.app-hdr .ht-role{display:none}
+  #hdrAcct{min-width:0;flex:1}
+  .app-hdr .logo-sub{font-size:22px;font-weight:800;color:inherit;max-width:none;margin:0;display:flex;align-items:center;letter-spacing:.1px}
+  .app-hdr .logo-sub .hdr-av{width:30px;height:30px;border-radius:9px;margin-right:9px;vertical-align:middle;flex-shrink:0}
+  .app-hdr .ht-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;min-width:0}
+  .app-hdr .ht-name .ic{width:16px;height:16px;flex-shrink:0;opacity:.75}
+  .hdr-r{gap:0;padding:3px 4px;border-radius:24px;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.85);
+    -webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);
+    box-shadow:0 4px 16px rgba(13,27,62,.12),inset 0 1px 0 rgba(255,255,255,.9)}
+  body.dark .hdr-r{background:rgba(17,28,53,.72);border-color:rgba(255,255,255,.09);box-shadow:0 4px 16px rgba(0,0,0,.4)}
+  .app-hdr .hdr-btn{width:38px;height:36px;border:0;border-radius:18px;color:inherit;font-size:18px;font-weight:700}
+  .app-hdr .hdr-btn:active{background:rgba(13,27,62,.08)}
+  .app-hdr .hdr-btn .ic{width:21px;height:21px;stroke-width:1.9}
+  .app-hdr .hdr-wide{display:none}
+  .app-hdr .noti-dot{border-color:#fff;top:-3px;right:-2px}
+  body.dark .app-hdr .noti-dot{border-color:#1a2744}
   .conv-list,.scroll-view{padding-bottom:var(--nav-space)}            /* เลื่อนรายการสุดท้ายพ้นแถบลอยได้ */
   .reply-bar{padding-bottom:max(8px,env(safe-area-inset-bottom))}    /* เปิดแชท = แถบล่างหลบ ช่องพิมพ์ติดขอบจอจริง */
   .upd-bar{bottom:calc(var(--nav-h) + 20px + env(safe-area-inset-bottom))}
@@ -703,6 +725,7 @@ select.input{appearance:auto}
   .logo-sub{font-size:10px}
 }
 @media(min-width:768px){
+  .hdr-more{display:none}
   .app-hdr{padding:0 16px;gap:11px}
   .top-tabs{display:flex}
   .bottom-nav{display:none}
@@ -962,10 +985,15 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
       <div class="noti-panel" id="notiPanel"></div>
     </div>
     <button class="hdr-btn" id="refreshBtn" onclick="refreshAll()" title="โหลดข้อมูลใหม่"><span data-ic="refresh"></span></button>
-    <button class="hdr-btn" onclick="toggleDark()" title="โหมดมืด/สว่าง"><span data-ic="moon"></span></button>
-    <button class="hdr-btn" onclick="doLogout()" title="ออกจากระบบ"><span data-ic="logout"></span></button>
+    <button class="hdr-btn hdr-wide" onclick="toggleDark()" title="โหมดมืด/สว่าง"><span data-ic="moon"></span></button>
+    <button class="hdr-btn hdr-wide" onclick="doLogout()" title="ออกจากระบบ"><span data-ic="logout"></span></button>
+    <button class="hdr-btn hdr-more" id="hdrMoreBtn" onclick="toggleHdrMore(event)" title="เมนูเพิ่มเติม">⋯</button>
   </div>
 </header>
+<div class="ctx-menu" id="hdrMore" role="menu">
+  <button onclick="closeHdrMore();toggleDark()"><span data-ic="moon"></span> โหมดมืด / สว่าง</button>
+  <button onclick="closeHdrMore();doLogout()"><span data-ic="logout"></span> ออกจากระบบ</button>
+</div>
 
 <!-- DESKTOP TABS -->
 <nav class="top-tabs">
@@ -4639,7 +4667,7 @@ function aboutCardHtml(){
 //  NAV / THEME / AUTH / INIT
 // ═══════════════════════════════════════════════════════════
 function setView(v){
-  view = v;
+  view = v; document.body.classList.remove('hdr-hidden');
   document.querySelectorAll('.tab-btn,.bni').forEach(b => b.classList.toggle('active', b.dataset.v === v));
   const ids = { chat:'viewChat', dash:'viewDash', blast:'viewBlast', set:'viewSet' };
   document.querySelectorAll('.view').forEach(s => s.classList.toggle('active', s.id === ids[v]));
@@ -5144,7 +5172,7 @@ function renderAcctHeader(){
   const multi = accounts.length > 1;
   // ลูกศรต่อท้ายชื่อบัญชีเลย (ไม่ใช่ท้ายบรรทัด) — จอแคบบรรทัดนี้ถูกตัดด้วย … แล้วลูกศรจะหาย · แผนกดูได้ในเมนู
   $('hdrGreet').innerHTML = acct
-    ? `${ACCT_LOGO[acct.slug] ? `<img class="hdr-av" src="${ACCT_LOGO[acct.slug]}" alt="">` : ''}${esc(acct.name)}${multi ? ic('chevdown') : ''} · ${esc(roleLabel(me.role))}`
+    ? `${ACCT_LOGO[acct.slug] ? `<img class="hdr-av" src="${ACCT_LOGO[acct.slug]}" alt="">` : ''}<span class="ht-name">${esc(acct.name)}${multi ? ic('chevdown') : ''}</span><span class="ht-role"> · ${esc(roleLabel(me.role))}</span>`
     : `แชท LINE · v${esc(APP_VERSION)}`;
   $('hdrAcct').classList.toggle('hdr-acct', multi);
   $('hdrAcct').title = multi ? 'สลับบัญชี LINE' : '';
@@ -5165,6 +5193,32 @@ function toggleAcctMenu(ev){
   refreshAccounts().then(() => { if(m.classList.contains('open')){ draw(); place(); } });
 }
 function closeAcctMenu(){ $('acctMenu')?.classList.remove('open'); }
+// v2.26 มือถือ: ปุ่ม ⋯ ในแคปซูลหัวแอพ (โหมดมืด/ออกจากระบบ)
+function toggleHdrMore(ev){
+  ev?.stopPropagation();
+  const m = $('hdrMore'); if(m.classList.contains('open')) return closeHdrMore();
+  m.classList.add('open');
+  const r = $('hdrMoreBtn').getBoundingClientRect();
+  m.style.top = Math.round(r.bottom + 8) + 'px'; m.style.left = Math.round(Math.max(8, r.right - m.offsetWidth)) + 'px';
+}
+function closeHdrMore(){ $('hdrMore')?.classList.remove('open'); }
+document.addEventListener('click', e => { if(!e.target.closest('#hdrMore') && !e.target.closest('#hdrMoreBtn')) closeHdrMore(); });
+// v2.26 มือถือ: เลื่อนรายการลง (ดูของเก่าลงไป) = หัวแอพหลบขึ้น · เลื่อนกลับขึ้น/ถึงบนสุด = หัวแอพกลับมา (แบบ Facebook/Safari)
+(function bindHdrAutoHide(){
+  const last = new WeakMap();
+  const SEL = '.conv-list,.scroll-view,#msgsArea';
+  document.addEventListener('scroll', e => {
+    const el = e.target; if(!(el instanceof Element) || !el.matches(SEL)) return;
+    if(window.innerWidth >= 768){ document.body.classList.remove('hdr-hidden'); return; }
+    const y = el.scrollTop, prev = last.get(el) ?? y; last.set(el, y);
+    if(notiOpen || $('acctMenu')?.classList.contains('open') || $('hdrMore')?.classList.contains('open')) return;
+    const atTop = y < 24, atEnd = y + el.clientHeight >= el.scrollHeight - 4;
+    if(atTop) document.body.classList.remove('hdr-hidden');
+    else if(y - prev > 6 && !atEnd) document.body.classList.add('hdr-hidden');
+    else if(prev - y > 6) document.body.classList.remove('hdr-hidden');
+  }, true);
+  window.addEventListener('resize', () => { if(window.innerWidth >= 768) document.body.classList.remove('hdr-hidden'); });
+})();
 document.addEventListener('click', e => { if(!e.target.closest('#acctMenu') && !e.target.closest('#hdrAcct')) closeAcctMenu(); });
 
 // ล้างข้อมูลของบัญชีเดิมทั้งหมดก่อนโหลดบัญชีใหม่ — ห้ามมีแชท/ตัวเลข/รายชื่อของอีกบัญชีค้างบนจอ
