@@ -181,6 +181,14 @@ body.dark .tagchips .tchip:hover{color:#9cc2ff}body.dark .tagchips .tchip .n{col
 .msr-note{padding:8px 14px;font-size:11.5px;color:var(--muted)}
 @keyframes msgFlash{0%,60%{box-shadow:0 0 0 3px rgba(250,178,25,.9)}100%{box-shadow:0 0 0 3px rgba(250,178,25,0)}}
 .msg-grp.flash .bubble{animation:msgFlash 2.4s ease-out}
+@media (hover:none){.conv-item{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}}
+.conv-item.swiping{overflow:hidden}
+.conv-item.swiping > *{transform:translateX(var(--sx,0px));transition:transform .2s ease}
+.conv-item.dragging > *{transition:none}
+.swipe-act{position:absolute;top:0;bottom:0;right:-96px;width:96px;border:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:#2e6ec9;color:#fff;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
+.swipe-act.read{background:#1e8449}
+.swipe-act .dot{width:10px;height:10px;border-radius:50%;background:#fff}
+.swipe-act svg{width:18px;height:18px}
 .ctx-menu{position:fixed;z-index:9000;min-width:190px;padding:4px;background:var(--card-bg);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-lg);display:none}
 .ctx-menu.open{display:block}
 .ctx-menu button{display:flex;align-items:center;gap:9px;width:100%;padding:9px 12px;border:0;border-radius:7px;background:none;font:inherit;font-size:13.5px;font-weight:600;color:var(--text);cursor:pointer;text-align:left}
@@ -1624,43 +1632,82 @@ let listShown = LIST_STEP;
 // ถ้าวาดใหม่ตอนนิ้วยังแตะอยู่ องค์ประกอบใต้นิ้วถูกแทนที่ → มือถือทิ้ง "คลิก" นั้น ผู้ใช้ต้องแตะซ้ำหลายรอบ
 // → จำแชทที่แตะตั้งแต่ touchstart แล้วเปิดเองตอน touchend · ระหว่างแตะเลื่อนการวาดไว้ก่อน วาดทันทีที่ยกนิ้ว
 let listTouch = null, listDeferred = false;
+// v2.23 ปัดซ้ายที่แชท (มือถือ) = ปุ่ม "ยังไม่อ่าน / อ่านแล้ว" แบบ LINE · iOS Mail — เดิมกดค้าง แต่ iPhone เด้งเมนูคัดลอก/ค้นดูของระบบทับ
+// ระหว่างปุ่มเปิดค้างอยู่ เลื่อนการวาดรายการไว้ (ไม่งั้นข้อความใหม่ที่เข้ามาวาดรายการทับ ปุ่มหายก่อนกดทัน) · ปิดเองใน 6 วิ
+const SWIPE_W = 96;
+let swipeOpen = null, swipeTimer = null;
+function swipeSet(it, x, drag){
+  it.classList.add('swiping'); it.classList.toggle('dragging', !!drag);
+  it.style.setProperty('--sx', x + 'px');
+}
+function swipeEnsureBtn(it){
+  if(it.querySelector('.swipe-act')) return;
+  const c = chatById.get(it.dataset.id); if(!c) return;
+  const unread = (c.unread_count || 0) > 0;
+  it.insertAdjacentHTML('beforeend', `<button class="swipe-act ${unread ? 'read' : ''}" onclick="event.stopPropagation();swipeAction('${c.id}')">${unread ? ic('check') + 'อ่านแล้ว' : '<span class="dot"></span>ยังไม่อ่าน'}</button>`);
+}
+function closeSwipe(now){
+  clearTimeout(swipeTimer);
+  const it = swipeOpen; swipeOpen = null;
+  if(it){
+    swipeSet(it, 0, false);
+    const done = () => { it.classList.remove('swiping', 'dragging'); it.querySelector('.swipe-act')?.remove(); };
+    now ? done() : setTimeout(done, 220);
+  }
+  if(listDeferred){ listDeferred = false; setTimeout(renderList, now ? 0 : 230); }
+}
+function swipeAction(id){
+  const c = chatById.get(id); closeSwipe(true);
+  if(!c) return;
+  (c.unread_count || 0) > 0 ? markReadNow(id) : markUnread(id);
+}
 function bindListTouch(){
   const el = $('convList'); if(!el) return;
-  const flush = () => { if(listDeferred){ listDeferred = false; setTimeout(renderList, 0); } };
-  let pressT = null;                  // v2.23 กดค้าง 0.55 วิ = เมนู (ยังไม่อ่าน/อ่านแล้ว) แบบ Facebook — ไม่เปิดแชท
-  const stopPress = () => { clearTimeout(pressT); pressT = null; };
+  const flush = () => { if(listDeferred && !swipeOpen){ listDeferred = false; setTimeout(renderList, 0); } };
   el.addEventListener('touchstart', e => {
+    if(e.target.closest('.swipe-act')){ listTouch = null; return; }   // กดปุ่มที่ปัดออกมา — ให้ onclick ของปุ่มทำงาน
     const it = e.target.closest('.conv-item[data-id]'), t = e.touches[0];
-    listTouch = { id:it ? it.dataset.id : null, x:t.clientX, y:t.clientY, at:Date.now() };
-    stopPress();
-    if(listTouch.id) pressT = setTimeout(() => {
-      const tt = listTouch; if(!tt || !tt.id) return;
-      tt.id = null; tt.menu = true;    // ยกนิ้วแล้วไม่เปิดแชท
-      try{ navigator.vibrate?.(12); }catch(_){}
-      showListMenu(it.dataset.id, tt.x, tt.y);
-    }, 550);
+    listTouch = { id:it ? it.dataset.id : null, el:it, x:t.clientX, y:t.clientY, at:Date.now(), swipe:false, base:0 };
+    if(swipeOpen){
+      if(swipeOpen === it){ listTouch.base = -SWIPE_W; listTouch.id = null; }   // ปัดต่อ/ปัดกลับแถวที่เปิดอยู่
+      else { closeSwipe(); listTouch.id = null; }                              // แตะที่อื่น = แค่ปิดปุ่ม ไม่เปิดแชท
+    }
   }, { passive:true });
-  el.addEventListener('contextmenu', e => {          // คลิกขวาบนคอม (Android กดค้างก็ยิงอันนี้ — เมนูเปิดอยู่แล้วไม่ต้องซ้ำ)
+  el.addEventListener('contextmenu', e => {          // คลิกขวาบนคอม = เมนู (มือถือใช้ปัดซ้าย)
     const it = e.target.closest('.conv-item[data-id]'); if(!it) return;
+    if(matchMedia('(hover: none)').matches){ e.preventDefault(); return; }
     e.preventDefault();
-    if($('listMenu').classList.contains('open') && $('listMenu').dataset.id === it.dataset.id) return;
     showListMenu(it.dataset.id, e.clientX, e.clientY);
   });
   el.addEventListener('touchmove', e => {
-    if(!listTouch || !listTouch.id) return; const t = e.touches[0];
-    if(Math.abs(t.clientX - listTouch.x) > 10 || Math.abs(t.clientY - listTouch.y) > 10){ listTouch.id = null; stopPress(); }   // เลื่อนรายการ ไม่ใช่แตะ
+    const tt = listTouch; if(!tt || !tt.el) return; const t = e.touches[0];
+    const dx = t.clientX - tt.x, dy = t.clientY - tt.y;
+    if(!tt.swipe){
+      if(Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy) * 1.5 && (dx < 0 || tt.base)){
+        tt.swipe = true; tt.id = null; swipeEnsureBtn(tt.el);
+      } else if(Math.abs(dx) > 10 || Math.abs(dy) > 10){ tt.id = null; tt.el = null; return; }   // เลื่อนรายการ ไม่ใช่แตะ
+      else return;
+    }
+    swipeSet(tt.el, Math.max(-SWIPE_W * 1.25, Math.min(0, tt.base + dx)), true);
   }, { passive:true });
   el.addEventListener('touchend', e => {
-    stopPress();
     const tt = listTouch; listTouch = null;
-    if(tt && tt.menu){ e.preventDefault(); flush(); return; }   // เพิ่งเปิดเมนูจากการกดค้าง — กันคลิกที่ตามมาปิดเมนูทิ้ง
+    if(tt && tt.swipe){
+      const x = parseFloat(tt.el.style.getPropertyValue('--sx')) || 0;
+      if(x < -SWIPE_W / 2){
+        swipeSet(tt.el, -SWIPE_W, false); swipeOpen = tt.el;
+        clearTimeout(swipeTimer); swipeTimer = setTimeout(() => closeSwipe(), 6000);
+      } else { swipeOpen = tt.el; closeSwipe(); }
+      return;
+    }
     if(tt && tt.id && Date.now() - tt.at < 800 && chatById.get(tt.id)){
       e.preventDefault();            // เปิดเองแล้ว — กันคลิกจากเบราว์เซอร์เปิดซ้ำ
       openChat(tt.id);
-    }
+    } else if(tt && !tt.id) e.preventDefault();   // แตะเพื่อปิดปุ่มที่ปัดค้างไว้ — ไม่ต้องเปิดแชท
     flush();
   }, { passive:false });
-  el.addEventListener('touchcancel', () => { stopPress(); listTouch = null; flush(); });
+  el.addEventListener('touchcancel', () => { listTouch = null; flush(); });
+  el.addEventListener('scroll', () => { if(swipeOpen) closeSwipe(); }, { passive:true });
 }
 // ── v2.23 ทำเป็นยังไม่อ่าน / อ่านแล้ว (แบบ Facebook) — คลิกขวา/กดค้างที่รายการ หรือปุ่มในแถบเครื่องมือแชท ──
 function showListMenu(id, x, y){
@@ -1702,7 +1749,7 @@ async function markReadNow(id){
 function moreChats(){ listShown += LIST_STEP; renderList(); }
 function resetList(){ listShown = LIST_STEP; }
 function renderList(){
-  if(listTouch){ listDeferred = true; return; }       // นิ้วกำลังแตะรายการอยู่ — วาดหลังยกนิ้ว (ดู bindListTouch)
+  if(listTouch || swipeOpen){ listDeferred = true; return; }   // นิ้วกำลังแตะ / ปุ่มที่ปัดออกมายังเปิดอยู่ — วาดทีหลัง (ดู bindListTouch)
   const list = filteredChats(); const el = $('convList');
   const n = chipCounts();
   for(const k in n){ const e = $('cn-' + k); if(e) e.textContent = n[k] || ''; }
