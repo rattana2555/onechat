@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.26">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.27">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.26">
-<title>Rattana One Chat v2.26</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.27">
+<title>Rattana One Chat v2.27</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -201,6 +201,9 @@ body.dark .tagchips .tchip:hover{color:#9cc2ff}body.dark .tagchips .tchip .n{col
 .swipe-act .dot{width:10px;height:10px;border-radius:50%;background:#fff}
 .swipe-act svg{width:18px;height:18px}
 #chatContent.drop-on{outline:3px dashed var(--gold);outline-offset:-8px}
+.bl-job{padding:10px 0;border-top:1px solid var(--grid)}
+.bl-job:first-child{border-top:0}
+.bl-job .pill .ic,.bl-job .mini .ic{width:13px;height:13px;vertical-align:-2px}
 .ctx-menu{position:fixed;z-index:9000;min-width:190px;padding:4px;background:var(--card-bg);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-lg);display:none}
 .ctx-menu.open{display:block}
 .ctx-menu button{display:flex;align-items:center;gap:9px;width:100%;padding:9px 12px;border:0;border-radius:7px;background:none;font:inherit;font-size:13.5px;font-weight:600;color:var(--text);cursor:pointer;text-align:left}
@@ -925,7 +928,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
     <div class="lg-err" id="lgErr"></div>
     <div class="lg-wait" role="status"><div class="lg-spin"></div><b id="lgWaitMsg">กำลังเปิดแอพ…</b><div class="sub" id="lgWaitSub"></div>
       <div class="acts"><button class="btn btn-gold" type="button" onclick="retryGate()">ลองใหม่เดี๋ยวนี้</button><button class="btn btn-outline" type="button" onclick="doLogout()">ออกจากระบบ</button></div></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.26 · 01/10/2569</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.27 · 07/10/2569</div>
   </div>
 </div>
 
@@ -975,7 +978,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.26</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.27</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -1228,7 +1231,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.26 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.27 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1256,6 +1259,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 //  v2.24: มือถือ — ปัดซ้ายที่แชท = ยังไม่อ่าน/อ่านแล้ว (แทนกดค้างที่ iPhone เด้งเมนูคัดลอก) · แถบเมนูล่างแบบลอยกระจกฝ้า (แบบ LINE) ซ่อนตอนเปิดแชท
 //  v2.25: แก้ "เด้งออก ให้ล็อกอินใหม่บ่อย" — โหลดสิทธิ์ตอนเปิดแอพไม่สำเร็จไม่ signOut แล้ว (ลองใหม่เอง) · ออกจากระบบ/ไม่มีสิทธิ์ = เฉพาะเครื่องนี้ (scope local) · เปิดแอพขึ้น "กำลังเปิดแอพ…" แทนปุ่มล็อกอิน
 //  v2.26: วางรูปจากคลิปบอร์ด/ลากรูปมาวาง (ดูตัวอย่างก่อนส่ง) · มือถือ: หัวแอพแบบ LINE (ชื่อบัญชีตัวใหญ่ + แคปซูลกระจกฝ้า) หลบตอนเลื่อน · แถบล่างลอยต่ำลง
+//  v2.27: บรอดแคสต์ผ่านเซิร์ฟเวอร์ (pur_blast_jobs · pur-send v2.3) — ส่งทันที/ตั้งเวลา ปิดแอพได้ · คิวการส่ง · ข้อความ+ไฟล์ในคำขอเดียว (โควตา 1 เท่า) · โควตาที่เหลือ · แก้ชื่อแชทในแอพ = ชื่อเล่นใน OA (ingest v2.7 + ส่วนขยาย 3.4)
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
@@ -2670,14 +2674,20 @@ function openEditChat(){
   const c = chatById.get(activeId); if(!c) return;
   openModal('ข้อมูลแชท', `
     <div class="field"><label>ชื่อจาก LINE</label><div class="txt-sm">${esc(c.title || '—')} <span class="txt-muted">· ${c.kind === 'user' ? 'แชท 1:1' : 'กลุ่ม'}</span></div></div>
-    <div class="field"><label>ชื่อที่ทีมตั้ง (เช่น ชื่อ${peer()} + รหัส PU)</label><input class="input" id="edSupplier" value="${esc(c.supplier_name || '')}" placeholder="เช่น บจก. วัสดุก่อสร้าง A"></div>
+    <div class="field"><label>ชื่อที่ทีมตั้ง (เช่น ชื่อ${peer()} + รหัส PU)</label><input class="input" id="edSupplier" value="${esc(c.supplier_name || '')}" placeholder="เช่น บจก. วัสดุก่อสร้าง A">
+      ${c.oa_chat_id ? `<span class="mini">แก้แล้ว<b>ชื่อเล่นใน LINE OA Manager เปลี่ยนตามเอง</b>ภายในราว 1–2 นาที (ต้องมีเครื่องที่ติดส่วนขยายเปิดแท็บ chat.line.biz ไว้)${c.oa_alias_pending ? ` · <span class="lv-warn-txt">กำลังรอเปลี่ยนใน OA เป็น "${esc(c.oa_alias_pending)}"</span>` : ''}</span>` : ''}</div>
     <div class="field"><label>โน้ต</label><textarea class="input" id="edNote" rows="3" placeholder="เช่น เซลส์ชื่อคุณเอ โทร 08x-xxx-xxxx · ส่งของทุกวันพุธ">${esc(c.note || '')}</textarea></div>
     <div class="txt-sm txt-muted">LINE ID: <code style="font-size:11px">${esc(c.line_id)}</code></div>`,
     `<button class="btn btn-outline" onclick="closeModal()">ยกเลิก</button><button class="btn btn-gold" onclick="saveEditChat()">บันทึก</button>`);
 }
 async function saveEditChat(){
   const id = activeId; const supplier = $('edSupplier').value.trim(), note = $('edNote').value.trim(); closeModal();
-  try{ await rpc('pur_update_chat', { p_chat:id, p_supplier:supplier || null, p_note:note || null }); patchChat(id, { supplier_name:supplier || null, note:note || null }); showToast('บันทึกแล้ว ✓', 'success'); }
+  const c0 = chatById.get(id), renamed = !!supplier && supplier !== (c0?.supplier_name || '');
+  try{
+    await rpc('pur_update_chat', { p_chat:id, p_supplier:supplier || null, p_note:note || null });
+    patchChat(id, { supplier_name:supplier || null, note:note || null, ...(renamed && c0?.oa_chat_id ? { oa_alias_pending:supplier } : {}) });
+    showToast(renamed && c0?.oa_chat_id ? 'บันทึกแล้ว ✓ — ชื่อเล่นใน OA จะเปลี่ยนตามภายในราว 1–2 นาที' : 'บันทึกแล้ว ✓', 'success', 4500);
+  }
   catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
 }
 
@@ -3714,6 +3724,12 @@ const blast = {
   attach: null,            // { kind:'image'|'file', name, mime, b64, size }
   sending: false, stop: false,
   result: null,            // { ok, fail, errors:[] }
+  // v2.27 ส่งผ่านเซิร์ฟเวอร์ (งานส่ง pur_blast_jobs) · ตั้งเวลาได้
+  when: 'now',             // now | later
+  runAt: '',               // ค่าของ datetime-local (เวลาเครื่อง)
+  jobs: null,              // งานส่งล่าสุดของบัญชีนี้
+  quota: null, quotaAt: 0, // โควตา LINE เดือนนี้ (จาก pur-send action quota)
+  openErr: '',             // งานที่เปิดดูรายการไม่สำเร็จอยู่
 };
 
 // ── รายชื่อผู้รับที่เลือกได้ ──
@@ -3818,8 +3834,10 @@ async function blastPickFile(kind){
     const f = inp.files?.[0]; if(!f) return;
     const cap = kind === 'image' ? 10 : 20;
     if(f.size > cap * 1024 * 1024) return showToast(`ไฟล์ใหญ่เกิน ${cap}MB`, 'error');
-    const b64 = await new Promise(res => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.readAsDataURL(f); });
-    blast.attach = { kind, name:f.name, mime:f.type || 'application/octet-stream', b64, size:f.size };
+    if(kind === 'image' && !/^image\//.test(f.type)) return showToast('เลือกได้เฉพาะไฟล์รูปภาพ', 'warning');
+    const body = kind === 'image' ? await downscaleImage(f) : f;          // v2.27 รูปย่อเป็น JPEG ≤1600px ก่อน (อัปโหลดครั้งเดียวใช้ทุกแชท)
+    const b64 = await new Promise(res => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.readAsDataURL(body); });
+    blast.attach = { kind, name:f.name, mime:kind === 'image' ? 'image/jpeg' : (f.type || 'application/octet-stream'), b64, size:body.size };
     renderBlast();
   };
   inp.click();
@@ -3831,6 +3849,9 @@ function blastPreview(){
   const ids = blastIds();
   if(!ids.length) return showToast('ยังไม่ได้เลือกผู้รับ', 'info');
   if(!blast.text.trim() && !blast.attach) return showToast('ยังไม่ได้พิมพ์ข้อความ', 'info');
+  const later = blast.when === 'later', at = later ? new Date(blast.runAt) : null;
+  if(later && !(at && at.getTime() > Date.now() + 60000)) return showToast('เลือกเวลาส่งที่เป็นอนาคต (อย่างน้อย 1 นาทีจากตอนนี้)', 'warning');
+  if(later && at.getTime() > Date.now() + 30 * 86400000) return showToast('ตั้งเวลาล่วงหน้าได้ไม่เกิน 30 วัน', 'warning');
 
   const missing = blastMissingVars();
   const empties = blast.mode === 'sheet'
@@ -3848,7 +3869,9 @@ function blastPreview(){
        <div><div class="mini">เป็นกลุ่ม</div><div class="txt-bold">${nf(groups)}</div></div>
        <div><div class="mini">ใช้โควตา LINE</div><div class="txt-bold">${nf(quota)} ข้อความ</div></div>
        <div><div class="mini">ไฟล์แนบ</div><div class="txt-bold">${blast.attach ? esc(blast.attach.name) : '—'}</div></div>
+       <div><div class="mini">เวลาส่ง</div><div class="txt-bold">${later ? esc(thDate(at) + ' ' + thTime(at.toISOString())) + ' น.' : 'ทันที'}</div></div>
      </div>
+     ${blastQuotaWarn(quota)}
      ${missing.length ? `<div class="warn-box bad mt-8">ตัวแปร <b>${missing.map(esc).map(v => '{{' + v + '}}').join(' ')}</b> ไม่มีคอลัมน์นี้ในชีท — จะถูกส่งไปเป็นตัวหนังสือแบบนั้นเลย</div>` : ''}
      ${empties.length ? `<div class="warn-box bad mt-8">มี ${nf(empties.length)} แชทที่ข้อความยังเติมไม่ครบ (ช่องในชีทว่าง) — ดูแถวที่มีเครื่องหมาย ⚠️</div>` : ''}
      <div class="tbl-wrap mt-12"><table class="tbl compact"><thead><tr>
@@ -3860,42 +3883,99 @@ function blastPreview(){
          <td style="white-space:pre-wrap;max-width:420px">${esc(r.text) || '<span class="txt-muted">(ไม่มีข้อความ ส่งแต่ไฟล์แนบ)</span>'}</td></tr>`;
      }).join('')}</tbody></table></div>`,
     `<button class="btn btn-outline" onclick="closeModal()">ยกเลิก</button>
-     <button class="btn btn-gold" onclick="blastSend()">ยืนยันส่ง ${nf(rows.length)} แชท</button>`,
+     <button class="btn btn-gold" onclick="blastSend()">${later ? `ยืนยันตั้งเวลาส่ง ${nf(rows.length)} แชท` : `ยืนยันส่ง ${nf(rows.length)} แชท`}</button>`,
     { wide:true });
 }
 
-// ── ส่งจริง ──
+// ── ส่งจริง (v2.27): สร้าง "งานส่ง" ให้เซิร์ฟเวอร์ส่ง — ปิดแอพได้ · ตั้งเวลาได้ · ตั้งคิวได้หลายงาน ──
+// ข้อความ + รูป/ไฟล์ ไปในคำขอเดียวต่อแชท = LINE นับโควตา 1 ข้อความต่อผู้รับ (เดิมยิงแยก 2 ครั้ง)
 async function blastSend(){
-  closeModal();
   const ids = blastIds();
-  blast.sending = true; blast.stop = false; blast.result = { ok:0, fail:0, errors:[] };
+  const items = ids.map(id => ({ chatId:id, text:blastTextFor(id).trim() }));
+  const later = blast.when === 'later', at = later ? new Date(blast.runAt) : null;
+  if(later && !(at && at.getTime() > Date.now() + 30000)) return showToast('เวลาส่งต้องเป็นอนาคต', 'warning');
+  const attach = blast.attach ? { kind:blast.attach.kind, name:blast.attach.name, mime:blast.attach.mime, b64:blast.attach.b64 } : null;
+  closeModal();
+  showSpinner(later ? 'กำลังตั้งเวลาส่ง…' : 'กำลังส่งเข้าคิว…');
+  let r;
+  try{ r = await callFn({ action:'blastCreate', accountId:acct.id, runAt:later ? at.toISOString() : null, items, attach }); }
+  finally{ hideSpinner(); }
+  if(!r || !r.ok) return showToast((r && r.error) || 'สร้างงานส่งไม่สำเร็จ', 'error', 7000);
+  showToast(later ? `ตั้งเวลาส่งแล้ว ✓ ${nf(r.total)} แชท · ${thDate(at)} ${thTime(at.toISOString())} น.`
+                  : `เริ่มส่งแล้ว ✓ ${nf(r.total)} แชท — ปิดแอพได้ ระบบส่งต่อให้เอง`, 'success', 6500);
+  blast.picked.clear(); blast.text = ''; blast.attach = null; blast.when = 'now'; blast.runAt = '';
   renderBlast();
-  for(let i = 0; i < ids.length; i++){
-    if(blast.stop) break;
-    const id = ids[i], c = chatById.get(id), text = blastTextFor(id).trim();
-    try{
-      let r = { ok:true };
-      if(text) r = await callFn({ action:'text', chatId:id, text });
-      if(r.ok && blast.attach){
-        r = blast.attach.kind === 'image'
-          ? await callFn({ action:'image', chatId:id, imageBase64:blast.attach.b64, imageMime:blast.attach.mime })
-          : await callFn({ action:'file', chatId:id, fileBase64:blast.attach.b64, fileName:blast.attach.name, fileMime:blast.attach.mime });
-      }
-      if(r.ok) blast.result.ok++;
-      else { blast.result.fail++; blast.result.errors.push({ name:chatName(c), err:r.error || 'ส่งไม่สำเร็จ' }); }
-    }catch(e){
-      blast.result.fail++; blast.result.errors.push({ name:chatName(c), err:e.message });
-    }
-    $('blProg').style.width = Math.round((i + 1) / ids.length * 100) + '%';
-    $('blProgTxt').textContent = `ส่งแล้ว ${nf(i + 1)} / ${nf(ids.length)} · สำเร็จ ${nf(blast.result.ok)} · ไม่สำเร็จ ${nf(blast.result.fail)}`;
-    await new Promise(r => setTimeout(r, 350));            // หน่วงไว้ กัน LINE ตีว่าส่งรัวเกินไป
-  }
-  blast.sending = false;
-  renderBlast();
-  showToast(`ส่งเสร็จ — สำเร็จ ${nf(blast.result.ok)} · ไม่สำเร็จ ${nf(blast.result.fail)}`,
-            blast.result.fail ? 'error' : 'success', 6000);
-  await loadChats();
+  loadBlastJobs(); setTimeout(loadBlastJobs, 2000);
 }
+// ── คิวการส่ง ──
+let blastPollT = null;
+async function loadBlastJobs(){
+  if(DEMO){ blast.jobs = []; renderBlastJobs(); return; }
+  const { data, error } = await sb.from('pur_blast_jobs')
+    .select('id,created_by,created_at,run_at,status,total,cursor,ok,fail,errors,attach,finished_at,cancelled_by')
+    .eq('account_id', acct.id).order('created_at', { ascending:false }).limit(15);
+  if(error){ console.warn('blast jobs:', error.message); return; }
+  blast.jobs = data || [];
+  renderBlastJobs();
+  clearTimeout(blastPollT);
+  const live = blast.jobs.some(j => j.status === 'running' || (j.status === 'scheduled' && Date.parse(j.run_at) - Date.now() < 90000));
+  if(view === 'blast' && live) blastPollT = setTimeout(loadBlastJobs, 4000);
+}
+async function loadBlastQuota(force){
+  if(DEMO || !acct) return;
+  if(!force && blast.quota && blast.quota.acct === acct.id && Date.now() - blast.quotaAt < 120000) return;
+  blast.quotaAt = Date.now();
+  const r = await callFn({ action:'quota', accountId:acct.id });
+  blast.quota = { acct:acct.id, ok:!!r.ok, used:Number(r.used) || 0, limit:r.type === 'limited' ? Number(r.limit) : null, error:r.error || '' };
+  renderBlastBar();
+}
+const blastLeft = () => blast.quota && blast.quota.ok && blast.quota.limit != null ? Math.max(0, blast.quota.limit - blast.quota.used) : null;
+function blastQuotaWarn(need){
+  const left = blastLeft();
+  if(left == null || need <= left) return '';
+  return `<div class="warn-box bad mt-8"><b>โควตา LINE เดือนนี้เหลือ ${nf(left)} ข้อความ</b> แต่งานนี้ใช้ ${nf(need)} — แชทที่เกินจะส่งไม่สำเร็จ (LINE แจ้งโควตาหมด)</div>`;
+}
+async function cancelBlastJob(id){
+  if(!confirm('ยกเลิกงานส่งนี้?\n\nแชทที่ส่งไปแล้วเรียกคืนไม่ได้ · ที่ยังไม่ส่งจะไม่ถูกส่ง')) return;
+  try{ await rpc('pur_blast_cancel', { p_job:id }); showToast('ยกเลิกแล้ว ✓', 'success'); }
+  catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
+  loadBlastJobs();
+}
+function toggleBlastErr(id){ blast.openErr = blast.openErr === id ? '' : id; renderBlastJobs(); }
+function renderBlastJobs(){
+  const el = $('blJobs'); if(!el) return;
+  const jobs = blast.jobs || [];
+  if(!jobs.length){ el.innerHTML = ''; return; }
+  const when = d => `${thDateShort(new Date(d))} ${thTime(d)} น.`;
+  el.innerHTML = `<div class="card card-gold"><div class="card-head"><h3><span class="hb">${ic('clock')}</span>คิวการส่ง <span class="mini">ส่งจากเซิร์ฟเวอร์ — ปิดแอพได้</span></h3>
+      <div class="acts"><button class="btn btn-outline btn-sm" onclick="loadBlastJobs()">${ic('refresh')} โหลดใหม่</button></div></div>
+    <div class="card-body" style="padding-top:4px">${jobs.map(j => {
+      const st = { scheduled:['warn', `รอส่ง ${when(j.run_at)}`], running:['gold', `กำลังส่ง ${nf(j.cursor)}/${nf(j.total)}`],
+                   done:['ok', 'ส่งเสร็จ'], cancelled:['grey', 'ยกเลิกแล้ว'], failed:['bad', 'ผิดพลาด'] }[j.status] || ['grey', j.status];
+      const pct = j.total ? Math.round(j.cursor / j.total * 100) : 0, errs = Array.isArray(j.errors) ? j.errors : [];
+      const canCancel = j.status === 'scheduled' || j.status === 'running';
+      return `<div class="bl-job">
+        <div class="row" style="gap:8px;align-items:center">
+          <span class="pill ${st[0]}">${esc(st[1])}</span>
+          <b>${nf(j.total)} แชท</b>${j.attach ? `<span class="mini">· ${j.attach.kind === 'image' ? ic('image') : ic('paperclip')} ${esc(j.attach.name || '')}</span>` : ''}
+          <span class="mini txt-muted" style="margin-left:auto">โดย ${esc(memberName(j.created_by))} · สร้าง ${esc(when(j.created_at))}</span>
+        </div>
+        ${j.status === 'running' || j.cursor ? `<div class="bl-prog mt-8"><div style="width:${pct}%"></div></div>
+          <div class="mini mt-8">สำเร็จ ${nf(j.ok)} · ไม่สำเร็จ ${nf(j.fail)}${j.finished_at ? ` · จบ ${esc(when(j.finished_at))}` : ''}${j.cancelled_by ? ` · ยกเลิกโดย ${esc(memberName(j.cancelled_by))}` : ''}</div>` : ''}
+        <div class="row mt-8" style="gap:6px">
+          ${canCancel ? `<button class="btn btn-outline btn-sm" onclick="cancelBlastJob('${j.id}')">ยกเลิกงานนี้</button>` : ''}
+          ${errs.length ? `<button class="btn btn-outline btn-sm" onclick="toggleBlastErr('${j.id}')">${blast.openErr === j.id ? 'ซ่อน' : 'ดู'}แชทที่ส่งไม่สำเร็จ (${nf(j.fail)})</button>` : ''}
+        </div>
+        ${blast.openErr === j.id && errs.length ? `<ul class="mt-8" style="padding-left:18px">${errs.slice(0, 50).map(e => `<li class="txt-sm">${esc(e.name || e.chat_id || '')} — ${esc(e.err || '')}</li>`).join('')}</ul>` : ''}
+      </div>`;
+    }).join('')}</div></div>`;
+}
+function setBlastWhen(w){
+  blast.when = w;
+  if(w === 'later' && !blast.runAt){ const d = new Date(Date.now() + 60 * 60000); d.setMinutes(0, 0, 0); blast.runAt = localDT(d); }
+  renderBlast();
+}
+const localDT = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 const blastStop = () => { blast.stop = true; showToast('กำลังหยุด…', 'info'); };
 
 // ── หน้าจอ ──
@@ -3942,8 +4022,11 @@ function renderBlastList(){
 function renderBlastBar(){
   const ids = blastIds();
   const el = $('blBar'); if(!el) return;
-  el.innerHTML = `<div><b>${nf(ids.length)}</b> แชท · ใช้โควตา <b>${nf(blastQuota(ids))}</b> ข้อความ
-      ${blast.attach ? `· แนบ <b>${esc(blast.attach.name)}</b>` : ''}</div>
+  const need = blastQuota(ids), left = blastLeft(), over = left != null && need > left;
+  el.innerHTML = `<div><b>${nf(ids.length)}</b> แชท · ใช้โควตา <b class="${over ? 'txt-danger' : ''}">${nf(need)}</b> ข้อความ
+      ${blast.attach ? `· แนบ <b>${esc(blast.attach.name)}</b>` : ''}
+      <div class="mini" style="opacity:.85">${blast.quota ? (blast.quota.ok ? (left == null ? 'โควตาเดือนนี้: ไม่จำกัด' : `โควตาเดือนนี้เหลือ <b>${nf(left)}</b> จาก ${nf(blast.quota.limit)}${over ? ' — ไม่พอ' : ''}`) : 'ดูโควตาไม่ได้: ' + esc(blast.quota.error)) : DEMO ? 'โหมดตัวอย่าง — ไม่ได้ดูโควตาจริง' : 'กำลังดูโควตา…'}
+        ${blast.when === 'later' && blast.runAt ? ` · ตั้งเวลา ${esc(thDate(new Date(blast.runAt)) + ' ' + thTime(new Date(blast.runAt).toISOString()))} น.` : ''}</div></div>
     <button class="btn btn-gold" onclick="blastPreview()" ${ids.length && (blast.text.trim() || blast.attach) ? '' : 'disabled'}>ตรวจก่อนส่ง →</button>`;
 }
 function renderBlast(){
@@ -3997,7 +4080,17 @@ function renderBlast(){
               <button class="btn btn-outline btn-sm" onclick="clearAttach()">เอาออก</button>` : ''}
           </div>
           <span class="mini">ไฟล์แนบตัวเดียวกันส่งให้ทุกเจ้า · <b>รูป</b>เข้าแชทเป็นรูปปกติ ·
-            <b>ไฟล์ (PDF/Excel)</b> LINE ไม่รองรับการส่งไฟล์เข้าแชท ระบบจะส่งเป็น<b>ลิงก์ดาวน์โหลดอายุ 30 วัน</b>แทน (ในแอพยังเห็นเป็นไฟล์ปกติ)</span>
+            <b>ไฟล์ (PDF/Excel)</b> LINE ไม่รองรับการส่งไฟล์เข้าแชท ระบบจะส่งเป็น<b>ลิงก์ดาวน์โหลดอายุ 30 วัน</b>แทน (ในแอพยังเห็นเป็นไฟล์ปกติ) ·
+            ข้อความกับไฟล์แนบส่งไปพร้อมกันในครั้งเดียว <b>นับโควตา 1 ข้อความต่อผู้รับ</b></span>
+        </div>
+
+        <div class="field"><label>${no()}. เวลาส่ง</label>
+          <div class="seg">
+            <button class="${S.when !== 'later' ? 'active' : ''}" onclick="setBlastWhen('now')">ส่งทันที</button>
+            <button class="${S.when === 'later' ? 'active' : ''}" onclick="setBlastWhen('later')">ตั้งเวลาส่ง</button>
+          </div>
+          ${S.when === 'later' ? `<input type="datetime-local" class="input mt-8" style="max-width:260px" value="${esc(S.runAt)}" min="${localDT(new Date(Date.now() + 2 * 60000))}" onchange="blast.runAt=this.value;renderBlastBar()">` : ''}
+          <span class="mini">เซิร์ฟเวอร์เป็นคนส่ง — กดแล้ว<b>ปิดแอพได้เลย</b> · ตั้งคิวได้หลายงาน · ตั้งล่วงหน้าได้ถึง 30 วัน · ยกเลิกได้ในการ์ด "คิวการส่ง"</span>
         </div>
       </div>
     </div>
@@ -4014,17 +4107,12 @@ function renderBlast(){
       </div>
     </div>
 
-    ${S.sending || S.result ? `<div class="card card-gold"><div class="card-head"><h3><span class="hb info">${ic('activity')}</span>ผลการส่ง</h3></div>
-      <div class="card-body">
-        <div class="bl-prog"><div id="blProg" style="width:${S.sending ? '0' : '100'}%"></div></div>
-        <div class="mini mt-8" id="blProgTxt">${S.result ? `สำเร็จ ${nf(S.result.ok)} · ไม่สำเร็จ ${nf(S.result.fail)}` : ''}</div>
-        ${S.sending ? `<button class="btn btn-outline btn-sm mt-8" onclick="blastStop()">หยุดส่ง</button>` : ''}
-        ${S.result?.errors.length ? `<div class="warn-box bad mt-8"><b>ส่งไม่สำเร็จ ${nf(S.result.errors.length)} แชท</b>
-          <ul class="mt-8" style="padding-left:18px">${S.result.errors.slice(0, 20).map(e => `<li class="txt-sm">${esc(e.name)} — ${esc(e.err)}</li>`).join('')}</ul></div>` : ''}
-      </div></div>` : ''}
+    <div id="blJobs"></div>
 
     <div id="blBar" class="bl-bar"></div>`;
-  renderBlastList(); renderBlastBar();
+  renderBlastList(); renderBlastBar(); renderBlastJobs();
+  if(blast.jobs === null || blast.jobsAcct !== acct?.id){ blast.jobsAcct = acct?.id; loadBlastJobs(); }
+  loadBlastQuota();
 }
 
 
