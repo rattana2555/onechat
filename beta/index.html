@@ -2674,14 +2674,20 @@ function openEditChat(){
   const c = chatById.get(activeId); if(!c) return;
   openModal('ข้อมูลแชท', `
     <div class="field"><label>ชื่อจาก LINE</label><div class="txt-sm">${esc(c.title || '—')} <span class="txt-muted">· ${c.kind === 'user' ? 'แชท 1:1' : 'กลุ่ม'}</span></div></div>
-    <div class="field"><label>ชื่อที่ทีมตั้ง (เช่น ชื่อ${peer()} + รหัส PU)</label><input class="input" id="edSupplier" value="${esc(c.supplier_name || '')}" placeholder="เช่น บจก. วัสดุก่อสร้าง A"></div>
+    <div class="field"><label>ชื่อที่ทีมตั้ง (เช่น ชื่อ${peer()} + รหัส PU)</label><input class="input" id="edSupplier" value="${esc(c.supplier_name || '')}" placeholder="เช่น บจก. วัสดุก่อสร้าง A">
+      ${c.oa_chat_id ? `<span class="mini">แก้แล้ว<b>ชื่อเล่นใน LINE OA Manager เปลี่ยนตามเอง</b>ภายในราว 1–2 นาที (ต้องมีเครื่องที่ติดส่วนขยายเปิดแท็บ chat.line.biz ไว้)${c.oa_alias_pending ? ` · <span class="lv-warn-txt">กำลังรอเปลี่ยนใน OA เป็น "${esc(c.oa_alias_pending)}"</span>` : ''}</span>` : ''}</div>
     <div class="field"><label>โน้ต</label><textarea class="input" id="edNote" rows="3" placeholder="เช่น เซลส์ชื่อคุณเอ โทร 08x-xxx-xxxx · ส่งของทุกวันพุธ">${esc(c.note || '')}</textarea></div>
     <div class="txt-sm txt-muted">LINE ID: <code style="font-size:11px">${esc(c.line_id)}</code></div>`,
     `<button class="btn btn-outline" onclick="closeModal()">ยกเลิก</button><button class="btn btn-gold" onclick="saveEditChat()">บันทึก</button>`);
 }
 async function saveEditChat(){
   const id = activeId; const supplier = $('edSupplier').value.trim(), note = $('edNote').value.trim(); closeModal();
-  try{ await rpc('pur_update_chat', { p_chat:id, p_supplier:supplier || null, p_note:note || null }); patchChat(id, { supplier_name:supplier || null, note:note || null }); showToast('บันทึกแล้ว ✓', 'success'); }
+  const c0 = chatById.get(id), renamed = !!supplier && supplier !== (c0?.supplier_name || '');
+  try{
+    await rpc('pur_update_chat', { p_chat:id, p_supplier:supplier || null, p_note:note || null });
+    patchChat(id, { supplier_name:supplier || null, note:note || null, ...(renamed && c0?.oa_chat_id ? { oa_alias_pending:supplier } : {}) });
+    showToast(renamed && c0?.oa_chat_id ? 'บันทึกแล้ว ✓ — ชื่อเล่นใน OA จะเปลี่ยนตามภายในราว 1–2 นาที' : 'บันทึกแล้ว ✓', 'success', 4500);
+  }
   catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
 }
 
