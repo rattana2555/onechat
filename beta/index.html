@@ -171,6 +171,11 @@ body.dark .bni .nbadge{border-color:#1a2744}
 .tag.none{border-style:dashed}
 .tag.wait{background:rgba(250,178,25,.18);border-color:rgba(250,178,25,.5);color:var(--text)}
 .tag.lbl{background:rgba(46,110,201,.12);border-color:rgba(46,110,201,.4);color:#1f5aa8}
+/* v2.28 งานโดนแท็ก — ของฉันเป็นสีทึบให้เห็นก่อน · เกิน SLA = แดง */
+.tag.ment{background:rgba(46,110,201,.1);border-color:rgba(46,110,201,.45);color:#1f5aa8;font-weight:700}
+.tag.ment.me{background:#1f5aa8;border-color:#1f5aa8;color:#fff}
+.tag.ment.over{background:var(--st-crit);border-color:var(--st-crit);color:#fff}
+body.dark .tag.ment:not(.me):not(.over){background:rgba(110,160,240,.16);border-color:rgba(110,160,240,.45);color:#9cc2ff}
 body.dark .tag.lbl{background:rgba(110,160,240,.16);border-color:rgba(110,160,240,.45);color:#9cc2ff}
 .chips.has-tags{border-bottom:0;padding-bottom:5px}
 .tagchips{padding-top:0;padding-bottom:8px;gap:5px;align-items:center}
@@ -244,6 +249,9 @@ body.dark .tool-btn.done{background:#1a3a25;color:#7be0a3;border-color:#2b5a3a}
 .strip{display:block;padding:8px 12px;font-size:12px;line-height:1.5;flex-shrink:0;border-bottom:1px solid var(--border)}
 .strip.wait{background:rgba(250,178,25,.14)}
 .strip.over{background:rgba(208,59,59,.12)}
+.strip.ment{background:rgba(46,110,201,.1)}
+.strip.ment.over{background:rgba(208,59,59,.12)}
+.strip .strip-btn{margin-left:8px;padding:1px 10px;font-size:11.5px;vertical-align:middle}
 .strip.off{background:rgba(208,59,59,.08);color:var(--st-crit)}
 .strip.info{background:rgba(42,120,214,.08)}
 .strip b{font-weight:700}
@@ -1018,6 +1026,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
       <div class="chips" id="listChips">
         <button class="chip active" data-f="all" onclick="setListFilter('all')">ทั้งหมด <span class="n" id="cn-all"></span></button>
         <button class="chip warn" data-f="awaiting" onclick="setListFilter('awaiting')"><span data-ic="clock"></span>รอตอบ <span class="n" id="cn-awaiting"></span></button>
+        <button class="chip" data-f="mention" onclick="setListFilter('mention')" title="แชทกลุ่มที่มีคนแท็กคุณและคุณยังไม่ได้ตอบ">@ แท็กถึงฉัน <span class="n" id="cn-mention"></span></button>
         <button class="chip" data-f="mine" data-owner-only onclick="setListFilter('mine')">ของฉัน <span class="n" id="cn-mine"></span></button>
         <button class="chip" data-f="unassigned" data-owner-only onclick="setListFilter('unassigned')">ไม่มีผู้รับผิดชอบ <span class="n" id="cn-unassigned"></span></button>
         <button class="chip" data-f="group" onclick="setListFilter('group')">กลุ่ม <span class="n" id="cn-group"></span></button>
@@ -1651,9 +1660,12 @@ function warmSend(){
 // "งานรอตอบ" ที่นับบนแท็บ / ไอคอนแอพ / ตัวกรอง "รอตอบ" — สูตรเดียวกับ waitingCount ใน pur-push
 // (ตัดแชทที่เสร็จแล้ว + แชท "ไม่นับสถิติ") ไม่งั้นเลขบนไอคอนกระโดดไปมาระหว่างเลขที่แอพตั้งเองกับเลขที่ push ตั้งให้
 const isWaiting = c => !!c.awaiting_since && c.status !== 'resolved' && !c.exclude_kpi;
+// v2.28 งานโดนแท็กที่ยังไม่ตอบ (trigger เขียนลง pur_chats.mention_open) — [{ id, e:อีเมลคนที่โดนแท็ก, s:เริ่ม, b:ชื่อคนแท็ก }]
+const mentionsOpen = c => !c || c.exclude_kpi || !Array.isArray(c.mention_open) ? [] : c.mention_open;
+const myMentions = c => me ? mentionsOpen(c).filter(x => x.e === me.email) : [];
 function chipCounts(){
   const open = chats.filter(c => c.status !== 'resolved');
-  return { all: chats.length, awaiting: chats.filter(isWaiting).length,
+  return { all: chats.length, awaiting: chats.filter(isWaiting).length, mention: chats.filter(c => myMentions(c).length).length,
            mine: open.filter(c => c.assignee_email === me?.email).length, unassigned: open.filter(c => !c.assignee_email).length,
            group: open.filter(c => c.kind !== 'user').length, user: open.filter(c => c.kind === 'user').length,
            resolved: chats.filter(c => c.status === 'resolved').length };
@@ -1664,6 +1676,7 @@ function filteredChats(){
     const open = c.status !== 'resolved';
     switch(listFilter){
       case 'awaiting':   if(!isWaiting(c)) return false; break;      // ให้รายการตรงกับเลขบนชิป/แท็บ
+      case 'mention':    if(!myMentions(c).length) return false; break;
       case 'mine':       if(!open || c.assignee_email !== me?.email) return false; break;
       case 'unassigned': if(!open || c.assignee_email) return false; break;
       case 'group':      if(!open || c.kind === 'user') return false; break;
@@ -1832,6 +1845,8 @@ function renderList(){
     if(useOwner() || c.assignee_email)
       tags.push(c.assignee_email ? `<span class="tag assg">👤 ${esc(memberName(c.assignee_email))}</span>` : `<span class="tag none">ไม่มีผู้รับผิดชอบ</span>`);
     if(age != null) tags.push(`<span class="tag wait ${over ? 'over' : ''}">⏱ รอ ${fmtDur(age)}${over ? ' · เกิน SLA' : ''}</span>`);
+    mentionsOpen(c).forEach(x => { const a = elapsedSec(x.s, null), o = a > sla, mine = x.e === me?.email;
+      tags.push(`<span class="tag ment ${mine ? 'me' : ''} ${o ? 'over' : ''}" title="${esc(x.b ? x.b + ' แท็ก' : 'โดนแท็ก')} — รอคำตอบจาก ${esc(memberName(x.e))}">@ ${mine ? 'แท็กถึงคุณ' : esc(memberName(x.e))} · รอ ${fmtDur(a)}${o ? ' · เกิน SLA' : ''}</span>`); });
     if(!c.is_active) tags.push(`<span class="tag off">${c.kind === 'user' ? 'ถูกบล็อก' : 'ไม่อยู่ในกลุ่ม'}</span>`);
     if(c.status === 'resolved') tags.push(`<span class="tag done">✓ เสร็จแล้ว</span>`);
     (c.tags || []).forEach(t => tags.push(`<span class="tag lbl">🏷 ${esc(t)}</span>`));
@@ -2003,6 +2018,10 @@ function renderStrips(c){
     const age = elapsedSec(c.awaiting_since, null), over = age > slaSec();
     h += `<div class="strip ${over ? 'over' : 'wait'}">⏱ ${peer()}รอคำตอบมา <b>${fmtDur(age)}</b>${clockMode === 'biz' ? ' (นับเวลาทำการ)' : ''} · SLA ${settings.sla_minutes} นาที${over ? ' — <b>เกินกำหนดแล้ว</b>' : ''}</div>`;
   }
+  mentionsOpen(c).forEach(x => {
+    const a = elapsedSec(x.s, null), o = a > slaSec(), mine = x.e === me?.email;
+    h += `<div class="strip ment ${o ? 'over' : ''}">@ <b>${mine ? 'คุณ' : esc(memberName(x.e))}</b> โดนแท็ก${x.b ? ` (โดย ${esc(x.b)})` : ''} · รอคำตอบมา <b>${fmtDur(a)}</b>${o ? ' — <b>เกิน SLA แล้ว</b>' : ''}${mine ? ' · พิมพ์ตอบในแชทนี้ = ปิดงาน' : ''}${mine || isSup() ? `<button class="btn btn-outline btn-sm strip-btn" data-id="${esc(x.id)}" onclick="dismissMention(this.dataset.id)">ไม่ต้องตอบ</button>` : ''}</div>`;
+  });
   if(!c.is_active) h += `<div class="strip off">⚠️ ${c.kind === 'user' ? `ผู้ติดต่อบล็อกบัญชี LINE ${esc(acctName())} — ส่งข้อความหาไม่ได้จนกว่าจะปลดบล็อก` : `บัญชี LINE ${esc(acctName())} ไม่ได้อยู่ในกลุ่มนี้แล้ว — เชิญกลับเข้ากลุ่มก่อนจึงจะส่งได้`}</div>`;
   if(c.exclude_kpi) h += `<div class="strip info">📵 แชทนี้ไม่นับในสถิติ</div>`;
   // ใครในทีมเคยตอบแชทนี้ (จาก trigger team_seen) — หัวหน้าคลิกชื่อเพื่อตั้งเป็นผู้รับผิดชอบได้
@@ -2013,6 +2032,13 @@ function renderStrips(c){
     h += `<div class="strip info">👥 ทีมที่เคยตอบแชทนี้: ${chips || '—'}${c.oa_assignee ? ` &nbsp;·&nbsp; ผู้รับผิดชอบใน OA Manager: <b>${esc(c.oa_assignee)}</b>` : ''}</div>`;
   }
   $('chatStrips').innerHTML = h;
+}
+// v2.28 ปิดงานโดนแท็กแบบ "ไม่ต้องตอบ" (คนที่โดนแท็กเอง หรือหัวหน้า) — แถบหายเองเมื่อ realtime ส่งแชทที่อัปเดตมา
+async function dismissMention(id){
+  if(DEMO || !id) return;
+  const { error } = await sb.rpc('pur_dismiss_mention', { p_id:id });
+  if(error){ showToast('ปิดงานโดนแท็กไม่สำเร็จ: ' + error.message, 'error'); return; }
+  showToast('ปิดงานโดนแท็กแล้ว (ไม่ต้องตอบ)', 'success');
 }
 // แชทที่ส่วนขยายดึงมาจาก OA Manager แต่แอพยังไม่รู้รหัส LINE จริง (line_id = 'oa:…') — Messaging API ส่งหาไม่ได้
 // pur-send ปฏิเสธอยู่แล้ว · ฝั่งแอพปิดช่องพิมพ์ไว้เลย จะได้ไม่พิมพ์ยาวแล้วค่อยรู้ว่าส่งไม่ได้ (ไม่มีปุ่ม "ลองส่งดูอยู่ดี" เพราะส่งไม่ได้แน่)
@@ -2730,6 +2756,7 @@ function setupRealtime(){
     if(!paintSnap) paintSnap = snapshot();   // เก็บภาพก่อนหน้าครั้งเดียวต่อรอบ ไม่ใช่ทุกเหตุการณ์
     const prevRead = chatById.get(r.id)?.peer_read_at;
     upsertChat(r);
+    if(Array.isArray(r.mention_open) && r.mention_open.length) notiMentions(chatById.get(r.id));   // v2.28 เพิ่งโดนแท็ก → เตือนทันที ไม่ต้องรอรอบ 30 วิ
     if(activeId === r.id && r.peer_read_at !== prevRead) paintReadMarks();   // อีกฝั่งเพิ่งเปิดอ่าน → ขึ้น "อ่านแล้ว" ทันที
     if(activeId === r.id && r.unread_count > 0 && viewingChat()){ r.unread_count = 0; chatById.get(r.id).unread_count = 0; }
     if(activeId === r.id) paintHeader = true;
@@ -2810,10 +2837,11 @@ const NOTI_KINDS = {
   sla:    { icon:'⏰', label:'เกิน SLA แล้ว',                 tone:[520, .16, .34] },
   assign: { icon:'👤', label:'คุณเป็นผู้รับผิดชอบ',              tone:[740, .11, .30] },
   orphan: { icon:'❓', label:'แชทใหม่ ยังไม่มีผู้รับผิดชอบ',      tone:[600, .10, .30] },
+  mention:{ icon:'@',  label:'คุณโดนแท็ก',                    tone:[820, .12, .32] },
 };
 function defaultNotiPrefs(){
   return { on:true, sound:true, popup:true, scope:isSup() ? 'all' : 'mine_none',
-           msg:true, warn:true, sla:true, assign:true, orphan:false, workOnly:false };
+           msg:true, warn:true, sla:true, assign:true, orphan:false, mention:true, workOnly:false };
 }
 let notiPrefs = defaultNotiPrefs();
 let notiList  = [];                  // [{id,kind,chat,name,text,at,read}]
@@ -2847,8 +2875,9 @@ function inWorkNow(){
   return hm >= settings.work_start && hm <= settings.work_end;
 }
 // key = กันเตือนซ้ำเรื่องเดียวกัน (เช่น งานรอตอบชิ้นเดิมที่เกิน SLA ไปแล้ว)
-function pushNoti(kind, chat, text, key){
-  if(!notiPrefs.on || !notiPrefs[kind] || !notiInScope(chat)) return;
+// personal = งานของฉันเอง (โดนแท็ก) → เตือนเสมอ ไม่ขึ้นกับขอบเขต "แชทไหนบ้าง"
+function pushNoti(kind, chat, text, key, personal){
+  if(!notiPrefs.on || !notiPrefs[kind] || !(personal ? chat && !chat.exclude_kpi : notiInScope(chat))) return;
   if(key){ if(notiFired.has(key)) return; notiFired.add(key); }
   const k = NOTI_KINDS[kind] || NOTI_KINDS.msg;
   const n = { id:'n' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), kind,
@@ -2997,6 +3026,18 @@ function slaWatch(){
     else if(age >= warnAt)
       pushNoti('warn', c, `รอมาแล้ว ${fmtDur(age)} · อีก ${fmtDur(sla - age)} จะเกิน SLA`, `warn|${c.id}|${c.awaiting_since}`);
   });
+  chats.forEach(notiMentions);
+}
+// v2.28 งานโดนแท็กของฉัน: เตือนทันทีที่โดนแท็ก + ใกล้ครบ/เกิน SLA (เกณฑ์เดียวกับงานรอตอบ)
+function notiMentions(c){
+  if(DEMO || !settings || !notiPrefs.on || !notiPrefs.mention || !c) return;
+  const sla = slaSec(), warnAt = Math.round(sla * .8);
+  myMentions(c).forEach(x => {
+    const age = elapsedSec(x.s, null), by = x.b ? `${x.b} แท็กคุณ` : 'มีคนแท็กคุณ';
+    if(age >= sla) pushNoti('sla', c, `${by} · รอคำตอบมา ${fmtDur(age)} (SLA ${settings.sla_minutes} นาที)`, `msla|${x.id}`, true);
+    else if(age >= warnAt) pushNoti('warn', c, `${by} · รอมา ${fmtDur(age)} · อีก ${fmtDur(sla - age)} จะเกิน SLA`, `mwarn|${x.id}`, true);
+    else pushNoti('mention', c, `${by}ในกลุ่มนี้ · ตอบภายใน ${settings.sla_minutes} นาที`, `mention|${x.id}`, true);
+  });
 }
 function startSlaWatch(){
   if(slaTimer) clearInterval(slaTimer);
@@ -3129,7 +3170,8 @@ async function disablePush(){
 }
 
 // ชนิดที่เปิดไว้ในแอพ = ชนิดที่ให้ส่ง push (ครบทุกชนิด รวม "ใกล้ครบ SLA")
-const pushKinds = () => ['msg', 'warn', 'sla', 'assign', 'orphan'].filter(k => notiPrefs[k]);
+// mention_off = ปิดแจ้งเตือนโดนแท็ก (เครื่องที่ลงทะเบียนก่อน v2.28 ไม่มีทั้งสองค่า → เซิร์ฟเวอร์ถือว่าเปิด ถ้าเปิดรับข้อความใหม่)
+const pushKinds = () => [...['msg', 'warn', 'sla', 'assign', 'orphan'].filter(k => notiPrefs[k]), notiPrefs.mention ? 'mention' : 'mention_off'];
 
 // ค่าตั้งในแอพเปลี่ยน → บอกเซิร์ฟเวอร์ด้วย ไม่งั้น push จะใช้กติกาเก่า
 async function syncPushPrefs(){
@@ -3263,15 +3305,19 @@ async function loadDash(){
   try{
     if(DEMO){ dash.data = demoDash(); }
     else {
-      const [w1, w2, rc] = await Promise.all([
+      const noMentions = e => { console.warn('mentions:', e.message); return []; };
+      const [w1, w2, rc, m1, m2] = await Promise.all([
         fetchAll('pur_waits', q => q.eq('account_id', acct.id).gte('started_at', from.toISOString()).lt('started_at', to.toISOString()).order('started_at')),
         fetchAll('pur_waits', q => q.eq('account_id', acct.id).is('closed_at', null).order('started_at')),
         sb.rpc('pur_reply_counts', { p_from:from.toISOString(), p_to:to.toISOString(), p_account:acct.id }),
+        fetchAll('pur_mentions', q => q.eq('account_id', acct.id).gte('started_at', from.toISOString()).lt('started_at', to.toISOString()).order('started_at')).catch(noMentions),
+        fetchAll('pur_mentions', q => q.eq('account_id', acct.id).is('closed_at', null).order('started_at')).catch(noMentions),
       ]);
       if(seq !== dash.seq) return;                          // มีคำขอใหม่กว่าแล้ว — ทิ้งผลชุดนี้
       if(rc.error) throw new Error(rc.error.message);
       const map = new Map(); [...w1, ...w2].forEach(w => map.set(w.id, withOwner(w)));
-      dash.data = { waits:[...map.values()], replies:rc.data || [] };
+      const mm = new Map(); [...m1, ...m2].forEach(x => mm.set(x.id, x));
+      dash.data = { waits:[...map.values()], replies:rc.data || [], mentions:[...mm.values()] };
     }
     dashLoadedOnce = true; renderDash(); checkOaFresh();
   }catch(e){ if(seq === dash.seq) showToast('โหลดแดชบอร์ดไม่สำเร็จ: ' + e.message, 'error'); }
@@ -3312,6 +3358,21 @@ async function checkOaFresh(){
   }catch(e){ console.warn('oa freshness:', e.message); }
 }
 
+// v2.28 งานโดนแท็ก (pur_mentions) ตามตัวกรองปัจจุบัน — มีเฉพาะแชทกลุ่ม · ข้อความที่ถูกยกเลิกไม่นับ
+// นับเป็นผลงานของ "คนที่โดนแท็ก" (ไม่ใช่ผู้รับผิดชอบแชท) · ไม่รวมในการ์ดตัวเลขของทั้งทีม (ข้อความเดียวกันนับเป็นงานรอตอบของแชทอยู่แล้ว)
+function visibleMentions(){
+  const [from, to] = currentRange(); const f = +from, t = +to, sla = slaSec();
+  if(dash.kind === 'user' || dash.person === 'none') return [];
+  return (dash.data.mentions || []).filter(x => {
+    if(x.closed_reason === 'unsent') return false;
+    const c = chatById.get(x.chat_id); if(c && c.exclude_kpi) return false;
+    return dash.person === 'all' || x.mentioned_email === dash.person;
+  }).map(x => {
+    const s = Date.parse(x.started_at), answered = x.closed_reason === 'answered', open = !x.closed_at;
+    const dur = answered ? elapsedSec(x.started_at, x.closed_at) : null;
+    return { ...x, _s:s, _inRange:s >= f && s < t, _answered:answered, _open:open, _dur:dur, _age:open ? elapsedSec(x.started_at, null) : null, _ok:answered && dur <= sla };
+  });
+}
 // คัดกรอง + คำนวณระยะเวลาของแต่ละงานตามตัวกรองปัจจุบัน
 function visibleWaits(){
   const [from, to] = currentRange(); const f = +from, t = +to, sla = slaSec();
@@ -3553,22 +3614,32 @@ function sortRows(rows, key, dir){
 }
 function renderPersons(inR, open, reps){
   const rows = new Map();
-  const get = k => { if(!rows.has(k)) rows.set(k, { email:k, name:k ? memberName(k) : (useOwner() ? 'ไม่มีผู้รับผิดชอบ' : 'ยังไม่มีคนตอบ'), total:0, answered:0, ok:0, late:0, openR:0, dis:0, byOther:0, openNow:0, openLate:0, durs:[], repApp:0, repLine:0, repOa:0 }); return rows.get(k); };
+  const get = k => { if(!rows.has(k)) rows.set(k, { email:k, name:k ? memberName(k) : (useOwner() ? 'ไม่มีผู้รับผิดชอบ' : 'ยังไม่มีคนตอบ'), total:0, answered:0, ok:0, late:0, openR:0, dis:0, byOther:0, openNow:0, openLate:0, durs:[], repApp:0, repLine:0, repOa:0, mTotal:0, mAns:0, mOk:0, mOpen:0, mOpenLate:0, mDurs:[] }); return rows.get(k); };
   inR.forEach(w => { const r = get(w.owner_email || ''); r.total++; if(w._answered){ r.answered++; if(w._ok) r.ok++; else r.late++; r.durs.push(w._dur); if(w.closed_by && w.closed_by !== w.owner_email) r.byOther++; } else if(w._dismissed) r.dis++; else r.openR++; });
   const slaNow = slaSec();
   open.forEach(w => { const r = get(w.owner_email || ''); r.openNow++; if(w._age > slaNow) r.openLate++; });
   reps.forEach(r => { if(!r.staff_email) return; const p = get(r.staff_email); if(r.via === 'app') p.repApp += Number(r.replies); else if(r.via === 'oa') p.repOa += Number(r.replies); else p.repLine += Number(r.replies); });
+  // v2.28 งานโดนแท็ก → ผลงานของคนที่โดนแท็ก: รวมใน % ทัน SLA · งานค้าง/เลย SLA (ใช้จัดอันดับความน่ากังวล)
+  visibleMentions().forEach(x => {
+    const r = get(x.mentioned_email);
+    if(x._inRange){ r.mTotal++; if(x._answered){ r.mAns++; if(x._ok) r.mOk++; r.mDurs.push(x._dur); } }
+    if(x._open){ r.mOpen++; r.openNow++; if(x._age > slaNow){ r.mOpenLate++; r.openLate++; } }
+  });
   if(isSup() && dash.person === 'all') [...members.values()].filter(m => m.active && m.role !== 'admin').forEach(m => get(m.email));
-  const list = [...rows.values()].map(r => { r.durs.sort((a, b) => a - b); r.med = quantile(r.durs, .5); r.p90 = quantile(r.durs, .9); r.slaPct = r.answered ? r.ok / r.answered : null; r.reps = r.repApp + r.repLine + r.repOa; return r; });
+  const list = [...rows.values()].map(r => { r.durs.sort((a, b) => a - b); r.med = quantile(r.durs, .5); r.p90 = quantile(r.durs, .9);
+    r.slaPct = r.answered + r.mAns ? (r.ok + r.mOk) / (r.answered + r.mAns) : null;          // รวมงานโดนแท็ก
+    r.mPct = r.mAns ? r.mOk / r.mAns : null; r.mDurs.sort((a, b) => a - b); r.mMed = quantile(r.mDurs, .5);
+    r.reps = r.repApp + r.repLine + r.repOa; return r; });
   // ผู้ดูแลระบบไม่ได้ตอบแชทซัพ — ไม่ขึ้นในผลงานรายคน (ทั้งการ์ดและตาราง)
   for(let i = list.length - 1; i >= 0; i--) if(list[i].email && members.get(list[i].email)?.role === 'admin') list.splice(i, 1);
-  const cols = [['name', useOwner() ? 'ผู้รับผิดชอบ' : 'คนที่ตอบ', 'str'], ['total', 'ทักเข้ามา', 'num'], ['answered', 'ตอบแล้ว', 'num'], ['openR', 'ยังไม่ตอบ', 'num'], ['dis', 'ไม่ต้องตอบ', 'num'], ['openNow', 'ค้างตอนนี้', 'num'], ['slaPct', 'ทัน SLA', 'num'], ['late', 'ช้ากว่า SLA', 'num'], ['med', 'มัธยฐาน', 'num'], ['p90', 'P90', 'num'], ['byOther', 'คนอื่นช่วยตอบ', 'num'], ['reps', 'ข้อความส่ง', 'num']];
+  const cols = [['name', useOwner() ? 'ผู้รับผิดชอบ' : 'คนที่ตอบ', 'str'], ['total', 'ทักเข้ามา', 'num'], ['answered', 'ตอบแล้ว', 'num'], ['openR', 'ยังไม่ตอบ', 'num'], ['dis', 'ไม่ต้องตอบ', 'num'], ['openNow', 'ค้างตอนนี้', 'num'], ['slaPct', 'ทัน SLA', 'num'], ['late', 'ช้ากว่า SLA', 'num'], ['mTotal', 'โดนแท็ก', 'num'], ['med', 'มัธยฐาน', 'num'], ['p90', 'P90', 'num'], ['byOther', 'คนอื่นช่วยตอบ', 'num'], ['reps', 'ข้อความส่ง', 'num']];
   const sorted = sortRows(list, personSort.key, personSort.dir);
-  const T = list.reduce((t, r) => { t.total += r.total; t.answered += r.answered; t.openR += r.openR; t.dis += r.dis; t.openNow += r.openNow; t.ok += r.ok; t.late += r.late; t.byOther += r.byOther; t.reps += r.reps; return t; }, { total:0, answered:0, openR:0, dis:0, openNow:0, ok:0, late:0, byOther:0, reps:0 });
+  const T = list.reduce((t, r) => { t.total += r.total; t.answered += r.answered; t.openR += r.openR; t.dis += r.dis; t.openNow += r.openNow; t.ok += r.ok; t.late += r.late; t.byOther += r.byOther; t.reps += r.reps; t.mTotal += r.mTotal; t.mAns += r.mAns; t.mOk += r.mOk; return t; }, { total:0, answered:0, openR:0, dis:0, openNow:0, ok:0, late:0, byOther:0, reps:0, mTotal:0, mAns:0, mOk:0 });
+  const mCell = r => `<td class="num" title="โดนแท็ก ${nf(r.mTotal)} ครั้ง · ตอบแล้ว ${nf(r.mAns)} · ทัน SLA ${r.mPct == null ? '–' : Math.round(r.mPct * 100) + '%'}${r.mMed != null ? ' · มัธยฐาน ' + fmtDur(r.mMed) : ''}">${nf(r.mTotal)}${r.mOpen ? ` <span class="pill bad">ค้าง ${nf(r.mOpen)}</span>` : ''}</td>`;
   const allDurs = inR.filter(w => w._answered).map(w => w._dur).sort((a, b) => a - b);
   $('personTable').innerHTML = `<table class="tbl" id="personTbl"><thead><tr>${cols.map(c => `<th class="${c[2] === 'num' ? 'num' : ''}" data-key="${c[0]}" data-type="${c[2]}">${c[1]}<span class="sort-ind">${personSort.key === c[0] ? (personSort.dir === 'asc' ? '▲' : '▼') : ''}</span></th>`).join('')}</tr></thead>
-    <tbody>${sorted.length ? sorted.map(r => `<tr><td>${esc(r.name)}${r.email && r.email === me?.email ? ' <span class="pill gold">คุณ</span>' : ''}</td><td class="num">${nf(r.total)}</td><td class="num">${nf(r.answered)}</td><td class="num">${r.openR ? `<span class="pill bad">${nf(r.openR)}</span>` : '0'}</td><td class="num">${nf(r.dis)}</td><td class="num">${r.openNow ? `<span class="pill bad">${nf(r.openNow)}</span>` : '0'}</td><td class="num">${slaPill(r.slaPct)}</td><td class="num" title="ตอบแล้วแต่ช้ากว่า SLA — คลิกดูว่าเป็นแชทไหนบ้าง">${r.late ? `<span class="pill bad drill" data-e="${esc(r.email)}" onclick="openLateFor(this.dataset.e)">${nf(r.late)}</span>` : '0'}</td><td class="num">${fmtDur(r.med)}</td><td class="num">${fmtDur(r.p90)}</td><td class="num">${nf(r.byOther)}</td><td class="num" title="แอป ${nf(r.repApp)} · LINE ส่วนตัว ${nf(r.repLine)} · OA Manager ${nf(r.repOa)}">${nf(r.reps)}</td></tr>`).join('') : `<tr class="empty-row"><td colspan="12">ไม่มีข้อมูลในช่วงนี้</td></tr>`}</tbody>
-    <tfoot><tr><td>รวม</td><td class="num">${nf(T.total)}</td><td class="num">${nf(T.answered)}</td><td class="num">${nf(T.openR)}</td><td class="num">${nf(T.dis)}</td><td class="num">${nf(T.openNow)}</td><td class="num">${T.answered ? Math.round(T.ok / T.answered * 100) + '%' : '–'}</td><td class="num">${nf(T.late)}</td><td class="num">${fmtDur(quantile(allDurs, .5))}</td><td class="num">${fmtDur(quantile(allDurs, .9))}</td><td class="num">${nf(T.byOther)}</td><td class="num">${nf(T.reps)}</td></tr></tfoot></table>`;
+    <tbody>${sorted.length ? sorted.map(r => `<tr><td>${esc(r.name)}${r.email && r.email === me?.email ? ' <span class="pill gold">คุณ</span>' : ''}</td><td class="num">${nf(r.total)}</td><td class="num">${nf(r.answered)}</td><td class="num">${r.openR ? `<span class="pill bad">${nf(r.openR)}</span>` : '0'}</td><td class="num">${nf(r.dis)}</td><td class="num">${r.openNow ? `<span class="pill bad">${nf(r.openNow)}</span>` : '0'}</td><td class="num">${slaPill(r.slaPct)}</td><td class="num" title="ตอบแล้วแต่ช้ากว่า SLA — คลิกดูว่าเป็นแชทไหนบ้าง">${r.late ? `<span class="pill bad drill" data-e="${esc(r.email)}" onclick="openLateFor(this.dataset.e)">${nf(r.late)}</span>` : '0'}</td>${mCell(r)}<td class="num">${fmtDur(r.med)}</td><td class="num">${fmtDur(r.p90)}</td><td class="num">${nf(r.byOther)}</td><td class="num" title="แอป ${nf(r.repApp)} · LINE ส่วนตัว ${nf(r.repLine)} · OA Manager ${nf(r.repOa)}">${nf(r.reps)}</td></tr>`).join('') : `<tr class="empty-row"><td colspan="13">ไม่มีข้อมูลในช่วงนี้</td></tr>`}</tbody>
+    <tfoot><tr><td>รวม</td><td class="num">${nf(T.total)}</td><td class="num">${nf(T.answered)}</td><td class="num">${nf(T.openR)}</td><td class="num">${nf(T.dis)}</td><td class="num">${nf(T.openNow)}</td><td class="num">${T.answered + T.mAns ? Math.round((T.ok + T.mOk) / (T.answered + T.mAns) * 100) + '%' : '–'}</td><td class="num">${nf(T.late)}</td><td class="num">${nf(T.mTotal)}</td><td class="num">${fmtDur(quantile(allDurs, .5))}</td><td class="num">${fmtDur(quantile(allDurs, .9))}</td><td class="num">${nf(T.byOther)}</td><td class="num">${nf(T.reps)}</td></tr></tfoot></table>`;
   // ── เรียงตาม "ความน่ากังวล" ──
   // กติกาอธิบายได้ตรงๆ ไม่ใช้คะแนนลับ: งานค้างที่เลย SLA แล้ว > งานค้างทั้งหมด > จำนวนครั้งที่ตอบช้า > สัดส่วนทัน SLA
   const ranked = list.filter(r => r.email).sort((a, b) =>
@@ -3605,7 +3676,11 @@ function renderPersons(inR, open, reps){
         <div><b>${fmtDur(r.med)}</b><span>มัธยฐาน</span></div>
         <div><b>${fmtDur(r.p90)}</b><span>P90</span></div>
         <div><b>${nf(r.reps)}</b><span>ข้อความส่ง</span></div>
+        <div><b class="${r.mOpenLate ? 'bad' : ''}">${nf(r.mTotal)}</b><span>โดนแท็ก${r.mOpen ? ` · ค้าง ${nf(r.mOpen)}` : ''}</span></div>
+        <div><b>${r.mPct == null ? '–' : Math.round(r.mPct * 100) + '%'}</b><span>ตอบแท็กทัน SLA</span></div>
+        <div><b>${fmtDur(r.mMed)}</b><span>เวลาตอบแท็ก (มัธยฐาน)</span></div>
       </div>
+      ${r.mTotal || r.mOpen ? `<div class="hint" style="margin-top:10px">@ งานโดนแท็กในกลุ่มนับรวมใน % ทัน SLA และงานค้างของ ${esc(r.name)} แล้ว — นับจากเวลาที่โดนแท็กจนเขาพิมพ์ในกลุ่มนั้น (LINE / แอป / OA Manager)</div>` : ''}
       <div class="hint" style="margin-top:10px">ข้อความส่ง — แอป ${nf(r.repApp)} · LINE ส่วนตัว ${nf(r.repLine)} · OA Manager ${nf(r.repOa)}${r.byOther ? ` · คนอื่นช่วยตอบ ${nf(r.byOther)} งาน` : ''}</div>
     </div>` : `<div class="txt-sm txt-muted" style="padding:6px 2px">ไม่มีข้อมูลในช่วงนี้ <button class="mback" onclick="setPerson('all')">◀ กลับไปดูทั้งทีม</button></div>`;
     dash.lastPersons = list;
@@ -4254,7 +4329,7 @@ function exportDashExcel(){
   if(!dashLoadedOnce){ showToast('ยังไม่มีข้อมูล', 'warning'); return; }
   const all = visibleWaits(), [from, to] = currentRange(), sla = slaSec(), inR = all.filter(w => w._inRange);
   const wb = XLSX.utils.book_new();
-  const persons = (dash.lastPersons || []).map(r => ({ 'ผู้รับผิดชอบ':r.name, 'ทักเข้ามา (ครั้ง)':r.total, 'ตอบแล้ว':r.answered, 'ยังไม่ตอบ':r.openR, 'ไม่ต้องตอบ':r.dis, 'ค้างตอนนี้':r.openNow, 'ทัน SLA (%)':r.slaPct == null ? '' : Math.round(r.slaPct * 100), 'ช้ากว่า SLA (ครั้ง)':r.late,'มัธยฐาน (นาที)':r.med == null ? '' : Math.round(r.med / 60), 'P90 (นาที)':r.p90 == null ? '' : Math.round(r.p90 / 60), 'คนอื่นช่วยตอบ':r.byOther, 'ข้อความจากแอป':r.repApp, 'ข้อความจาก LINE ส่วนตัว':r.repLine, 'ข้อความจาก OA Manager':r.repOa }));
+  const persons = (dash.lastPersons || []).map(r => ({ 'ผู้รับผิดชอบ':r.name, 'ทักเข้ามา (ครั้ง)':r.total, 'ตอบแล้ว':r.answered, 'ยังไม่ตอบ':r.openR, 'ไม่ต้องตอบ':r.dis, 'ค้างตอนนี้':r.openNow, 'ทัน SLA (%)':r.slaPct == null ? '' : Math.round(r.slaPct * 100), 'ช้ากว่า SLA (ครั้ง)':r.late,'มัธยฐาน (นาที)':r.med == null ? '' : Math.round(r.med / 60), 'P90 (นาที)':r.p90 == null ? '' : Math.round(r.p90 / 60), 'คนอื่นช่วยตอบ':r.byOther, 'โดนแท็ก (ครั้ง)':r.mTotal, 'ตอบแท็กทัน SLA (%)':r.mPct == null ? '' : Math.round(r.mPct * 100), 'งานโดนแท็กค้าง':r.mOpen, 'ข้อความจากแอป':r.repApp, 'ข้อความจาก LINE ส่วนตัว':r.repLine, 'ข้อความจาก OA Manager':r.repOa }));
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(persons), 'รายคน');
   const waits = inR.sort((a, b) => a._s - b._s).map(w => { const c = chatById.get(w.chat_id); return { 'วันที่':thDate(w.started_at), 'เวลา':thTime(w.started_at), 'ซัพพลายเออร์/แชท':c ? chatName(c) : '', 'ประเภท':w.chat_kind === 'user' ? '1:1' : 'กลุ่ม', 'ผู้รับผิดชอบ':w.owner_email ? memberName(w.owner_email) : '', 'สถานะ':w._answered ? 'ตอบแล้ว' : w._dismissed ? 'ไม่ต้องตอบ' : 'ยังไม่ตอบ', 'ตอบโดย':w.closed_by ? memberName(w.closed_by) : '', 'ช่องทาง':w.answer_via === 'app' ? 'แอป' : w.answer_via === 'oa' ? 'OA Manager' : w.answer_via === 'line' ? 'LINE' : '', 'ตอบเมื่อ':w.closed_at ? thDateTime(w.closed_at) : '', 'ข้อความจากซัพ':w.in_count, 'เวลาตอบ 24ชม. (นาที)':w.response_sec == null ? '' : Math.round(w.response_sec / 60), 'เวลาตอบ เวลาทำการ (นาที)':w._answered ? Math.round(bizSeconds(Date.parse(w.started_at), Date.parse(w.closed_at)) / 60) : '', 'ทัน SLA':w._answered ? (w._ok ? 'ทัน' : 'ช้า') : '' }; });
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(waits), 'ข้อความที่ทักเข้ามา');
@@ -4483,6 +4558,7 @@ function notiCardHtml(){
         ${chk('ntWarn', P.warn, '🟠 ใกล้ครบ SLA', `เตือนเมื่อรอมาแล้ว 80% ของ SLA (ตอนนี้ราว ${Math.round(sla * .8)} นาที)`)}
         ${chk('ntSla', P.sla, '🔴 เกิน SLA แล้ว', `รอเกิน ${sla} นาทีแล้วยังไม่มีใครตอบ — เตือนเองแม้ซัพไม่ได้ทักมาใหม่`)}
         ${useOwner() ? chk('ntAssign', P.assign, '👤 มีคนตั้งให้ฉันเป็นผู้รับผิดชอบแชท') : ''}
+        ${chk('ntMention', P.mention, '@ มีคนแท็กฉันในแชทกลุ่ม', 'เตือนทันทีที่โดนแท็ก และเตือนใกล้ครบ/เกิน SLA ของงานที่โดนแท็ก (ตามช่อง 🟠/🔴 ด้านบน) · เตือนเสมอไม่ว่าแชทนั้นใครรับผิดชอบ')}
         ${chk('ntOrphan', P.orphan, useOwner() ? '❓ แชทใหม่ที่ยังไม่มีผู้รับผิดชอบ' : '❓ แชทใหม่เข้ามา', 'เหมาะกับหัวหน้า — ถ้าเปิดไว้ตอนกำลังนำเข้าประวัติจะเตือนเยอะ')}
       </div>
       <div class="field"><label>ช่องทาง</label>
@@ -4503,7 +4579,7 @@ function notiPermLabel(){
 function saveNotiPrefs(){
   const g = (id, k) => { const e = $(id); if(e) notiPrefs[k] = e.type === 'checkbox' ? e.checked : e.value; };
   // ntAssign ไม่มีในบัญชีที่ไม่แบ่งงานรายแชท — g() ข้ามช่องที่ไม่มีให้แล้ว ค่าเดิมของบัญชีอื่นจึงไม่ถูกล้าง
-  g('ntScope', 'scope'); g('ntMsg', 'msg'); g('ntWarn', 'warn'); g('ntSla', 'sla'); g('ntAssign', 'assign'); g('ntOrphan', 'orphan');
+  g('ntScope', 'scope'); g('ntMsg', 'msg'); g('ntWarn', 'warn'); g('ntSla', 'sla'); g('ntAssign', 'assign'); g('ntOrphan', 'orphan'); g('ntMention', 'mention');
   g('ntSound', 'sound'); g('ntPopup', 'popup'); g('ntWork', 'workOnly');
   notiSave(); renderBell(); syncPushPrefs();
   if(notiPrefs.popup) askNotifyPermission();
@@ -5420,6 +5496,7 @@ async function route(session){
 //  DEMO DATA (?demo=1) — ข้อมูลสมมติสำหรับดูหน้าตาแอพ ไม่ต่อเน็ต
 // ═══════════════════════════════════════════════════════════
 let demoWaits = [];
+let demoMentions = [];      // v2.28 งานโดนแท็ก (โหมดตัวอย่าง)
 function seeded(seed){ let s = seed >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
 function demoInit(){
   const rnd = seeded(2569);
@@ -5531,6 +5608,21 @@ function demoAccount(id, seed, team, list, asks){
       c.last_message = closed ? 'ได้ค่ะ เดี๋ยวจัดการให้นะคะ' : asks[Math.floor(rnd() * asks.length)];
       if(open){ c.awaiting_since = st.toISOString(); c.open_wait_id = w.id; c.unread_count = 1; } else { c.awaiting_since = null; c.open_wait_id = null; }
     }
+    c.mention_open = [];
+    if(c.kind !== 'user'){
+      // ย้อนหลัง: โดนแท็กแล้วตอบ (ส่วนใหญ่ทัน) · วันนี้: บางแชทยังค้าง — ของ "ฉัน" 1 งานให้ชิป "แท็กถึงฉัน" มีของ
+      for(let d = 14; d >= 1; d -= 2){
+        const st = new Date(startOfDay(addDays(now, -d))); st.setHours(10 + (d % 5), 15, 0, 0); const sec = 300 + Math.floor(rnd() * 4200);
+        const who = staff[(i + d) % staff.length];
+        demoMentions.push({ id:'m' + pre + demoMentions.length, account_id:id, chat_id:c.id, chat_kind:c.kind, mentioned_email:who, by_name:'เซลส์ ' + (c.supplier_name || c.title),
+          started_at:st.toISOString(), closed_at:new Date(st.getTime() + sec * 1000).toISOString(), closed_reason:'answered', closed_by:who, answer_via:'line', response_sec:sec });
+      }
+      if(i % 3 === 0){
+        const who = i === 0 ? 'admin@demo' : staff[(i + 1) % staff.length], st = new Date(now - (i === 0 ? 14 : 75) * 60000);
+        const x = { id:'m' + pre + demoMentions.length, account_id:id, chat_id:c.id, chat_kind:c.kind, mentioned_email:who, by_name:'เซลส์ ' + (c.supplier_name || c.title), started_at:st.toISOString(), closed_at:null, closed_reason:null };
+        demoMentions.push(x); c.mention_open = [{ id:x.id, e:who, s:x.started_at, b:x.by_name }];
+      }
+    }
     cs.push(c);
   });
   const keep = members; members = mem;                        // demoMsgs ใช้ชื่อทีมของบัญชีนั้น
@@ -5588,7 +5680,7 @@ function demoDash(){
   const [from, to] = currentRange(); const agg = new Map();
   demoWaits.forEach(w => { if(w.closed_reason !== 'answered' || !w.closed_by) return; const s = Date.parse(w.started_at); if(s < from || s >= to) return; const k = w.closed_by + '|' + w.answer_via + '|' + (w.chat_kind || 'group'); agg.set(k, (agg.get(k) || 0) + 1 + (Math.random() < .6 ? 1 : 0)); });
   // มี kind ด้วย — ให้ตัวกรอง "กลุ่ม / 1:1" ของการ์ด "ข้อความที่ทีมส่ง" ทำงานในโหมดตัวอย่างเหมือนของจริง
-  return { waits:demoWaits.map(withOwner), replies:[...agg.entries()].map(([k, n]) => { const [e, v, kd] = k.split('|'); return { staff_email:e, via:v, kind:kd, replies:n }; }) };
+  return { mentions:demoMentions.filter(x => x.account_id === acct.id), waits:demoWaits.map(withOwner), replies:[...agg.entries()].map(([k, n]) => { const [e, v, kd] = k.split('|'); return { staff_email:e, via:v, kind:kd, replies:n }; }) };
 }
 
 // ── เริ่มทำงาน (ต้องอยู่ท้ายสุด หลังประกาศตัวแปรทั้งหมด) ──
