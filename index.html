@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.28">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.29">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.28">
-<title>Rattana One Chat v2.28</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.29">
+<title>Rattana One Chat v2.29</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -249,6 +249,37 @@ body.dark .tool-btn.done{background:#1a3a25;color:#7be0a3;border-color:#2b5a3a}
 .strip.wait{background:rgba(250,178,25,.14)}
 .strip.over{background:rgba(208,59,59,.12)}
 .strip.ment{background:rgba(46,110,201,.1)}
+/* v2.29 แท็กถึงฉัน: ป้ายเด้งบนแชทในรายการ (ลอยขึ้นลง · กระดิ่งสั่น · แสงวิ่ง) + แถบเตือนบนสุดของรายการ */
+.conv-item.ment-me{background:linear-gradient(90deg,rgba(46,110,201,.10),rgba(46,110,201,0) 75%)}
+.ment-pop{position:relative;display:inline-flex;align-items:center;gap:7px;margin-top:7px;padding:4px 13px 4px 4px;border-radius:999px;overflow:hidden;
+  background:linear-gradient(100deg,#1f5aa8,#2e6ec9 55%,#4f8de6);color:#fff;font-size:12.5px;font-weight:700;line-height:20px;white-space:nowrap;max-width:100%;
+  box-shadow:0 4px 14px rgba(31,90,168,.35),inset 0 1px 0 rgba(255,255,255,.35);animation:mpFloat 2.8s ease-in-out infinite}
+.ment-pop.enter{animation:mpIn .6s cubic-bezier(.34,1.56,.64,1) both,mpFloat 2.8s ease-in-out .6s infinite}
+.ment-pop .mp-ic{width:22px;height:22px;flex-shrink:0;border-radius:50%;background:#fff;color:#1f5aa8;display:grid;place-items:center;font-size:13px;font-weight:800;
+  transform-origin:50% 15%;animation:mpRing 2.8s ease-in-out infinite}
+.ment-pop .mp-t{font-weight:600;opacity:.85}
+.ment-pop::after{content:'';position:absolute;top:0;bottom:0;left:-60%;width:45%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);animation:mpShine 2.8s ease-in-out infinite;pointer-events:none}
+.ment-pop.over{background:linear-gradient(100deg,#a82828,#d03b3b 55%,#ea6a63);box-shadow:0 4px 14px rgba(208,59,59,.4),inset 0 1px 0 rgba(255,255,255,.35)}
+.ment-pop.over .mp-ic{color:#d03b3b}
+.ment-banner{display:flex;align-items:center;gap:10px;width:calc(100% - 20px);margin:10px 10px 4px;padding:10px 14px;border:0;border-radius:16px;cursor:pointer;font:inherit;text-align:left;
+  color:#fff;background:linear-gradient(110deg,#0d1b3e,#1f5aa8 60%,#2e6ec9);box-shadow:0 6px 18px rgba(13,27,62,.25),inset 0 0 0 1px rgba(232,200,106,.45);
+  position:relative;overflow:hidden;animation:mbIn .5s cubic-bezier(.34,1.56,.64,1) both}
+.ment-banner b{font-size:14px}.ment-banner small{display:block;font-size:11.5px;opacity:.8}
+.ment-banner .mb-ic{width:34px;height:34px;flex-shrink:0;border-radius:50%;background:linear-gradient(135deg,#e8c86a,#c9a84c);color:#0d1b3e;display:grid;place-items:center;font-size:18px;font-weight:800;
+  transform-origin:50% 15%;animation:mpRing 2.4s ease-in-out infinite}
+.ment-banner .mb-go{margin-left:auto;font-size:12px;font-weight:700;padding:4px 10px;border-radius:12px;background:rgba(255,255,255,.18);white-space:nowrap}
+.ment-banner::after{content:'';position:absolute;top:0;bottom:0;left:-50%;width:35%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.28),transparent);animation:mpShine 3.2s ease-in-out infinite;pointer-events:none}
+@keyframes mpIn{0%{opacity:0;transform:translateY(8px) scale(.55)}100%{opacity:1;transform:none}}
+@keyframes mbIn{0%{opacity:0;transform:translateY(-10px) scale(.96)}100%{opacity:1;transform:none}}
+@keyframes mpFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@keyframes mpRing{0%,58%,100%{transform:rotate(0)}64%{transform:rotate(-18deg)}70%{transform:rotate(15deg)}76%{transform:rotate(-10deg)}82%{transform:rotate(6deg)}88%{transform:rotate(0)}}
+@keyframes mpShine{0%,50%{left:-60%}85%,100%{left:130%}}
+@media (prefers-reduced-motion:reduce){.ment-pop,.ment-pop .mp-ic,.ment-pop::after,.ment-banner,.ment-banner .mb-ic,.ment-banner::after{animation:none!important}}
+/* v2.29 ป้ายคลังส่ง (จากชีทลูกค้า) */
+.tag.wh{background:rgba(12,140,120,.12);border-color:rgba(12,140,120,.45);color:#0b6b5c;font-weight:700}
+body.dark .tag.wh{background:rgba(60,200,170,.14);border-color:rgba(60,200,170,.4);color:#7fe0cb}
+.tagchips.wh .tchip.active{background:#0c8c78;border-color:#0c8c78}
+.tagchips.wh .tchip .n{background:rgba(12,140,120,.14);color:#0b6b5c}
 .strip.ment.over{background:rgba(208,59,59,.12)}
 .strip .strip-btn{margin-left:8px;padding:1px 10px;font-size:11.5px;vertical-align:middle}
 .strip.off{background:rgba(208,59,59,.08);color:var(--st-crit)}
@@ -936,7 +967,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
     <div class="lg-err" id="lgErr"></div>
     <div class="lg-wait" role="status"><div class="lg-spin"></div><b id="lgWaitMsg">กำลังเปิดแอพ…</b><div class="sub" id="lgWaitSub"></div>
       <div class="acts"><button class="btn btn-gold" type="button" onclick="retryGate()">ลองใหม่เดี๋ยวนี้</button><button class="btn btn-outline" type="button" onclick="doLogout()">ออกจากระบบ</button></div></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.28 · 09/10/2569</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.29 · 09/10/2569</div>
   </div>
 </div>
 
@@ -986,7 +1017,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.28</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.29</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -1033,6 +1064,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
         <button class="chip" data-f="resolved" onclick="setListFilter('resolved')"><span data-ic="check"></span>เสร็จแล้ว <span class="n" id="cn-resolved"></span></button>
       </div>
       <div class="chips tagchips" id="tagChips" style="display:none"></div>
+      <div class="chips tagchips wh" id="whChips" style="display:none"></div>
       <div class="conv-list" id="convList"><div class="conv-empty">กำลังโหลด…</div></div>
       <div class="ctx-menu" id="listMenu" role="menu"></div>
     </div>
@@ -1240,7 +1272,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.28 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.29 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1270,6 +1302,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 //  v2.26: วางรูปจากคลิปบอร์ด/ลากรูปมาวาง (ดูตัวอย่างก่อนส่ง) · มือถือ: หัวแอพแบบ LINE (ชื่อบัญชีตัวใหญ่ + แคปซูลกระจกฝ้า) หลบตอนเลื่อน · แถบล่างลอยต่ำลง
 //  v2.27: บรอดแคสต์ผ่านเซิร์ฟเวอร์ (pur_blast_jobs · pur-send v2.3) — ส่งทันที/ตั้งเวลา ปิดแอพได้ · คิวการส่ง · ข้อความ+ไฟล์ในคำขอเดียว (โควตา 1 เท่า) · โควตาที่เหลือ · แก้ชื่อแชทในแอพ = ชื่อเล่นใน OA (ingest v2.7 + ส่วนขยาย 3.4)
 //  v2.28: งานโดนแท็กในแชทกลุ่ม (pur_mentions · webhook v2.4 · pur-push v2.1) — @แท็กพนักงาน = งานของคนนั้น นับเวลาจนเขาพิมพ์ในกลุ่ม · ป้าย @ · ชิป "แท็กถึงฉัน" · แถบ+ปุ่มไม่ต้องตอบ · แจ้งเตือน · นับรวมผลงานรายคน
+//  v2.29: ป้ายเด้ง "โดนแท็กแล้ว ตอบแชทหน่อยนะ!" + แถบเตือนบนรายการ · ป้ายคลังส่งจากชีทลูกค้า (pur-customer-map.sql · pur-sheet v1.2) กรองตามคลังได้
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
@@ -1360,6 +1393,8 @@ let people  = new Map();              // line_user_id → person
 let chats = [], chatById = new Map(), msgCache = {};
 let settings = null;
 let activeId = null, listFilter = 'all', searchQ = '', view = 'chat', quoting = null, started = false;
+let listWh = '';                    // v2.29 กรองตามป้ายคลังส่ง ('' = ไม่กรอง)
+const mentPopSeen = new Set();       // v2.29 ป้ายเด้ง "โดนแท็ก" เล่นท่าเข้าครั้งเดียวต่องาน (รายการถูกวาดใหม่บ่อย)
 let listTag = '';                   // v2.23 กรองตามป้ายสถานะแชท ('' = ไม่กรอง)
 const LS = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let clockMode = LS.get('pur.clock') || 'biz';          // biz = เวลาทำการ · raw = 24 ชม.
@@ -1684,7 +1719,8 @@ function filteredChats(){
       case 'resolved':   if(open) return false; break;
     }
     if(listTag && !(c.tags || []).includes(listTag)) return false;
-    if(q){ const hay = [c.supplier_name, c.title, c.last_message, c.note, c.assignee_email && memberName(c.assignee_email), ...(c.tags || [])].join(' ').toLowerCase(); if(!hay.includes(q)) return false; }
+    if(listWh && c.wh_tag !== listWh) return false;
+    if(q){ const hay = [c.supplier_name, c.title, c.last_message, c.note, c.assignee_email && memberName(c.assignee_email), ...(c.tags || []), c.wh_tag, c.cust_code].join(' ').toLowerCase(); if(!hay.includes(q)) return false; }
     return true;
   }).sort((a, b) => {
     const recent = (Date.parse(b.last_message_at || 0) || 0) - (Date.parse(a.last_message_at || 0) || 0);
@@ -1831,21 +1867,33 @@ function renderList(){
   const list = filteredChats(); const el = $('convList');
   const n = chipCounts();
   for(const k in n){ const e = $('cn-' + k); if(e) e.textContent = n[k] || ''; }
-  renderTagChips();
+  renderTagChips(); renderWhChips();
   const msrBlock = msrHtml();
+  // v2.29 แถบเตือนบนสุด: มีแชทที่แท็กถึงฉันแล้วยังไม่ตอบ (ซ่อนตอนกรอง "แท็กถึงฉัน" อยู่แล้ว)
+  const nMent = n.mention || 0;
+  const mBanner = nMent && listFilter !== 'mention' && !searchQ.trim()
+    ? `<button class="ment-banner" onclick="setListFilter('mention')"><span class="mb-ic">@</span><span><b>คุณโดนแท็ก ${nf(nMent)} แชท</b><small>ตอบแชทหน่อยนะ! นับเป็นผลงานของคุณ</small></span><span class="mb-go">ดูเลย ›</span></button>` : '';
   if(!list.length){ el.innerHTML = `<div class="conv-empty">${chats.length ? (searchQ.trim() ? 'ไม่พบชื่อแชทที่ตรงกัน' : 'ไม่มีแชทในหมวดนี้') : `ยังไม่มีแชทเข้ามา<br><span class="txt-sm">เชิญบัญชี LINE ${esc(acctName())} เข้ากลุ่ม${peer()} หรือรอให้${peer()}ทักเข้ามา</span>`}</div>` + msrBlock; return; }
   const sla = slaSec();
   if(listShown > LIST_STEP && listShown > list.length) listShown = Math.max(LIST_STEP, Math.ceil(list.length / LIST_STEP) * LIST_STEP);
   const shown = list.slice(0, listShown), rest = list.length - shown.length;
-  el.innerHTML = shown.map(c => {
+  el.innerHTML = mBanner + shown.map(c => {
     const age = c.awaiting_since ? elapsedSec(c.awaiting_since, null) : null; const over = age != null && age > sla;
-    const cls = ['conv-item', c.unread_count > 0 ? 'unread' : '', c.awaiting_since ? 'awaiting' : '', over ? 'over' : '', activeId === c.id ? 'selected' : '', c.status === 'resolved' ? 'resolved' : ''].join(' ');
+    const mine = myMentions(c)[0];
+    const cls = ['conv-item', c.unread_count > 0 ? 'unread' : '', c.awaiting_since ? 'awaiting' : '', over ? 'over' : '', activeId === c.id ? 'selected' : '', c.status === 'resolved' ? 'resolved' : '', mine ? 'ment-me' : ''].join(' ');
+    let mPop = '';
+    if(mine){
+      const a = elapsedSec(mine.s, null), o = a > sla, first = !mentPopSeen.has(mine.id); mentPopSeen.add(mine.id);
+      mPop = `<div class="ment-pop ${o ? 'over' : ''} ${first ? 'enter' : ''}"><span class="mp-ic">@</span>${o ? 'เลยเวลาแล้ว ตอบด่วนเลยนะ!' : 'โดนแท็กแล้ว ตอบแชทหน่อยนะ!'} <span class="mp-t">· ${fmtDur(a)}</span></div>`;
+    }
     const tags = [];
     tags.push(`<span class="tag">${c.kind === 'user' ? '1:1' : `👥 กลุ่ม${c.member_count ? ' · ' + c.member_count : ''}`}</span>`);
     if(useOwner() || c.assignee_email)
       tags.push(c.assignee_email ? `<span class="tag assg">👤 ${esc(memberName(c.assignee_email))}</span>` : `<span class="tag none">ไม่มีผู้รับผิดชอบ</span>`);
     if(age != null) tags.push(`<span class="tag wait ${over ? 'over' : ''}">⏱ รอ ${fmtDur(age)}${over ? ' · เกิน SLA' : ''}</span>`);
+    if(c.wh_tag) tags.push(`<span class="tag wh" title="คลังส่งจากชีทลูกค้า${c.cust_code ? ' · รหัส ' + esc(c.cust_code) : ''}">🚚 ${esc(c.wh_tag)}</span>`);
     mentionsOpen(c).forEach(x => { const a = elapsedSec(x.s, null), o = a > sla, mine = x.e === me?.email;
+      if(mine) return;                                                       // ของฉันมีป้ายเด้งแยกแล้ว
       tags.push(`<span class="tag ment ${mine ? 'me' : ''} ${o ? 'over' : ''}" title="${esc(x.b ? x.b + ' แท็ก' : 'โดนแท็ก')} — รอคำตอบจาก ${esc(memberName(x.e))}">@ ${mine ? 'แท็กถึงคุณ' : esc(memberName(x.e))} · รอ ${fmtDur(a)}${o ? ' · เกิน SLA' : ''}</span>`); });
     if(!c.is_active) tags.push(`<span class="tag off">${c.kind === 'user' ? 'ถูกบล็อก' : 'ไม่อยู่ในกลุ่ม'}</span>`);
     if(c.status === 'resolved') tags.push(`<span class="tag done">✓ เสร็จแล้ว</span>`);
@@ -1855,7 +1903,7 @@ function renderList(){
       <div class="conv-info">
         <div class="conv-row1"><div class="conv-name">${esc(chatName(c))}</div><div class="conv-time">${timeAgo(c.last_message_at)}</div></div>
         <div class="conv-row2"><div class="conv-prev">${esc(c.last_message || '')}</div>${c.unread_count > 0 ? `<div class="ubadge">${c.unread_count}</div>` : ''}</div>
-        <div class="conv-row3">${tags.join('')}</div>
+        <div class="conv-row3">${tags.join('')}</div>${mPop}
       </div></div>`;
   }).join('') + (rest > 0
     ? `<button class="older-bar" style="display:block;margin:10px auto" onclick="moreChats()">แสดงเพิ่ม (เหลืออีก ${nf(rest)} แชท)</button>` : '') + msrBlock;
@@ -1873,6 +1921,19 @@ function renderTagChips(){
     return `<button class="tchip ${listTag === t ? 'active' : ''}" data-t="${esc(t)}" onclick="setListTag(this.dataset.t)" title="แสดงเฉพาะแชทที่ติดป้าย ${esc(t)}${listTag === t ? ' (กดอีกครั้งเพื่อยกเลิก)' : ''}">${esc(t)}${n ? `<span class="n">${nf(n)}</span>` : ''}</button>`; }).join('');
 }
 function setListTag(t){ listTag = listTag === t ? '' : t; resetList(); renderList(); $('convList').scrollTop = 0; }
+// v2.29 ชิปคลังส่ง — มีเฉพาะบัญชีที่ตั้งชีทลูกค้าไว้ (แชทมี wh_tag) · เลขต่อคลัง = แชทที่ยังไม่เสร็จ
+function renderWhChips(){
+  const el = $('whChips'); if(!el) return;
+  const whs = [...new Set(chats.map(c => c.wh_tag).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'th', { numeric:true }));
+  if(listWh && !whs.includes(listWh)) listWh = '';
+  $('tagChips')?.classList.toggle('has-tags', whs.length > 0);
+  if(!whs.length){ el.style.display = 'none'; el.innerHTML = ''; return; }
+  const cnt = w => chats.filter(c => c.status !== 'resolved' && c.wh_tag === w).length;
+  el.style.display = '';
+  el.innerHTML = `<span class="lb">🚚 คลัง</span>` + whs.map(w => { const n = cnt(w);
+    return `<button class="tchip ${listWh === w ? 'active' : ''}" data-w="${esc(w)}" onclick="setListWh(this.dataset.w)" title="แสดงเฉพาะแชทของ ${esc(w)}${listWh === w ? ' (กดอีกครั้งเพื่อยกเลิก)' : ''}">${esc(w)}${n ? `<span class="n">${nf(n)}</span>` : ''}</button>`; }).join('');
+}
+function setListWh(w){ listWh = listWh === w ? '' : w; resetList(); renderList(); $('convList').scrollTop = 0; }
 
 // ── v2.23 ค้นหาในเนื้อข้อความ (เลข PO / ชื่อสินค้า / บาร์โค้ด) ──
 // ค้นในฐานข้อมูลของบัญชีที่เปิดอยู่ (สิทธิ์เดียวกับการอ่านแชท) · พิมพ์ 2 ตัวขึ้นไป รอหยุดพิมพ์ 0.35 วิ · แสดง 40 ข้อความล่าสุดที่ตรง
@@ -4353,7 +4414,7 @@ let peopleQ = '';
 function renderSettings(){
   if(view !== 'set') return;
   const sup = isSup();
-  $('setContent').innerHTML = linkCardHtml() + notiCardHtml() + (isAdmin() ? accountsCardHtml() + accessCardHtml() : '') + (sup ? teamCardHtml() + peopleCardHtml() + hoursCardHtml() : '') + quickCardHtml(sup) + (sup ? tagsCardHtml() + ackCardHtml() + quotaCardHtml() : '') + (isAdmin() ? adminCardHtml() : '') + (sup ? aboutCardHtml() : '');   // v2.22 พนักงานเห็นแค่ของตัวเอง (ผูก LINE · แจ้งเตือน · ข้อความตอบด่วน)
+  $('setContent').innerHTML = linkCardHtml() + notiCardHtml() + (isAdmin() ? accountsCardHtml() + accessCardHtml() : '') + (sup ? teamCardHtml() + peopleCardHtml() + hoursCardHtml() : '') + quickCardHtml(sup) + (sup ? tagsCardHtml() + whCardHtml() + ackCardHtml() + quotaCardHtml() : '') + (isAdmin() ? adminCardHtml() : '') + (sup ? aboutCardHtml() : '');   // v2.22 พนักงานเห็นแค่ของตัวเอง (ผูก LINE · แจ้งเตือน · ข้อความตอบด่วน)
   if(sup && peopleOpen) renderPeopleRows();
   if(sup && oaAdmins === null && !DEMO) loadOaAdmins();
 }
@@ -4773,6 +4834,60 @@ function tagsCardHtml(){
   return `<div class="card card-gold"><div class="card-head"><h3>🏷 ป้ายสถานะแชท · ${esc(acctName())}</h3>
     <div class="hint">ป้ายที่ทีมติดให้แชทได้ เช่น รอของ / รอราคา / รอเอกสาร · ใช้กรองรายการแชท ไม่เกี่ยวกับสถิติ · หนึ่งบรรทัดต่อป้าย (ไม่เกิน 12 ป้าย ป้ายละ 20 ตัวอักษร) · ลบป้ายออก = ถอดป้ายนั้นจากทุกแชท</div></div>
     <div class="card-body"><textarea class="input" id="tagText" rows="5">${esc(t.join('\n'))}</textarea><div class="mt-8"><button class="btn btn-gold" onclick="saveTagPalette()">💾 บันทึก</button></div></div></div>`;
+}
+// v2.29 ป้ายคลังส่งจากชีทลูกค้า (หัวหน้า) — ชื่อ LINE มีรหัสลูกค้า → ติดป้ายคลังตามชีท · ลิงก์ชีทเก็บฝั่งเซิร์ฟเวอร์ (pur_private)
+let whInfo = null, whInfoAcct = 0;
+function whCardHtml(){
+  if(whInfoAcct !== acct.id){ whInfo = DEMO ? {} : null; whInfoAcct = acct.id; if(!DEMO) loadWhInfo(); }
+  const cfg = whInfo?.cfg || {}, sy = whInfo?.sync;
+  const tagged = chats.filter(c => c.wh_tag).length;
+  return `<div class="card card-gold" id="whCard"><div class="card-head"><h3>🚚 ป้ายคลังส่งจากชีทลูกค้า · ${esc(acctName())}</h3>
+    <div class="hint">ชื่อ LINE ของลูกค้ามีรหัสลูกค้า (ตัวเลข 7–12 หลัก) → ระบบเทียบกับชีทแล้วติดป้ายคลังให้เอง ใช้กรองแชทตามคลังเพื่อแบ่งแอดมินดูแล ·
+      แชทใหม่/เปลี่ยนชื่อติดป้ายทันที · ดึงชีทใหม่ทุกวัน 05:30 · ชีทต้องแชร์แบบ "ทุกคนที่มีลิงก์ดูได้" · ข้อมูลลูกค้าในชีทไม่ถูกส่งมาที่เครื่อง (เก็บแค่รหัส→คลัง)</div></div>
+    <div class="card-body">
+      <div class="field"><label>ลิงก์ชีท (เปิดที่แท็บรายชื่อลูกค้าแล้วก๊อปลิงก์)</label><input class="input" id="whUrl" placeholder="https://docs.google.com/spreadsheets/d/…#gid=…" value="${esc(cfg.url || '')}"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div class="field" style="flex:1;min-width:90px"><label>คอลัมน์รหัสลูกค้า</label><input class="input" id="whCode" value="${esc(cfg.code_col || 'B')}" maxlength="2"></div>
+        <div class="field" style="flex:1;min-width:90px"><label>คอลัมน์คลังส่ง</label><input class="input" id="whTag" value="${esc(cfg.tag_col || 'AH')}" maxlength="2"></div>
+        <div class="field" style="flex:1;min-width:90px"><label>คำนำหน้าป้าย</label><input class="input" id="whPrefix" value="${esc(cfg.prefix ?? 'คลัง')}" maxlength="12"></div>
+      </div>
+      <div class="mini mb-12" id="whStat">${whInfo === null ? 'กำลังโหลด…' : sy ? `ซิงก์ล่าสุด ${thDateTime(sy.at)} · รหัสในชีท ${nf(sy.codes)} · ติดป้ายแล้ว <b>${nf(sy.tagged)}</b> แชท${(sy.tags || []).length ? ' · ป้าย ' + sy.tags.map(esc).join(', ') : ''}` : (cfg.url ? 'ยังไม่เคยซิงก์' : 'ยังไม่ได้ตั้ง')}${tagged ? ` · ตอนนี้ในแอพ ${nf(tagged)} แชท` : ''}</div>
+      <button class="btn btn-gold" onclick="saveWhSheet()">💾 บันทึก + ซิงก์</button>
+      ${cfg.url ? `<button class="btn btn-outline" onclick="syncWhSheet()">🔄 ซิงก์เดี๋ยวนี้</button> <button class="btn btn-outline" onclick="clearWhSheet()">เลิกใช้</button>` : ''}
+    </div></div>`;
+}
+async function loadWhInfo(){
+  try{ const { data, error } = await sb.rpc('pur_customer_sheet_info', { p_account:acct.id }); if(error) throw error; whInfo = data || {}; }
+  catch(e){ console.warn('wh info:', e.message); whInfo = {}; }
+  const el = $('whCard'); if(el) el.outerHTML = whCardHtml();
+}
+async function saveWhSheet(){
+  const url = $('whUrl').value.trim(), code = $('whCode').value.trim().toUpperCase(), tag = $('whTag').value.trim().toUpperCase(), prefix = $('whPrefix').value.trim();
+  if(!url) return showToast('วางลิงก์ชีทก่อน', 'info');
+  try{ await rpc('pur_save_customer_sheet', { p_account:acct.id, p_url:url, p_code_col:code, p_tag_col:tag, p_prefix:prefix }); }
+  catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); return; }
+  await syncWhSheet();
+}
+async function syncWhSheet(){
+  if(DEMO) return showToast('โหมดตัวอย่าง — ไม่ได้ซิงก์จริง', 'info');
+  const st = $('whStat'); if(st) st.textContent = 'กำลังดึงชีทและติดป้าย… (ชีทใหญ่ใช้เวลาราว 10–20 วินาที)';
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/pur-sheet`, { method:'POST',
+      headers:{ 'Content-Type':'application/json', apikey:SUPABASE_ANON, Authorization:`Bearer ${session?.access_token || ''}` },
+      body:JSON.stringify({ action:'customerSync', accountId:acct.id }) });
+    const r = await res.json();
+    if(!r.ok) throw new Error(r.error || `HTTP ${res.status}`);
+    showToast(`ซิงก์แล้ว — รหัสในชีท ${nf(r.codes)} · ติดป้ายแล้ว ${nf(r.tagged)} แชท`, 'success', 6000);
+    await loadChats();
+  }catch(e){ showToast('ซิงก์ไม่สำเร็จ: ' + e.message, 'error', 8000); }
+  await loadWhInfo();
+}
+async function clearWhSheet(){
+  if(!confirm('เลิกใช้ป้ายคลังของบัญชีนี้? ป้ายคลังจะถูกถอดออกจากทุกแชท')) return;
+  try{ await rpc('pur_save_customer_sheet', { p_account:acct.id, p_url:'', p_code_col:'B', p_tag_col:'AH', p_prefix:'' }); await loadChats(); showToast('เลิกใช้ป้ายคลังแล้ว', 'success'); }
+  catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
+  await loadWhInfo();
 }
 async function saveTagPalette(){
   const arr = $('tagText').value.split('\n').map(s => s.trim()).filter(Boolean);
