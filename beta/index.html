@@ -139,6 +139,8 @@ body.dark .bni .nbadge{border-color:#1a2744}
 .sort-btn.wait{background:rgba(250,178,25,.18);border-color:rgba(250,178,25,.5);color:var(--text)}
 .chips{display:flex;gap:6px;padding:4px 10px 9px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;border-bottom:1px solid var(--border);background:var(--card-bg)}
 .chips::-webkit-scrollbar{display:none}
+/* v2.29.1 จอคอม (เมาส์): แถวชิปขึ้นบรรทัดใหม่แทนเลื่อนข้าง — แถบเลื่อนซ่อนอยู่ เมาส์เลื่อนข้างไม่ได้ ชิปท้ายแถวเลยเหมือนหายไป · มือถือยังปัดข้างเหมือนเดิม */
+@media (hover:hover) and (pointer:fine){ .chips{flex-wrap:wrap;overflow-x:visible;row-gap:6px} }
 .chip{flex-shrink:0;padding:5px 11px;border-radius:14px;border:1.5px solid var(--border);background:var(--bg);font-size:12px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:5px;min-height:30px;white-space:nowrap}
 .chip .n{background:var(--border);color:var(--text);border-radius:8px;padding:0 5px;font-size:10px;min-width:16px;text-align:center}
 .chip.active{background:var(--navy);border-color:var(--navy);color:#fff}
