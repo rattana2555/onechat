@@ -4597,7 +4597,7 @@ let peopleQ = '';
 function renderSettings(){
   if(view !== 'set') return;
   const sup = isSup();
-  $('setContent').innerHTML = linkCardHtml() + notiCardHtml() + (isAdmin() ? accountsCardHtml() + accessCardHtml() : '') + (sup ? teamCardHtml() + peopleCardHtml() + hoursCardHtml() : '') + quickCardHtml() + (sup ? tagsCardHtml() + whCardHtml() + ackCardHtml() + quotaCardHtml() : '') + (isAdmin() ? adminCardHtml() : '') + (sup ? aboutCardHtml() : '');   // v2.22 พนักงานเห็นแค่ของตัวเอง (ผูก LINE · แจ้งเตือน · ข้อความตอบด่วน)
+  $('setContent').innerHTML = linkCardHtml() + notiCardHtml() + (isAdmin() ? accountsCardHtml() + accessCardHtml() + lineSheetCardHtml() : '') + (sup ? teamCardHtml() + peopleCardHtml() + hoursCardHtml() : '') + quickCardHtml() + (sup ? tagsCardHtml() + whCardHtml() + ackCardHtml() + quotaCardHtml() : '') + (isAdmin() ? adminCardHtml() : '') + (sup ? aboutCardHtml() : '');   // v2.22 พนักงานเห็นแค่ของตัวเอง (ผูก LINE · แจ้งเตือน · ข้อความตอบด่วน)
   if(sup && peopleOpen) renderPeopleRows();
   if(sup && oaAdmins === null && !DEMO) loadOaAdmins();
 }
@@ -5121,6 +5121,81 @@ async function loadQuota(){
   if(!r.ok){ box.innerHTML = `<span class="txt-danger">${esc(r.error || 'ดูไม่ได้')}</span>`; return; }
   const limit = r.type === 'limited' ? r.limit : null;
   box.innerHTML = `ใช้ไปแล้ว <b style="font-size:20px">${nf(r.used || 0)}</b> ${limit ? `จาก ${nf(limit)} ข้อความ (${pct(r.used || 0, limit)})` : 'ข้อความ · แพ็กเกจไม่จำกัด'}`;
+}
+// ═══ v2.36 รหัส LINE พนักงาน → Google Sheet อัตโนมัติ (ผู้ดูแลระบบ) ═══
+// ชีทรัน Apps Script ทุกชั่วโมง ดึงรายการล่าสุดจาก pur-sheet ด้วยโทเคนของชีท (สร้างที่นี่ · สร้างใหม่ = โทเคนเก่าใช้ไม่ได้)
+let lineSheetInfo = null;
+function lineSheetCardHtml(){
+  if(lineSheetInfo === null && !DEMO){ lineSheetInfo = {}; loadLineSheetInfo(); }
+  const i = lineSheetInfo || {};
+  const st = !i.has_token ? 'ยังไม่ได้เชื่อมชีท'
+    : i.last_pull ? `เชื่อมแล้ว · ชีทดึงข้อมูลล่าสุด <b>${thDateTime(i.last_pull)}</b>` : 'สร้างโค้ดแล้ว · ชีทยังไม่เคยดึงข้อมูล (ทำตามขั้นตอนในชีทให้ครบ)';
+  return `<div class="card card-gold" id="lineSheetCard"><div class="card-head"><h3>📄 รหัส LINE พนักงาน → Google Sheet อัตโนมัติ</h3>
+    <div class="hint">ชีทอัปเดตเองทุกชั่วโมง: รหัส LINE ของคนในบริษัท (ผูกกับพนักงานแล้ว / ยังไม่ผูก) + พนักงานในทีมที่ยังไม่มีรหัส LINE · ไม่มีข้อมูลลูกค้า ·
+      ระบบได้รหัส LINE เมื่อคนนั้นพิมพ์ในกลุ่ม/แชทที่มีบัญชี OA · เพิ่มเพื่อนบัญชี OA · หรือเข้ากลุ่มที่มีบัญชี OA</div></div>
+    <div class="card-body"><div class="mini mb-12">${st}</div>
+      <button class="btn btn-gold" onclick="makeLineSheetCode()">${i.has_token ? '🔄 สร้างโค้ดใหม่' : '🔗 สร้างโค้ดสำหรับชีท'}</button>
+      ${i.has_token ? '<button class="btn btn-outline" onclick="revokeLineSheet()">ยกเลิกการเชื่อม</button>' : ''}</div></div>`;
+}
+async function loadLineSheetInfo(){
+  try{ const { data, error } = await sb.rpc('pur_sheet_token_info'); if(error) throw error; lineSheetInfo = data || {}; }
+  catch(e){ console.warn('sheet info:', e.message); lineSheetInfo = {}; }
+  const el = $('lineSheetCard'); if(el) el.outerHTML = lineSheetCardHtml();
+}
+function lineSheetScript(token){
+  return [
+    "// Rattana One Chat — รหัส LINE พนักงาน (อัปเดตเองทุกชั่วโมง)",
+    "// ⚠️ โค้ดนี้มีกุญแจของระบบ — อย่าแชร์ชีทนี้แบบ \"ทุกคนที่มีลิงก์แก้ไขได้\"",
+    "const RTN_URL = '" + SUPABASE_URL + "/functions/v1/pur-sheet';",
+    "const RTN_TOKEN = '" + token + "';",
+    "const RTN_TAB = 'LINE User ID';",
+    "",
+    "function syncLineIds() {",
+    "  const res = UrlFetchApp.fetch(RTN_URL, { method: 'post', contentType: 'application/json', muteHttpExceptions: true,",
+    "    headers: { 'x-export-token': RTN_TOKEN }, payload: JSON.stringify({ action: 'staffLineIds' }) });",
+    "  const d = JSON.parse(res.getContentText() || '{}');",
+    "  if (!d.ok) throw new Error(d.error || ('HTTP ' + res.getResponseCode()));",
+    "  const ss = SpreadsheetApp.getActive();",
+    "  const sh = ss.getSheetByName(RTN_TAB) || ss.insertSheet(RTN_TAB);",
+    "  const rows = [d.header].concat(d.rows);",
+    "  sh.clearContents();",
+    "  sh.getRange(1, 1, rows.length, d.header.length).setValues(rows);",
+    "  sh.getRange(1, 1, 1, d.header.length).setFontWeight('bold').setBackground('#0d1b3e').setFontColor('#ffffff');",
+    "  sh.setFrozenRows(1);",
+    "  sh.getRange(rows.length + 2, 1).setValue('อัปเดตล่าสุด ' + Utilities.formatDate(new Date(), 'Asia/Bangkok', 'dd/MM/yyyy HH:mm'));",
+    "  sh.autoResizeColumns(1, d.header.length);",
+    "}",
+    "",
+    "// กดเรียกใช้ครั้งเดียว: ตั้งให้อัปเดตเองทุกชั่วโมง + ดึงข้อมูลรอบแรก",
+    "function setupHourly() {",
+    "  ScriptApp.getProjectTriggers().forEach(t => { if (t.getHandlerFunction() === 'syncLineIds') ScriptApp.deleteTrigger(t); });",
+    "  ScriptApp.newTrigger('syncLineIds').timeBased().everyHours(1).create();",
+    "  syncLineIds();",
+    "}",
+  ].join('\n');
+}
+async function makeLineSheetCode(){
+  if(DEMO) return showToast('โหมดตัวอย่าง — สร้างโค้ดจริงไม่ได้', 'info');
+  if(lineSheetInfo?.has_token && !confirm('สร้างโค้ดใหม่? โค้ดเดิมที่ใส่ในชีทไว้จะใช้ไม่ได้ทันที ต้องวางโค้ดใหม่แทน')) return;
+  let token;
+  try{ token = await rpc('pur_new_sheet_token', {}); }catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); return; }
+  const code = lineSheetScript(token);
+  openModal('โค้ดสำหรับ Google Sheet', `
+    <ol class="txt-sm" style="padding-left:18px;line-height:1.8;margin:0 0 10px">
+      <li>เปิด Google Sheet ที่จะเก็บรายชื่อ (หรือสร้างใหม่) › เมนู <b>ส่วนขยาย › Apps Script</b></li>
+      <li>ลบโค้ดเดิมทั้งหมด แล้ว<b>วางโค้ดด้านล่าง</b> › กด 💾 บันทึก</li>
+      <li>ช่องเลือกฟังก์ชันด้านบน เลือก <b>setupHourly</b> › กด <b>เรียกใช้</b> › อนุญาตสิทธิ์ (Google จะถามครั้งแรก)</li>
+      <li>กลับไปที่ชีท จะมีแท็บ <b>LINE User ID</b> และอัปเดตเองทุกชั่วโมง</li>
+    </ol>
+    <textarea class="input" id="lsCode" rows="10" readonly style="font-family:Consolas,monospace;font-size:11.5px;white-space:pre">${esc(code)}</textarea>
+    <div class="txt-sm txt-muted mt-8">โค้ดนี้มีกุญแจเข้าถึงรายชื่อ — แสดงครั้งเดียว ถ้าทำหายให้สร้างใหม่ · ห้ามแชร์ชีทแบบใครมีลิงก์ก็แก้ไขได้</div>`,
+    `<button class="btn btn-outline" onclick="closeModal()">ปิด</button><button class="btn btn-gold" onclick="copyText($('lsCode').value)">📋 คัดลอกโค้ด</button>`, { wide:true });
+  lineSheetInfo = null; loadLineSheetInfo();
+}
+async function revokeLineSheet(){
+  if(!confirm('ยกเลิกการเชื่อมชีท? ชีทจะดึงข้อมูลใหม่ไม่ได้อีก (ข้อมูลที่อยู่ในชีทแล้วไม่หาย)')) return;
+  try{ await rpc('pur_revoke_sheet_token', {}); showToast('ยกเลิกการเชื่อมชีทแล้ว', 'success'); }catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
+  lineSheetInfo = null; loadLineSheetInfo();
 }
 function adminCardHtml(){
   return `<div class="card" style="border-top:3px solid var(--st-crit)"><div class="card-head"><h3>🛠 ผู้ดูแลระบบ</h3>
