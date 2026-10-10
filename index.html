@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.35">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.36">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.35">
-<title>Rattana One Chat v2.35</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.36">
+<title>Rattana One Chat v2.36</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -1021,7 +1021,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
     <div class="lg-err" id="lgErr"></div>
     <div class="lg-wait" role="status"><div class="lg-spin"></div><b id="lgWaitMsg">กำลังเปิดแอพ…</b><div class="sub" id="lgWaitSub"></div>
       <div class="acts"><button class="btn btn-gold" type="button" onclick="retryGate()">ลองใหม่เดี๋ยวนี้</button><button class="btn btn-outline" type="button" onclick="doLogout()">ออกจากระบบ</button></div></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.35 · 10/10/2569</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.36 · 10/10/2569</div>
   </div>
 </div>
 
@@ -1071,7 +1071,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.35</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.36</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -1328,7 +1328,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.35 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.36 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1365,6 +1365,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 //  v2.33: แผงอิโมจิในการ์ดข้อความตอบด่วน (คอมไม่มีคีย์บอร์ดอิโมจิ)
 //  v2.34: แชท "ไม่นับสถิติ" ไม่โชว์เวลารอ/เกิน SLA/ปุ่มไม่ต้องตอบ และไม่ถูกดันขึ้นบนตอนเรียงรอนานสุด
 //  v2.35: ส่งไฟล์จากแอพ (ปุ่ม 📎 · ลากไฟล์มาวาง) — อัปตรงเข้าที่เก็บด้วยลิงก์ครั้งเดียว (pur-send v2.4) ลูกค้าได้ลิงก์ดาวน์โหลด
+//  v2.36: รหัส LINE พนักงาน → Google Sheet อัตโนมัติ (การ์ดผู้ดูแลระบบ) · ชื่อที่ทีมตั้ง ≤20 ตัวอักษร · โน้ตในแอพ → โน้ตใน OA (ส่วนขยาย 3.5)
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
@@ -2879,19 +2880,36 @@ function openEditChat(){
   const c = chatById.get(activeId); if(!c) return;
   openModal('ข้อมูลแชท', `
     <div class="field"><label>ชื่อจาก LINE</label><div class="txt-sm">${esc(c.title || '—')} <span class="txt-muted">· ${c.kind === 'user' ? 'แชท 1:1' : 'กลุ่ม'}</span></div></div>
-    <div class="field"><label>ชื่อที่ทีมตั้ง (เช่น ชื่อ${peer()} + รหัส PU)</label><input class="input" id="edSupplier" value="${esc(c.supplier_name || '')}" placeholder="เช่น บจก. วัสดุก่อสร้าง A">
+    <div class="field"><label>ชื่อที่ทีมตั้ง (เช่น ชื่อ${peer()} + รหัส PU)</label><input class="input" id="edSupplier" value="${esc(c.supplier_name || '')}" placeholder="เช่น บจก. วัสดุก่อสร้าง A" oninput="edNameCount()">
+      <span class="mini" id="edNameCnt"></span>
       ${c.oa_chat_id ? `<span class="mini">แก้แล้ว<b>ชื่อเล่นใน LINE OA Manager เปลี่ยนตามเอง</b>ภายในราว 1–2 นาที (ต้องมีเครื่องที่ติดส่วนขยายเปิดแท็บ chat.line.biz ไว้)${c.oa_alias_pending ? ` · <span class="lv-warn-txt">กำลังรอเปลี่ยนใน OA เป็น "${esc(c.oa_alias_pending)}"</span>` : ''}</span>` : ''}</div>
-    <div class="field"><label>โน้ต</label><textarea class="input" id="edNote" rows="3" placeholder="เช่น เซลส์ชื่อคุณเอ โทร 08x-xxx-xxxx · ส่งของทุกวันพุธ">${esc(c.note || '')}</textarea></div>
+    <div class="field"><label>โน้ต</label><textarea class="input" id="edNote" rows="3" placeholder="เช่น เซลส์ชื่อคุณเอ โทร 08x-xxx-xxxx · ส่งของทุกวันพุธ">${esc(c.note || '')}</textarea>
+      ${c.oa_chat_id ? `<span class="mini">แก้แล้ว<b>เพิ่มเป็นโน้ตใน LINE OA Manager ให้เอง</b>ภายในราว 1–2 นาที (ส่วนขยาย 3.5 ขึ้นไป · เปิดแท็บ chat.line.biz ไว้) · แก้แต่ละครั้ง = โน้ตใหม่ใน OA (โน้ตเดิมใน OA ยังอยู่)${c.oa_note_pending ? ` · <span class="lv-warn-txt">กำลังรอเพิ่มใน OA</span>` : ''}</span>` : ''}</div>
     <div class="txt-sm txt-muted">LINE ID: <code style="font-size:11px">${esc(c.line_id)}</code></div>`,
     `<button class="btn btn-outline" onclick="closeModal()">ยกเลิก</button><button class="btn btn-gold" onclick="saveEditChat()">บันทึก</button>`);
+  edNameCount();
+}
+// v2.36 ชื่อเล่นใน LINE OA Manager ตั้งได้ไม่เกิน 20 ตัวอักษร → ชื่อที่ทีมตั้งในแอพจำกัดเท่ากัน (นับตามตัวอักษรจริง อิโมจิ = 1)
+const NAME_MAX = 20;
+const nameLen = t => [...String(t || '').trim()].length;
+function edNameCount(){
+  const el = $('edNameCnt'), inp = $('edSupplier'); if(!el || !inp) return;
+  const n = nameLen(inp.value), over = n > NAME_MAX;
+  el.innerHTML = `${n}/${NAME_MAX} ตัวอักษร${over ? ' — <b class="lv-crit-txt">ยาวเกิน ชื่อเล่นใน LINE ตั้งได้ไม่เกิน 20 ตัวอักษร</b>' : ''}`;
+  el.style.color = over ? 'var(--st-crit)' : '';
+  inp.style.borderColor = over ? 'var(--st-crit)' : '';
 }
 async function saveEditChat(){
-  const id = activeId; const supplier = $('edSupplier').value.trim(), note = $('edNote').value.trim(); closeModal();
+  const id = activeId; const supplier = $('edSupplier').value.trim(), note = $('edNote').value.trim();
   const c0 = chatById.get(id), renamed = !!supplier && supplier !== (c0?.supplier_name || '');
+  if(renamed && nameLen(supplier) > NAME_MAX){ showToast(`ชื่อยาว ${nameLen(supplier)} ตัวอักษร — ตั้งได้ไม่เกิน ${NAME_MAX} ตัวอักษร (เท่าชื่อเล่นใน LINE)`, 'warning', 5000); $('edSupplier').focus(); return; }
+  closeModal();
   try{
     await rpc('pur_update_chat', { p_chat:id, p_supplier:supplier || null, p_note:note || null });
-    patchChat(id, { supplier_name:supplier || null, note:note || null, ...(renamed && c0?.oa_chat_id ? { oa_alias_pending:supplier } : {}) });
-    showToast(renamed && c0?.oa_chat_id ? 'บันทึกแล้ว ✓ — ชื่อเล่นใน OA จะเปลี่ยนตามภายในราว 1–2 นาที' : 'บันทึกแล้ว ✓', 'success', 4500);
+    const noteChanged = !!note && note !== (c0?.note || '');
+    patchChat(id, { supplier_name:supplier || null, note:note || null, ...(renamed && c0?.oa_chat_id ? { oa_alias_pending:supplier } : {}), ...(noteChanged && c0?.oa_chat_id ? { oa_note_pending:note } : {}) });
+    const toOa = [renamed && 'ชื่อเล่น', noteChanged && 'โน้ต'].filter(Boolean);
+    showToast(toOa.length && c0?.oa_chat_id ? `บันทึกแล้ว ✓ — ${toOa.join(' และ ')}ใน OA จะอัปเดตภายในราว 1–2 นาที` : 'บันทึกแล้ว ✓', 'success', 4500);
   }
   catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
 }
@@ -4596,7 +4614,7 @@ let peopleQ = '';
 function renderSettings(){
   if(view !== 'set') return;
   const sup = isSup();
-  $('setContent').innerHTML = linkCardHtml() + notiCardHtml() + (isAdmin() ? accountsCardHtml() + accessCardHtml() : '') + (sup ? teamCardHtml() + peopleCardHtml() + hoursCardHtml() : '') + quickCardHtml() + (sup ? tagsCardHtml() + whCardHtml() + ackCardHtml() + quotaCardHtml() : '') + (isAdmin() ? adminCardHtml() : '') + (sup ? aboutCardHtml() : '');   // v2.22 พนักงานเห็นแค่ของตัวเอง (ผูก LINE · แจ้งเตือน · ข้อความตอบด่วน)
+  $('setContent').innerHTML = linkCardHtml() + notiCardHtml() + (isAdmin() ? accountsCardHtml() + accessCardHtml() + lineSheetCardHtml() : '') + (sup ? teamCardHtml() + peopleCardHtml() + hoursCardHtml() : '') + quickCardHtml() + (sup ? tagsCardHtml() + whCardHtml() + ackCardHtml() + quotaCardHtml() : '') + (isAdmin() ? adminCardHtml() : '') + (sup ? aboutCardHtml() : '');   // v2.22 พนักงานเห็นแค่ของตัวเอง (ผูก LINE · แจ้งเตือน · ข้อความตอบด่วน)
   if(sup && peopleOpen) renderPeopleRows();
   if(sup && oaAdmins === null && !DEMO) loadOaAdmins();
 }
@@ -5120,6 +5138,81 @@ async function loadQuota(){
   if(!r.ok){ box.innerHTML = `<span class="txt-danger">${esc(r.error || 'ดูไม่ได้')}</span>`; return; }
   const limit = r.type === 'limited' ? r.limit : null;
   box.innerHTML = `ใช้ไปแล้ว <b style="font-size:20px">${nf(r.used || 0)}</b> ${limit ? `จาก ${nf(limit)} ข้อความ (${pct(r.used || 0, limit)})` : 'ข้อความ · แพ็กเกจไม่จำกัด'}`;
+}
+// ═══ v2.36 รหัส LINE พนักงาน → Google Sheet อัตโนมัติ (ผู้ดูแลระบบ) ═══
+// ชีทรัน Apps Script ทุกชั่วโมง ดึงรายการล่าสุดจาก pur-sheet ด้วยโทเคนของชีท (สร้างที่นี่ · สร้างใหม่ = โทเคนเก่าใช้ไม่ได้)
+let lineSheetInfo = null;
+function lineSheetCardHtml(){
+  if(lineSheetInfo === null && !DEMO){ lineSheetInfo = {}; loadLineSheetInfo(); }
+  const i = lineSheetInfo || {};
+  const st = !i.has_token ? 'ยังไม่ได้เชื่อมชีท'
+    : i.last_pull ? `เชื่อมแล้ว · ชีทดึงข้อมูลล่าสุด <b>${thDateTime(i.last_pull)}</b>` : 'สร้างโค้ดแล้ว · ชีทยังไม่เคยดึงข้อมูล (ทำตามขั้นตอนในชีทให้ครบ)';
+  return `<div class="card card-gold" id="lineSheetCard"><div class="card-head"><h3>📄 รหัส LINE พนักงาน → Google Sheet อัตโนมัติ</h3>
+    <div class="hint">ชีทอัปเดตเองทุกชั่วโมง: รหัส LINE ของคนในบริษัท (ผูกกับพนักงานแล้ว / ยังไม่ผูก) + พนักงานในทีมที่ยังไม่มีรหัส LINE · ไม่มีข้อมูลลูกค้า ·
+      ระบบได้รหัส LINE เมื่อคนนั้นพิมพ์ในกลุ่ม/แชทที่มีบัญชี OA · เพิ่มเพื่อนบัญชี OA · หรือเข้ากลุ่มที่มีบัญชี OA</div></div>
+    <div class="card-body"><div class="mini mb-12">${st}</div>
+      <button class="btn btn-gold" onclick="makeLineSheetCode()">${i.has_token ? '🔄 สร้างโค้ดใหม่' : '🔗 สร้างโค้ดสำหรับชีท'}</button>
+      ${i.has_token ? '<button class="btn btn-outline" onclick="revokeLineSheet()">ยกเลิกการเชื่อม</button>' : ''}</div></div>`;
+}
+async function loadLineSheetInfo(){
+  try{ const { data, error } = await sb.rpc('pur_sheet_token_info'); if(error) throw error; lineSheetInfo = data || {}; }
+  catch(e){ console.warn('sheet info:', e.message); lineSheetInfo = {}; }
+  const el = $('lineSheetCard'); if(el) el.outerHTML = lineSheetCardHtml();
+}
+function lineSheetScript(token){
+  return [
+    "// Rattana One Chat — รหัส LINE พนักงาน (อัปเดตเองทุกชั่วโมง)",
+    "// ⚠️ โค้ดนี้มีกุญแจของระบบ — อย่าแชร์ชีทนี้แบบ \"ทุกคนที่มีลิงก์แก้ไขได้\"",
+    "const RTN_URL = '" + SUPABASE_URL + "/functions/v1/pur-sheet';",
+    "const RTN_TOKEN = '" + token + "';",
+    "const RTN_TAB = 'LINE User ID';",
+    "",
+    "function syncLineIds() {",
+    "  const res = UrlFetchApp.fetch(RTN_URL, { method: 'post', contentType: 'application/json', muteHttpExceptions: true,",
+    "    headers: { 'x-export-token': RTN_TOKEN }, payload: JSON.stringify({ action: 'staffLineIds' }) });",
+    "  const d = JSON.parse(res.getContentText() || '{}');",
+    "  if (!d.ok) throw new Error(d.error || ('HTTP ' + res.getResponseCode()));",
+    "  const ss = SpreadsheetApp.getActive();",
+    "  const sh = ss.getSheetByName(RTN_TAB) || ss.insertSheet(RTN_TAB);",
+    "  const rows = [d.header].concat(d.rows);",
+    "  sh.clearContents();",
+    "  sh.getRange(1, 1, rows.length, d.header.length).setValues(rows);",
+    "  sh.getRange(1, 1, 1, d.header.length).setFontWeight('bold').setBackground('#0d1b3e').setFontColor('#ffffff');",
+    "  sh.setFrozenRows(1);",
+    "  sh.getRange(rows.length + 2, 1).setValue('อัปเดตล่าสุด ' + Utilities.formatDate(new Date(), 'Asia/Bangkok', 'dd/MM/yyyy HH:mm'));",
+    "  sh.autoResizeColumns(1, d.header.length);",
+    "}",
+    "",
+    "// กดเรียกใช้ครั้งเดียว: ตั้งให้อัปเดตเองทุกชั่วโมง + ดึงข้อมูลรอบแรก",
+    "function setupHourly() {",
+    "  ScriptApp.getProjectTriggers().forEach(t => { if (t.getHandlerFunction() === 'syncLineIds') ScriptApp.deleteTrigger(t); });",
+    "  ScriptApp.newTrigger('syncLineIds').timeBased().everyHours(1).create();",
+    "  syncLineIds();",
+    "}",
+  ].join('\n');
+}
+async function makeLineSheetCode(){
+  if(DEMO) return showToast('โหมดตัวอย่าง — สร้างโค้ดจริงไม่ได้', 'info');
+  if(lineSheetInfo?.has_token && !confirm('สร้างโค้ดใหม่? โค้ดเดิมที่ใส่ในชีทไว้จะใช้ไม่ได้ทันที ต้องวางโค้ดใหม่แทน')) return;
+  let token;
+  try{ token = await rpc('pur_new_sheet_token', {}); }catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); return; }
+  const code = lineSheetScript(token);
+  openModal('โค้ดสำหรับ Google Sheet', `
+    <ol class="txt-sm" style="padding-left:18px;line-height:1.8;margin:0 0 10px">
+      <li>เปิด Google Sheet ที่จะเก็บรายชื่อ (หรือสร้างใหม่) › เมนู <b>ส่วนขยาย › Apps Script</b></li>
+      <li>ลบโค้ดเดิมทั้งหมด แล้ว<b>วางโค้ดด้านล่าง</b> › กด 💾 บันทึก</li>
+      <li>ช่องเลือกฟังก์ชันด้านบน เลือก <b>setupHourly</b> › กด <b>เรียกใช้</b> › อนุญาตสิทธิ์ (Google จะถามครั้งแรก)</li>
+      <li>กลับไปที่ชีท จะมีแท็บ <b>LINE User ID</b> และอัปเดตเองทุกชั่วโมง</li>
+    </ol>
+    <textarea class="input" id="lsCode" rows="10" readonly style="font-family:Consolas,monospace;font-size:11.5px;white-space:pre">${esc(code)}</textarea>
+    <div class="txt-sm txt-muted mt-8">โค้ดนี้มีกุญแจเข้าถึงรายชื่อ — แสดงครั้งเดียว ถ้าทำหายให้สร้างใหม่ · ห้ามแชร์ชีทแบบใครมีลิงก์ก็แก้ไขได้</div>`,
+    `<button class="btn btn-outline" onclick="closeModal()">ปิด</button><button class="btn btn-gold" onclick="copyText($('lsCode').value)">📋 คัดลอกโค้ด</button>`, { wide:true });
+  lineSheetInfo = null; loadLineSheetInfo();
+}
+async function revokeLineSheet(){
+  if(!confirm('ยกเลิกการเชื่อมชีท? ชีทจะดึงข้อมูลใหม่ไม่ได้อีก (ข้อมูลที่อยู่ในชีทแล้วไม่หาย)')) return;
+  try{ await rpc('pur_revoke_sheet_token', {}); showToast('ยกเลิกการเชื่อมชีทแล้ว', 'success'); }catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
+  lineSheetInfo = null; loadLineSheetInfo();
 }
 function adminCardHtml(){
   return `<div class="card" style="border-top:3px solid var(--st-crit)"><div class="card-head"><h3>🛠 ผู้ดูแลระบบ</h3>
