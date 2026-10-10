@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.33">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.34">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.33">
-<title>Rattana One Chat v2.33</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.34">
+<title>Rattana One Chat v2.34</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -1021,7 +1021,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
     <div class="lg-err" id="lgErr"></div>
     <div class="lg-wait" role="status"><div class="lg-spin"></div><b id="lgWaitMsg">กำลังเปิดแอพ…</b><div class="sub" id="lgWaitSub"></div>
       <div class="acts"><button class="btn btn-gold" type="button" onclick="retryGate()">ลองใหม่เดี๋ยวนี้</button><button class="btn btn-outline" type="button" onclick="doLogout()">ออกจากระบบ</button></div></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.33 · 10/10/2569</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.34 · 10/10/2569</div>
   </div>
 </div>
 
@@ -1071,7 +1071,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.33</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.34</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -1326,7 +1326,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.33 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.34 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1361,6 +1361,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 //  v2.31: ป๊อปอัป "อย่าลืมตอบแชทนะ!" ตอนเปิด/กลับเข้าแอพ (รายการแชทที่รอฉันตอบ + แท็กถึงฉัน) · พนักงานพิมพ์จาก LINE ส่วนตัวอยู่ฝั่งซ้ายแบบ LINE จริง (ป้ายทีม)
 //  v2.32: ป๊อปอัปเตือนเด้งตอนหน้าต่างกลับมาได้โฟกัสด้วย (คอม Alt+Tab) · ข้อความตอบด่วนแก้ได้ทุกคนในทีมของบัญชี (pur-quick-replies.sql)
 //  v2.33: แผงอิโมจิในการ์ดข้อความตอบด่วน (คอมไม่มีคีย์บอร์ดอิโมจิ)
+//  v2.34: แชท "ไม่นับสถิติ" ไม่โชว์เวลารอ/เกิน SLA/ปุ่มไม่ต้องตอบ และไม่ถูกดันขึ้นบนตอนเรียงรอนานสุด
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
@@ -1784,7 +1785,7 @@ function filteredChats(){
     const recent = (Date.parse(b.last_message_at || 0) || 0) - (Date.parse(a.last_message_at || 0) || 0);
     if(listSort !== 'wait') return recent;          // แบบ LINE: ข้อความล่าสุดบนสุด แชทเก่าลงล่าง
     // รอนานสุดก่อน: งานรอตอบขึ้นก่อน (รอนานสุดบนสุด) แล้วค่อยเรียงตามข้อความล่าสุด
-    const aw = a.awaiting_since ? 1 : 0, bw = b.awaiting_since ? 1 : 0;
+    const aw = a.awaiting_since && !a.exclude_kpi ? 1 : 0, bw = b.awaiting_since && !b.exclude_kpi ? 1 : 0;
     if(aw !== bw) return bw - aw;
     if(aw && bw) return Date.parse(a.awaiting_since) - Date.parse(b.awaiting_since);
     return recent;
@@ -1936,9 +1937,9 @@ function renderList(){
   if(listShown > LIST_STEP && listShown > list.length) listShown = Math.max(LIST_STEP, Math.ceil(list.length / LIST_STEP) * LIST_STEP);
   const shown = list.slice(0, listShown), rest = list.length - shown.length;
   el.innerHTML = mBanner + shown.map(c => {
-    const age = c.awaiting_since ? elapsedSec(c.awaiting_since, null) : null; const over = age != null && age > sla;
+    const age = c.awaiting_since && !c.exclude_kpi ? elapsedSec(c.awaiting_since, null) : null; const over = age != null && age > sla;   // v2.34 แชทไม่นับสถิติไม่โชว์เวลารอ
     const mine = myMentions(c)[0];
-    const cls = ['conv-item', c.unread_count > 0 ? 'unread' : '', c.awaiting_since ? 'awaiting' : '', over ? 'over' : '', activeId === c.id ? 'selected' : '', c.status === 'resolved' ? 'resolved' : '', mine ? 'ment-me' : ''].join(' ');
+    const cls = ['conv-item', c.unread_count > 0 ? 'unread' : '', age != null ? 'awaiting' : '', over ? 'over' : '', activeId === c.id ? 'selected' : '', c.status === 'resolved' ? 'resolved' : '', mine ? 'ment-me' : ''].join(' ');
     let mPop = '';
     if(mine){
       const a = elapsedSec(mine.s, null), o = a > sla, first = !mentPopSeen.has(mine.id); mentPopSeen.add(mine.id);
@@ -2127,13 +2128,13 @@ function renderTools(c){
   const pal = settings?.chat_tags || [];
   if(pal.length || (c.tags || []).length) h += `<button class="tool-btn" onclick="openTagMenu()" title="ป้ายสถานะแชท — ใช้กรองรายการแชท ไม่เกี่ยวกับสถิติ">🏷 ${(c.tags || []).length ? esc(c.tags.join(' · ')) : 'ติดป้าย'}</button>`;
   h += `<button class="tool-btn" onclick="markUnread()" title="เผลอเปิดอ่าน? ให้แชทนี้กลับไปขึ้นตัวหนาเหมือนยังไม่ได้อ่าน">● ยังไม่อ่าน</button>`;
-  if(c.awaiting_since) h += `<button class="tool-btn danger" onclick="dismissWait()" title="ปิดงานรอตอบโดยไม่ตอบ เช่น ข้อความไม่เกี่ยวกับเรา">🚫 ไม่ต้องตอบ</button>`;
+  if(c.awaiting_since && !c.exclude_kpi) h += `<button class="tool-btn danger" onclick="dismissWait()" title="ปิดงานรอตอบโดยไม่ตอบ เช่น ข้อความไม่เกี่ยวกับเรา">🚫 ไม่ต้องตอบ</button>`;
   if(isSup()) h += `<span class="tool-sp"></span><button class="tool-btn ${c.exclude_kpi ? 'danger' : ''}" onclick="toggleExclude()" title="แชททดสอบ/แชทภายใน ไม่ควรนับสถิติ">${c.exclude_kpi ? '📵 ไม่นับสถิติ' : '📊 นับสถิติ'}</button>`;
   $('chatTools').innerHTML = h;
 }
 function renderStrips(c){
   let h = '';
-  if(c.awaiting_since){
+  if(c.awaiting_since && !c.exclude_kpi){
     const age = elapsedSec(c.awaiting_since, null), over = age > slaSec();
     h += `<div class="strip ${over ? 'over' : 'wait'}">⏱ ${peer()}รอคำตอบมา <b>${fmtDur(age)}</b>${clockMode === 'biz' ? ' (นับเวลาทำการ)' : ''} · SLA ${settings.sla_minutes} นาที${over ? ' — <b>เกินกำหนดแล้ว</b>' : ''}</div>`;
   }
