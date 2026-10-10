@@ -1785,7 +1785,7 @@ function filteredChats(){
     const recent = (Date.parse(b.last_message_at || 0) || 0) - (Date.parse(a.last_message_at || 0) || 0);
     if(listSort !== 'wait') return recent;          // แบบ LINE: ข้อความล่าสุดบนสุด แชทเก่าลงล่าง
     // รอนานสุดก่อน: งานรอตอบขึ้นก่อน (รอนานสุดบนสุด) แล้วค่อยเรียงตามข้อความล่าสุด
-    const aw = a.awaiting_since ? 1 : 0, bw = b.awaiting_since ? 1 : 0;
+    const aw = a.awaiting_since && !a.exclude_kpi ? 1 : 0, bw = b.awaiting_since && !b.exclude_kpi ? 1 : 0;
     if(aw !== bw) return bw - aw;
     if(aw && bw) return Date.parse(a.awaiting_since) - Date.parse(b.awaiting_since);
     return recent;
@@ -1937,9 +1937,9 @@ function renderList(){
   if(listShown > LIST_STEP && listShown > list.length) listShown = Math.max(LIST_STEP, Math.ceil(list.length / LIST_STEP) * LIST_STEP);
   const shown = list.slice(0, listShown), rest = list.length - shown.length;
   el.innerHTML = mBanner + shown.map(c => {
-    const age = c.awaiting_since ? elapsedSec(c.awaiting_since, null) : null; const over = age != null && age > sla;
+    const age = c.awaiting_since && !c.exclude_kpi ? elapsedSec(c.awaiting_since, null) : null; const over = age != null && age > sla;   // v2.34 แชทไม่นับสถิติไม่โชว์เวลารอ
     const mine = myMentions(c)[0];
-    const cls = ['conv-item', c.unread_count > 0 ? 'unread' : '', c.awaiting_since ? 'awaiting' : '', over ? 'over' : '', activeId === c.id ? 'selected' : '', c.status === 'resolved' ? 'resolved' : '', mine ? 'ment-me' : ''].join(' ');
+    const cls = ['conv-item', c.unread_count > 0 ? 'unread' : '', age != null ? 'awaiting' : '', over ? 'over' : '', activeId === c.id ? 'selected' : '', c.status === 'resolved' ? 'resolved' : '', mine ? 'ment-me' : ''].join(' ');
     let mPop = '';
     if(mine){
       const a = elapsedSec(mine.s, null), o = a > sla, first = !mentPopSeen.has(mine.id); mentPopSeen.add(mine.id);
@@ -2128,13 +2128,13 @@ function renderTools(c){
   const pal = settings?.chat_tags || [];
   if(pal.length || (c.tags || []).length) h += `<button class="tool-btn" onclick="openTagMenu()" title="ป้ายสถานะแชท — ใช้กรองรายการแชท ไม่เกี่ยวกับสถิติ">🏷 ${(c.tags || []).length ? esc(c.tags.join(' · ')) : 'ติดป้าย'}</button>`;
   h += `<button class="tool-btn" onclick="markUnread()" title="เผลอเปิดอ่าน? ให้แชทนี้กลับไปขึ้นตัวหนาเหมือนยังไม่ได้อ่าน">● ยังไม่อ่าน</button>`;
-  if(c.awaiting_since) h += `<button class="tool-btn danger" onclick="dismissWait()" title="ปิดงานรอตอบโดยไม่ตอบ เช่น ข้อความไม่เกี่ยวกับเรา">🚫 ไม่ต้องตอบ</button>`;
+  if(c.awaiting_since && !c.exclude_kpi) h += `<button class="tool-btn danger" onclick="dismissWait()" title="ปิดงานรอตอบโดยไม่ตอบ เช่น ข้อความไม่เกี่ยวกับเรา">🚫 ไม่ต้องตอบ</button>`;
   if(isSup()) h += `<span class="tool-sp"></span><button class="tool-btn ${c.exclude_kpi ? 'danger' : ''}" onclick="toggleExclude()" title="แชททดสอบ/แชทภายใน ไม่ควรนับสถิติ">${c.exclude_kpi ? '📵 ไม่นับสถิติ' : '📊 นับสถิติ'}</button>`;
   $('chatTools').innerHTML = h;
 }
 function renderStrips(c){
   let h = '';
-  if(c.awaiting_since){
+  if(c.awaiting_since && !c.exclude_kpi){
     const age = elapsedSec(c.awaiting_since, null), over = age > slaSec();
     h += `<div class="strip ${over ? 'over' : 'wait'}">⏱ ${peer()}รอคำตอบมา <b>${fmtDur(age)}</b>${clockMode === 'biz' ? ' (นับเวลาทำการ)' : ''} · SLA ${settings.sla_minutes} นาที${over ? ' — <b>เกินกำหนดแล้ว</b>' : ''}</div>`;
   }
