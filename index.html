@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.34">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.35">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.34">
-<title>Rattana One Chat v2.34</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.35">
+<title>Rattana One Chat v2.35</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -1021,7 +1021,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
     <div class="lg-err" id="lgErr"></div>
     <div class="lg-wait" role="status"><div class="lg-spin"></div><b id="lgWaitMsg">กำลังเปิดแอพ…</b><div class="sub" id="lgWaitSub"></div>
       <div class="acts"><button class="btn btn-gold" type="button" onclick="retryGate()">ลองใหม่เดี๋ยวนี้</button><button class="btn btn-outline" type="button" onclick="doLogout()">ออกจากระบบ</button></div></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.34 · 10/10/2569</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.35 · 10/10/2569</div>
   </div>
 </div>
 
@@ -1071,7 +1071,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.34</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.35</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -1153,6 +1153,8 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
         <div class="reply-bar">
           <input type="file" id="imgInp" accept="image/*" hidden onchange="onPickImage(this)">
           <button class="round-btn attach-btn" id="attachBtn" title="ส่งรูป" onclick="document.getElementById('imgInp').click()"><span data-ic="image"></span></button>
+          <input type="file" id="fileInp" hidden onchange="onPickFile(this)">
+          <button class="round-btn attach-btn" id="fileBtn" title="ส่งไฟล์ (PDF / Excel / Word ฯลฯ ไม่เกิน 20MB)" aria-label="ส่งไฟล์" onclick="document.getElementById('fileInp').click()"><span data-ic="paperclip"></span></button>
           <button class="round-btn emo-btn" id="emoBtn" title="อิโมจิ / สติกเกอร์" aria-label="อิโมจิ / สติกเกอร์" onclick="toggleEmo()"><span data-ic="smile"></span></button>
           <textarea class="reply-inp" id="replyInp" placeholder="พิมพ์ข้อความ… (วางรูปได้ด้วย Ctrl+V)" rows="1" onkeydown="onKey(event)" oninput="grow(this);syncSend();warmSend()" onfocus="if(window.innerWidth<768)emoHide()"></textarea>
           <button class="round-btn send-btn" id="sendBtn" onclick="sendText()" title="ส่ง"><span data-ic="send"></span></button>
@@ -1326,7 +1328,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.34 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.35 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1362,6 +1364,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 //  v2.32: ป๊อปอัปเตือนเด้งตอนหน้าต่างกลับมาได้โฟกัสด้วย (คอม Alt+Tab) · ข้อความตอบด่วนแก้ได้ทุกคนในทีมของบัญชี (pur-quick-replies.sql)
 //  v2.33: แผงอิโมจิในการ์ดข้อความตอบด่วน (คอมไม่มีคีย์บอร์ดอิโมจิ)
 //  v2.34: แชท "ไม่นับสถิติ" ไม่โชว์เวลารอ/เกิน SLA/ปุ่มไม่ต้องตอบ และไม่ถูกดันขึ้นบนตอนเรียงรอนานสุด
+//  v2.35: ส่งไฟล์จากแอพ (ปุ่ม 📎 · ลากไฟล์มาวาง) — อัปตรงเข้าที่เก็บด้วยลิงก์ครั้งเดียว (pur-send v2.4) ลูกค้าได้ลิงก์ดาวน์โหลด
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
@@ -2173,7 +2176,7 @@ function applyReplyState(c){
   note.innerHTML = oaOnly ? `<span>⚠️ ${OA_ONLY_MSG} <span class="txt-muted">(ระบบจะได้รหัสเองเมื่อ${peer()}ทักเข้ามา${acct?.id === 1 ? 'หรือมีการส่งใบสั่งสินค้า' : ' แล้วตอบจากแอพได้ทันที'})</span></span>`
     : blocked ? `⚠️ ส่งจากหน้านี้ไม่ได้ในตอนนี้ <button class="btn btn-outline btn-sm" style="margin-left:auto" onclick="forceReply.add(activeId);applyReplyState(chatById.get(activeId))">ลองส่งดูอยู่ดี</button>` : '';
   note.classList.toggle('show', blocked);
-  $('replyInp').disabled = blocked; $('sendBtn').disabled = blocked; $('attachBtn').disabled = blocked; $('emoBtn').disabled = blocked; if(blocked) emoHide();
+  $('replyInp').disabled = blocked; $('sendBtn').disabled = blocked; $('attachBtn').disabled = blocked; $('fileBtn').disabled = blocked; $('emoBtn').disabled = blocked; if(blocked) emoHide();
   $('replyInp').placeholder = oaOnly ? 'ตอบใน LINE OA Manager' : blocked ? 'ส่งไม่ได้ในตอนนี้' : 'พิมพ์ข้อความ… (วางรูปได้ด้วย Ctrl+V)';
 }
 function renderQuick(){
@@ -2633,7 +2636,11 @@ function bindChatDrop(){
   pane.addEventListener('dragleave', e => { if(e.target === pane || !pane.contains(e.relatedTarget)) pane.classList.remove('drop-on'); });
   pane.addEventListener('drop', e => {
     pane.classList.remove('drop-on');
-    const files = imagesFrom(e.dataTransfer); if(!files.length) return;
+    const files = imagesFrom(e.dataTransfer);
+    if(!files.length){                                                   // v2.35 ไม่ใช่รูป → ส่งเป็นไฟล์
+      const f = e.dataTransfer?.files?.[0]; if(!f) return;
+      e.preventDefault(); openFilePreview(f); return;
+    }
     e.preventDefault(); openPastePreview(files, '');
   });
 }
@@ -2670,6 +2677,55 @@ async function sendImage(file){
     r = await callFn({ action:'image', chatId, imageBase64:b64, imageMime:'image/jpeg' });
   }catch(e){ r = { ok:false, error:e.message }; }
   if(r.path) signedCache.set(r.path, { url:blobUrl, exp:Date.now() + 30*60*1000 });   // ใช้รูปในเครื่องแสดงต่อได้เลย
+  reconcile(local, r);
+}
+// ── v2.35 ส่งไฟล์ (PDF / Excel / Word ฯลฯ) ──
+// LINE ให้ระบบภายนอกส่ง "ไฟล์" ตรงๆ ไม่ได้ → pur-send เก็บไฟล์ในที่เก็บส่วนตัว แล้วส่งข้อความ "📎 ชื่อไฟล์ + ลิงก์ดาวน์โหลด" (ลิงก์ใช้ได้ 30 วัน)
+// ในแอพยังแสดงเป็นไฟล์แนบเหมือนเดิม · รูปที่เลือกผ่านปุ่มนี้ส่งเป็นรูปตามปกติ
+const FILE_MAX = 20 * 1024 * 1024;
+let pickFile = null;
+const fmtSize = n => n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
+function onPickFile(inp){ const f = inp.files && inp.files[0]; inp.value = ''; if(f) openFilePreview(f); }
+function openFilePreview(f){
+  const c = chatById.get(activeId); if(!c) return;
+  if(/^image\//.test(f.type)){ openPastePreview([f], ''); return; }
+  if(isOaOnly(c)){ showToast(OA_ONLY_MSG, 'warning', 4500); return; }
+  if(f.size > FILE_MAX){ showToast(`ไฟล์ใหญ่เกิน 20 MB (${fmtSize(f.size)}) — ย่อไฟล์หรือส่งผ่าน LINE OA Manager`, 'warning', 6000); return; }
+  if(!f.size){ showToast('ไฟล์ว่าง ส่งไม่ได้', 'warning'); return; }
+  pickFile = f;
+  const cap = $('replyInp')?.value.trim() || '';
+  openModal(`ส่งไฟล์ถึง ${chatName(c)}`, `
+    <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--border);border-radius:14px;background:var(--row-alt)">
+      <div style="width:44px;height:44px;border-radius:12px;background:var(--navy);color:var(--gold-light);display:grid;place-items:center;font-size:20px;flex-shrink:0">📎</div>
+      <div style="min-width:0"><b style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(f.name)}</b><span class="txt-sm txt-muted">${fmtSize(f.size)}</span></div>
+    </div>
+    <div class="field mt-12"><label>ข้อความประกอบ (ไม่ใส่ก็ได้)</label><input class="input" id="fileCap" maxlength="500" value="${esc(cap)}" placeholder="เช่น ใบสั่งซื้อเดือนนี้ค่ะ"></div>
+    <div class="txt-sm txt-muted">${peer()}จะได้ข้อความ "📎 ชื่อไฟล์" พร้อม<b>ลิงก์ดาวน์โหลด</b> (LINE ไม่ให้ระบบภายนอกส่งไฟล์แนบตรงๆ) · ลิงก์ใช้ได้ 30 วัน</div>`,
+    `<button class="btn btn-outline" onclick="closeModal();pickFile=null">ยกเลิก</button><button class="btn btn-gold" id="fileSendBtn" onclick="sendPickedFile()">ส่งไฟล์</button>`);
+  setTimeout(() => $('fileSendBtn')?.focus(), 50);
+}
+async function sendPickedFile(){
+  const f = pickFile, cap = ($('fileCap')?.value || '').trim(); pickFile = null; closeModal();
+  if(!f || !activeId) return;
+  const inp = $('replyInp'); if(inp && cap && inp.value.trim() === cap){ inp.value = ''; grow(inp); syncSend(); }   // ใช้ข้อความในช่องพิมพ์เป็นคำประกอบแล้ว — ไม่ส่งซ้ำ
+  await sendFile(f, cap);
+}
+async function sendFile(file, caption){
+  if(!activeId) return; const chatId = activeId;
+  if(DEMO){ demoBlock(); return; }
+  const local = { id:'tmp-' + Date.now(), tmp:true, chat_id:chatId, via:'app', direction:'out', sender_type:'staff', staff_email:me.email,
+                  sender_name:me.nick, msg_type:'file', content:'', file_name:file.name, status:'sending', sent_at:new Date().toISOString() };
+  (msgCache[chatId] || (msgCache[chatId] = [])).push(local);
+  if(activeId === chatId){ renderMsgs(msgCache[chatId]); scrollBottom(); }
+  let r;
+  try{
+    // อัปไฟล์ตรงเข้าที่เก็บด้วยลิงก์ครั้งเดียวจาก pur-send (ไม่ส่งไฟล์ผ่านฟังก์ชัน — ไฟล์ใหญ่ไม่ติดขนาดคำขอ เร็วกว่าแปลง base64)
+    const up = await callFn({ action:'fileUpload', chatId, fileName:file.name });
+    if(!up.ok || !up.path || !up.token) throw new Error(up.error || 'ขอลิงก์อัปโหลดไม่สำเร็จ');
+    const { error } = await sb.storage.from(BUCKET).uploadToSignedUrl(up.path, up.token, file, { contentType:file.type || 'application/octet-stream' });
+    if(error) throw new Error('อัปโหลดไฟล์ไม่สำเร็จ: ' + error.message);
+    r = await callFn({ action:'file', chatId, path:up.path, fileName:file.name, caption:caption || '' });
+  }catch(e){ r = { ok:false, error:e.message }; }
   reconcile(local, r);
 }
 // ── อิโมจิ / สติกเกอร์ (v2.12) ──
