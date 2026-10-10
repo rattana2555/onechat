@@ -308,6 +308,11 @@ button.older-bar:hover{border-color:var(--gold);color:var(--text)}
 .bubble{padding:8px 13px;font-size:14px;line-height:1.55;word-break:break-word;white-space:pre-wrap;border-radius:18px;max-width:100%}
 .fc .bubble{background:var(--card-bg);border:1px solid var(--border);border-bottom-left-radius:5px;box-shadow:var(--shadow-sm)}
 .fa .bubble{background:var(--navy);color:#fff;border-bottom-right-radius:5px}
+/* v2.31 พนักงานที่พิมพ์จาก LINE ส่วนตัว = สมาชิกกลุ่มคนหนึ่ง → อยู่ฝั่งซ้ายแบบ LINE จริง (ขวา = ส่งในนามบัญชี OA) · ฟองสีทองอ่อน + ป้าย "ทีม" ให้แยกจากลูกค้า */
+.fc.staff .bubble{background:#fff8e6;border-color:rgba(201,168,76,.5)}
+body.dark .fc.staff .bubble{background:rgba(201,168,76,.14);border-color:rgba(201,168,76,.4)}
+.sender .stf{display:inline-block;margin-left:5px;padding:0 6px;border-radius:7px;background:rgba(201,168,76,.2);color:#8a6a12;font-size:10px;font-weight:700;line-height:15px;vertical-align:1px}
+body.dark .sender .stf{color:var(--gold-light)}
 .bubble.media{padding:0;background:transparent!important;border:none!important;box-shadow:none!important}
 .bubble.unsent{font-style:italic;color:var(--muted);background:transparent;border:1px dashed var(--border)}
 .sc-head{font-size:11px;font-weight:700;opacity:.8;margin-bottom:2px}
@@ -2410,6 +2415,8 @@ function renderMsgs(msgs){
       html += `<div class="sys-msg" data-mid="${m.id}">${esc(m.content)}${m.staff_email ? ' · ' + esc(memberName(m.staff_email)) : ''} · ${thTime(m.sent_at)}</div>`; return;
     }
     const out = m.direction === 'out';
+    // v2.31 ฝั่งขวา = ส่งในนามบัญชี OA (แอพ / OA Manager / ระบบ) · พนักงานพิมพ์จาก LINE ส่วนตัวอยู่ฝั่งซ้ายแบบสมาชิกกลุ่ม (เหมือน LINE จริง)
+    const staffLine = out && m.via === 'line', right = out && !staffLine;
     const quoted = m.quoted_line_msg_id && byLine.get(m.quoted_line_msg_id);
     const qHtml = quoted ? `<div class="quote">↩ ${esc(previewOf(quoted))}</div>` : (m.quotePreview ? `<div class="quote">↩ ${esc(m.quotePreview)}</div>` : '');
     let bubble;
@@ -2417,10 +2424,10 @@ function renderMsgs(msgs){
     else { const [inner, media] = bubbleBody(m); bubble = `<div class="bubble ${media ? 'media' : ''}">${qHtml}${inner}</div>`; }
     const who = out ? `${m.staff_email ? memberName(m.staff_email) : (m.sender_name || sysCardOf(m) || (m.via === 'oa' ? 'แอดมิน OA' : 'คนในบริษัท'))} · ${viaLabel(m.via)}` : (c && c.kind !== 'user' ? (m.sender_name || 'สมาชิกกลุ่ม') : '');
     const canQuote = !out && m.quote_token && !m.unsent && c && c.is_active;
-    html += `<div class="msg-grp ${out ? 'fa' : 'fc'}" data-mid="${m.id}">
-      ${!out && who ? `<div class="sender">${esc(who)}</div>` : ''}
+    html += `<div class="msg-grp ${right ? 'fa' : 'fc'}${staffLine ? ' staff' : ''}" data-mid="${m.id}">
+      ${staffLine ? `<div class="sender">${esc(m.staff_email ? memberName(m.staff_email) : (m.sender_name || 'คนในบริษัท'))}<span class="stf">ทีม</span></div>` : !out && who ? `<div class="sender">${esc(who)}</div>` : ''}
       <div class="bubble-row">${bubble}${canQuote ? `<button class="rq" onclick="startQuote('${m.id}')" title="ตอบกลับข้อความนี้">↩</button>` : ''}</div>
-      <div class="msg-time">${thTime(m.sent_at)}${out ? ` · ${esc(who)} ${sendMark(m)}` : (m.is_ack ? ' · <span title="ข้อความรับทราบ ไม่นับเป็นข้อความที่ต้องตอบ">รับทราบ</span>' : '')}</div>
+      <div class="msg-time">${thTime(m.sent_at)}${staffLine ? ' · LINE ส่วนตัว' : out ? ` · ${esc(who)} ${sendMark(m)}` : (m.is_ack ? ' · <span title="ข้อความรับทราบ ไม่นับเป็นข้อความที่ต้องตอบ">รับทราบ</span>' : '')}</div>
     </div>`;
   });
   area.innerHTML = html;
