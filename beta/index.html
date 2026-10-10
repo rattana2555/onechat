@@ -3208,12 +3208,18 @@ function closeRemind(){
 function remindOpen(id){ closeRemind(); setView('chat'); openChat(id); }
 function remindAll(f){ closeRemind(); setView('chat'); setListFilter(f); $('convList').scrollTop = 0; }
 document.addEventListener('keydown', e => { if(e.key === 'Escape' && $('rmdOv')) closeRemind(); });
-document.addEventListener('visibilitychange', () => {
-  if(document.hidden){ rmdHiddenAt = Date.now(); return; }
+// ออกจากแอพ = แท็บถูกซ่อน (สลับแท็บ/ย่อหน้าต่าง/มือถือสลับแอพ) หรือหน้าต่างเสียโฟกัส (คอม: Alt+Tab ไปโปรแกรม/หน้าต่างอื่นที่หน้าต่างแอพยังโชว์อยู่)
+// กลับมา = แท็บโชว์ + หน้าต่างได้โฟกัส · จับเวลาจากจังหวะแรกที่ออก ไม่นับซ้ำ
+function rmdAway(){ if(!rmdHiddenAt) rmdHiddenAt = Date.now(); }
+function rmdBack(){
+  if(document.hidden || !document.hasFocus()) return;
   // กลับเข้าแอพ: รอรอบดึงข้อมูลใหม่ (realtime/auto refresh) สักครู่ก่อน ตัวเลขจะได้เป็นปัจจุบัน
   if(rmdHiddenAt && Date.now() - rmdHiddenAt >= RMD_AWAY_MS) setTimeout(() => showRemind('return'), 1800);
   rmdHiddenAt = 0;
-});
+}
+document.addEventListener('visibilitychange', () => { if(document.hidden) rmdAway(); else rmdBack(); });
+window.addEventListener('blur', () => { setTimeout(() => { if(!document.hasFocus()) rmdAway(); }, 0); });   // คลิกเข้า iframe/ช่องในหน้าเดียวกันไม่นับ
+window.addEventListener('focus', rmdBack);
 function startSlaWatch(){
   if(slaTimer) clearInterval(slaTimer);
   slaTimer = setInterval(slaWatch, 30000);
