@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.31">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.32">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.31">
-<title>Rattana One Chat v2.31</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.32">
+<title>Rattana One Chat v2.32</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -1017,7 +1017,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
     <div class="lg-err" id="lgErr"></div>
     <div class="lg-wait" role="status"><div class="lg-spin"></div><b id="lgWaitMsg">กำลังเปิดแอพ…</b><div class="sub" id="lgWaitSub"></div>
       <div class="acts"><button class="btn btn-gold" type="button" onclick="retryGate()">ลองใหม่เดี๋ยวนี้</button><button class="btn btn-outline" type="button" onclick="doLogout()">ออกจากระบบ</button></div></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.31 · 10/10/2569</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.32 · 10/10/2569</div>
   </div>
 </div>
 
@@ -1067,7 +1067,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.31</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.32</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -1322,7 +1322,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.31 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.32 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1355,6 +1355,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 //  v2.29: ป้ายเด้ง "โดนแท็กแล้ว ตอบแชทหน่อยนะ!" + แถบเตือนบนรายการ · ป้ายคลังส่งจากชีทลูกค้า (pur-customer-map.sql · pur-sheet v1.2) กรองตามคลังได้
 //  v2.30: จอคอม/แท็บเล็ต (≥768px) แถวชิปกรองขึ้นบรรทัดใหม่ — เดิมเลื่อนข้างแบบซ่อนแถบเลื่อน ชิปท้ายแถวเหมือนหายไป
 //  v2.31: ป๊อปอัป "อย่าลืมตอบแชทนะ!" ตอนเปิด/กลับเข้าแอพ (รายการแชทที่รอฉันตอบ + แท็กถึงฉัน) · พนักงานพิมพ์จาก LINE ส่วนตัวอยู่ฝั่งซ้ายแบบ LINE จริง (ป้ายทีม)
+//  v2.32: ป๊อปอัปเตือนเด้งตอนหน้าต่างกลับมาได้โฟกัสด้วย (คอม Alt+Tab) · ข้อความตอบด่วนแก้ได้ทุกคนในทีมของบัญชี (pur-quick-replies.sql)
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
@@ -3207,12 +3208,18 @@ function closeRemind(){
 function remindOpen(id){ closeRemind(); setView('chat'); openChat(id); }
 function remindAll(f){ closeRemind(); setView('chat'); setListFilter(f); $('convList').scrollTop = 0; }
 document.addEventListener('keydown', e => { if(e.key === 'Escape' && $('rmdOv')) closeRemind(); });
-document.addEventListener('visibilitychange', () => {
-  if(document.hidden){ rmdHiddenAt = Date.now(); return; }
+// ออกจากแอพ = แท็บถูกซ่อน (สลับแท็บ/ย่อหน้าต่าง/มือถือสลับแอพ) หรือหน้าต่างเสียโฟกัส (คอม: Alt+Tab ไปโปรแกรม/หน้าต่างอื่นที่หน้าต่างแอพยังโชว์อยู่)
+// กลับมา = แท็บโชว์ + หน้าต่างได้โฟกัส · จับเวลาจากจังหวะแรกที่ออก ไม่นับซ้ำ
+function rmdAway(){ if(!rmdHiddenAt) rmdHiddenAt = Date.now(); }
+function rmdBack(){
+  if(document.hidden || !document.hasFocus()) return;
   // กลับเข้าแอพ: รอรอบดึงข้อมูลใหม่ (realtime/auto refresh) สักครู่ก่อน ตัวเลขจะได้เป็นปัจจุบัน
   if(rmdHiddenAt && Date.now() - rmdHiddenAt >= RMD_AWAY_MS) setTimeout(() => showRemind('return'), 1800);
   rmdHiddenAt = 0;
-});
+}
+document.addEventListener('visibilitychange', () => { if(document.hidden) rmdAway(); else rmdBack(); });
+window.addEventListener('blur', () => { setTimeout(() => { if(!document.hasFocus()) rmdAway(); }, 0); });   // คลิกเข้า iframe/ช่องในหน้าเดียวกันไม่นับ
+window.addEventListener('focus', rmdBack);
 function startSlaWatch(){
   if(slaTimer) clearInterval(slaTimer);
   slaTimer = setInterval(slaWatch, 30000);
@@ -4527,7 +4534,7 @@ let peopleQ = '';
 function renderSettings(){
   if(view !== 'set') return;
   const sup = isSup();
-  $('setContent').innerHTML = linkCardHtml() + notiCardHtml() + (isAdmin() ? accountsCardHtml() + accessCardHtml() : '') + (sup ? teamCardHtml() + peopleCardHtml() + hoursCardHtml() : '') + quickCardHtml(sup) + (sup ? tagsCardHtml() + whCardHtml() + ackCardHtml() + quotaCardHtml() : '') + (isAdmin() ? adminCardHtml() : '') + (sup ? aboutCardHtml() : '');   // v2.22 พนักงานเห็นแค่ของตัวเอง (ผูก LINE · แจ้งเตือน · ข้อความตอบด่วน)
+  $('setContent').innerHTML = linkCardHtml() + notiCardHtml() + (isAdmin() ? accountsCardHtml() + accessCardHtml() : '') + (sup ? teamCardHtml() + peopleCardHtml() + hoursCardHtml() : '') + quickCardHtml() + (sup ? tagsCardHtml() + whCardHtml() + ackCardHtml() + quotaCardHtml() : '') + (isAdmin() ? adminCardHtml() : '') + (sup ? aboutCardHtml() : '');   // v2.22 พนักงานเห็นแค่ของตัวเอง (ผูก LINE · แจ้งเตือน · ข้อความตอบด่วน)
   if(sup && peopleOpen) renderPeopleRows();
   if(sup && oaAdmins === null && !DEMO) loadOaAdmins();
 }
@@ -4932,15 +4939,15 @@ async function saveHours(){
 }
 
 // ── ข้อความตอบด่วน / คำรับทราบ ──
-function quickCardHtml(sup){
+// v2.32 ทุกคนในทีมของบัญชีแก้ชุดข้อความตอบด่วนของบัญชีนั้นได้ (pur_save_quick_replies) — ชุดเดียวใช้ทั้งทีมของบัญชี
+function quickCardHtml(){
   const q = settings.quick_replies || [];
-  return `<div class="card card-gold"><div class="card-head"><h3>⚡ ข้อความตอบด่วน</h3><div class="hint">ปุ่มลัดเหนือช่องพิมพ์ในหน้าแชท${sup ? ' · หนึ่งบรรทัดต่อหนึ่งข้อความ' : ''}</div></div>
-    <div class="card-body">${sup ? `<textarea class="input" id="qrText" rows="6">${esc(q.join('\n'))}</textarea><div class="mt-8"><button class="btn btn-gold" onclick="saveQuick()">💾 บันทึก</button></div>`
-                                  : `<div class="row">${q.map(t => `<span class="qchip">${esc(t)}</span>`).join('') || '<span class="txt-muted mini">ยังไม่มี</span>'}</div>`}</div></div>`;
+  return `<div class="card card-gold"><div class="card-head"><h3>⚡ ข้อความตอบด่วน · ${esc(acctName())}</h3><div class="hint">ปุ่มลัดเหนือช่องพิมพ์ในหน้าแชท · ใช้ร่วมกันทั้งทีมของบัญชี ${esc(acctName())} (แก้ได้ทุกคนในทีม) · หนึ่งบรรทัดต่อหนึ่งข้อความ · ไม่เกิน 30 ข้อความ</div></div>
+    <div class="card-body"><textarea class="input" id="qrText" rows="6">${esc(q.join('\n'))}</textarea><div class="mt-8"><button class="btn btn-gold" onclick="saveQuick()">💾 บันทึก</button></div></div></div>`;
 }
 async function saveQuick(){
   const arr = $('qrText').value.split('\n').map(s => s.trim()).filter(Boolean);
-  try{ await rpc('pur_save_settings', { p:{ quick_replies:arr }, p_account:acct.id }); await loadSettings(); showToast('บันทึกแล้ว ✓', 'success'); }
+  try{ await rpc('pur_save_quick_replies', { p_account:acct.id, p_items:arr }); await loadSettings(); renderQuick(); showToast('บันทึกข้อความตอบด่วนแล้ว ✓', 'success'); }
   catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
 }
 function tagsCardHtml(){
