@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.30">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.31">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.30">
-<title>Rattana One Chat v2.30</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.31">
+<title>Rattana One Chat v2.31</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -277,6 +277,49 @@ body.dark .tool-btn.done{background:#1a3a25;color:#7be0a3;border-color:#2b5a3a}
 @keyframes mpRing{0%,58%,100%{transform:rotate(0)}64%{transform:rotate(-18deg)}70%{transform:rotate(15deg)}76%{transform:rotate(-10deg)}82%{transform:rotate(6deg)}88%{transform:rotate(0)}}
 @keyframes mpShine{0%,50%{left:-60%}85%,100%{left:130%}}
 @media (prefers-reduced-motion:reduce){.ment-pop,.ment-pop .mp-ic,.ment-pop::after,.ment-banner,.ment-banner .mb-ic,.ment-banner::after{animation:none!important}}
+/* v2.31 ป๊อปอัป "อย่าลืมตอบแชทนะ" — ตอนเปิดแอพ / กลับเข้าแอพ */
+.rmd-ov{position:fixed;inset:0;z-index:900;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(7,15,38,.45);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:rmdFade .25s ease-out both}
+.rmd-ov.out{animation:rmdFadeOut .22s ease-in both}
+.rmd{width:100%;max-width:420px;max-height:min(640px,calc(100dvh - 32px));display:flex;flex-direction:column;border-radius:26px;overflow:hidden;background:var(--card-bg);color:var(--text);
+  box-shadow:0 30px 80px rgba(7,15,38,.45),0 0 0 1px rgba(232,200,106,.35);animation:rmdPop .55s cubic-bezier(.34,1.56,.64,1) both}
+.rmd-ov.out .rmd{animation:rmdDrop .22s ease-in both}
+.rmd-hd{position:relative;padding:22px 20px 18px;color:#fff;text-align:center;overflow:hidden;background:linear-gradient(140deg,#0d1b3e 0%,#1a2f5e 45%,#2e6ec9 100%)}
+.rmd-hd::after{content:'';position:absolute;top:0;bottom:0;left:-60%;width:40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.22),transparent);animation:mpShine 3.4s ease-in-out .6s infinite;pointer-events:none}
+.rmd-bell{position:relative;width:64px;height:64px;margin:0 auto 10px;border-radius:50%;display:grid;place-items:center;font-size:30px;
+  background:linear-gradient(135deg,#f6e3a8,#e8c86a 45%,#c9a84c);box-shadow:0 8px 24px rgba(201,168,76,.45),inset 0 2px 0 rgba(255,255,255,.6);
+  animation:rmdBell 1.8s ease-in-out .5s infinite;transform-origin:50% 12%}
+.rmd-bell::before,.rmd-bell::after{content:'';position:absolute;inset:-8px;border-radius:50%;border:2px solid rgba(232,200,106,.55);animation:rmdRing 1.8s ease-out .5s infinite}
+.rmd-bell::after{animation-delay:1.1s}
+.rmd-spark{position:absolute;width:6px;height:6px;border-radius:50%;background:#f6e3a8;box-shadow:0 0 10px #e8c86a;animation:rmdTwinkle 2.2s ease-in-out infinite}
+.rmd-hd h3{font-size:21px;font-weight:800;margin:0;letter-spacing:.2px}
+.rmd-hd p{font-size:13px;margin:4px 0 0;opacity:.85}
+.rmd-hd p b{color:#ffd9d6}
+.rmd-x{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;font-size:16px;cursor:pointer;z-index:2}
+.rmd-list{overflow-y:auto;padding:8px 10px;flex:1;min-height:0}
+.rmd-it{display:flex;align-items:center;gap:11px;width:100%;padding:9px 10px;border:0;border-radius:16px;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;
+  opacity:0;animation:rmdItem .45s cubic-bezier(.22,1,.36,1) both;animation-delay:calc(.25s + var(--i) * 70ms)}
+.rmd-it:hover{background:rgba(201,168,76,.10)}
+.rmd-it .av{width:42px;height:42px;font-size:15px}
+.rmd-tx{flex:1;min-width:0}
+.rmd-tx b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rmd-tx span{display:block;font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rmd-tx i{font-style:normal;display:inline-block;margin-right:5px;padding:0 6px;border-radius:7px;background:#1f5aa8;color:#fff;font-size:10.5px;font-weight:700;line-height:16px}
+.rmd-w{flex-shrink:0;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:11px;background:rgba(250,178,25,.2);color:var(--text);white-space:nowrap}
+.rmd-w.over{background:var(--st-crit);color:#fff;animation:rmdPulse 1.6s ease-in-out infinite}
+.rmd-more{text-align:center;font-size:12px;color:var(--muted);padding:4px 0 6px}
+.rmd-ft{display:flex;gap:8px;padding:12px 14px 14px;border-top:1px solid var(--border)}
+.rmd-ft .btn{flex:1;justify-content:center}
+@keyframes rmdFade{from{opacity:0}to{opacity:1}}
+@keyframes rmdFadeOut{from{opacity:1}to{opacity:0}}
+@keyframes rmdPop{0%{opacity:0;transform:translateY(40px) scale(.82)}100%{opacity:1;transform:none}}
+@keyframes rmdDrop{to{opacity:0;transform:translateY(24px) scale(.94)}}
+@keyframes rmdBell{0%,55%,100%{transform:rotate(0)}62%{transform:rotate(-16deg)}69%{transform:rotate(14deg)}76%{transform:rotate(-9deg)}83%{transform:rotate(5deg)}90%{transform:rotate(0)}}
+@keyframes rmdRing{0%{opacity:.9;transform:scale(.85)}100%{opacity:0;transform:scale(1.45)}}
+@keyframes rmdTwinkle{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1)}}
+@keyframes rmdItem{0%{opacity:0;transform:translateX(26px)}100%{opacity:1;transform:none}}
+@keyframes rmdPulse{0%,100%{box-shadow:0 0 0 0 rgba(208,59,59,.45)}50%{box-shadow:0 0 0 5px rgba(208,59,59,0)}}
+@media (prefers-reduced-motion:reduce){.rmd-ov,.rmd,.rmd-bell,.rmd-bell::before,.rmd-bell::after,.rmd-spark,.rmd-hd::after,.rmd-it,.rmd-w.over{animation:none!important;opacity:1}}
 /* v2.29 ป้ายคลังส่ง (จากชีทลูกค้า) */
 .tag.wh{background:rgba(12,140,120,.12);border-color:rgba(12,140,120,.45);color:#0b6b5c;font-weight:700}
 body.dark .tag.wh{background:rgba(60,200,170,.14);border-color:rgba(60,200,170,.4);color:#7fe0cb}
@@ -307,6 +350,11 @@ button.older-bar:hover{border-color:var(--gold);color:var(--text)}
 .bubble{padding:8px 13px;font-size:14px;line-height:1.55;word-break:break-word;white-space:pre-wrap;border-radius:18px;max-width:100%}
 .fc .bubble{background:var(--card-bg);border:1px solid var(--border);border-bottom-left-radius:5px;box-shadow:var(--shadow-sm)}
 .fa .bubble{background:var(--navy);color:#fff;border-bottom-right-radius:5px}
+/* v2.31 พนักงานที่พิมพ์จาก LINE ส่วนตัว = สมาชิกกลุ่มคนหนึ่ง → อยู่ฝั่งซ้ายแบบ LINE จริง (ขวา = ส่งในนามบัญชี OA) · ฟองสีทองอ่อน + ป้าย "ทีม" ให้แยกจากลูกค้า */
+.fc.staff .bubble{background:#fff8e6;border-color:rgba(201,168,76,.5)}
+body.dark .fc.staff .bubble{background:rgba(201,168,76,.14);border-color:rgba(201,168,76,.4)}
+.sender .stf{display:inline-block;margin-left:5px;padding:0 6px;border-radius:7px;background:rgba(201,168,76,.2);color:#8a6a12;font-size:10px;font-weight:700;line-height:15px;vertical-align:1px}
+body.dark .sender .stf{color:var(--gold-light)}
 .bubble.media{padding:0;background:transparent!important;border:none!important;box-shadow:none!important}
 .bubble.unsent{font-style:italic;color:var(--muted);background:transparent;border:1px dashed var(--border)}
 .sc-head{font-size:11px;font-weight:700;opacity:.8;margin-bottom:2px}
@@ -969,7 +1017,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
     <div class="lg-err" id="lgErr"></div>
     <div class="lg-wait" role="status"><div class="lg-spin"></div><b id="lgWaitMsg">กำลังเปิดแอพ…</b><div class="sub" id="lgWaitSub"></div>
       <div class="acts"><button class="btn btn-gold" type="button" onclick="retryGate()">ลองใหม่เดี๋ยวนี้</button><button class="btn btn-outline" type="button" onclick="doLogout()">ออกจากระบบ</button></div></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.30 · 09/10/2569</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.31 · 10/10/2569</div>
   </div>
 </div>
 
@@ -1019,7 +1067,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.30</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.31</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -1274,7 +1322,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.30 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.31 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1306,6 +1354,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 //  v2.28: งานโดนแท็กในแชทกลุ่ม (pur_mentions · webhook v2.4 · pur-push v2.1) — @แท็กพนักงาน = งานของคนนั้น นับเวลาจนเขาพิมพ์ในกลุ่ม · ป้าย @ · ชิป "แท็กถึงฉัน" · แถบ+ปุ่มไม่ต้องตอบ · แจ้งเตือน · นับรวมผลงานรายคน
 //  v2.29: ป้ายเด้ง "โดนแท็กแล้ว ตอบแชทหน่อยนะ!" + แถบเตือนบนรายการ · ป้ายคลังส่งจากชีทลูกค้า (pur-customer-map.sql · pur-sheet v1.2) กรองตามคลังได้
 //  v2.30: จอคอม/แท็บเล็ต (≥768px) แถวชิปกรองขึ้นบรรทัดใหม่ — เดิมเลื่อนข้างแบบซ่อนแถบเลื่อน ชิปท้ายแถวเหมือนหายไป
+//  v2.31: ป๊อปอัป "อย่าลืมตอบแชทนะ!" ตอนเปิด/กลับเข้าแอพ (รายการแชทที่รอฉันตอบ + แท็กถึงฉัน) · พนักงานพิมพ์จาก LINE ส่วนตัวอยู่ฝั่งซ้ายแบบ LINE จริง (ป้ายทีม)
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
@@ -2409,6 +2458,8 @@ function renderMsgs(msgs){
       html += `<div class="sys-msg" data-mid="${m.id}">${esc(m.content)}${m.staff_email ? ' · ' + esc(memberName(m.staff_email)) : ''} · ${thTime(m.sent_at)}</div>`; return;
     }
     const out = m.direction === 'out';
+    // v2.31 ฝั่งขวา = ส่งในนามบัญชี OA (แอพ / OA Manager / ระบบ) · พนักงานพิมพ์จาก LINE ส่วนตัวอยู่ฝั่งซ้ายแบบสมาชิกกลุ่ม (เหมือน LINE จริง)
+    const staffLine = out && m.via === 'line', right = out && !staffLine;
     const quoted = m.quoted_line_msg_id && byLine.get(m.quoted_line_msg_id);
     const qHtml = quoted ? `<div class="quote">↩ ${esc(previewOf(quoted))}</div>` : (m.quotePreview ? `<div class="quote">↩ ${esc(m.quotePreview)}</div>` : '');
     let bubble;
@@ -2416,10 +2467,10 @@ function renderMsgs(msgs){
     else { const [inner, media] = bubbleBody(m); bubble = `<div class="bubble ${media ? 'media' : ''}">${qHtml}${inner}</div>`; }
     const who = out ? `${m.staff_email ? memberName(m.staff_email) : (m.sender_name || sysCardOf(m) || (m.via === 'oa' ? 'แอดมิน OA' : 'คนในบริษัท'))} · ${viaLabel(m.via)}` : (c && c.kind !== 'user' ? (m.sender_name || 'สมาชิกกลุ่ม') : '');
     const canQuote = !out && m.quote_token && !m.unsent && c && c.is_active;
-    html += `<div class="msg-grp ${out ? 'fa' : 'fc'}" data-mid="${m.id}">
-      ${!out && who ? `<div class="sender">${esc(who)}</div>` : ''}
+    html += `<div class="msg-grp ${right ? 'fa' : 'fc'}${staffLine ? ' staff' : ''}" data-mid="${m.id}">
+      ${staffLine ? `<div class="sender">${esc(m.staff_email ? memberName(m.staff_email) : (m.sender_name || 'คนในบริษัท'))}<span class="stf">ทีม</span></div>` : !out && who ? `<div class="sender">${esc(who)}</div>` : ''}
       <div class="bubble-row">${bubble}${canQuote ? `<button class="rq" onclick="startQuote('${m.id}')" title="ตอบกลับข้อความนี้">↩</button>` : ''}</div>
-      <div class="msg-time">${thTime(m.sent_at)}${out ? ` · ${esc(who)} ${sendMark(m)}` : (m.is_ack ? ' · <span title="ข้อความรับทราบ ไม่นับเป็นข้อความที่ต้องตอบ">รับทราบ</span>' : '')}</div>
+      <div class="msg-time">${thTime(m.sent_at)}${staffLine ? ' · LINE ส่วนตัว' : out ? ` · ${esc(who)} ${sendMark(m)}` : (m.is_ack ? ' · <span title="ข้อความรับทราบ ไม่นับเป็นข้อความที่ต้องตอบ">รับทราบ</span>' : '')}</div>
     </div>`;
   });
   area.innerHTML = html;
@@ -2905,7 +2956,7 @@ const NOTI_KINDS = {
 };
 function defaultNotiPrefs(){
   return { on:true, sound:true, popup:true, scope:isSup() ? 'all' : 'mine_none',
-           msg:true, warn:true, sla:true, assign:true, orphan:false, mention:true, workOnly:false };
+           msg:true, warn:true, sla:true, assign:true, orphan:false, mention:true, remind:true, workOnly:false };
 }
 let notiPrefs = defaultNotiPrefs();
 let notiList  = [];                  // [{id,kind,chat,name,text,at,read}]
@@ -3103,6 +3154,65 @@ function notiMentions(c){
     else pushNoti('mention', c, `${by}ในกลุ่มนี้ · ตอบภายใน ${settings.sla_minutes} นาที`, `mention|${x.id}`, true);
   });
 }
+// ═══ v2.31 ป๊อปอัป "อย่าลืมตอบแชทนะ" ═══
+// เด้งตอนเปิดแอพ/เข้าบัญชี และตอนกลับเข้าแอพหลังออกไป ≥1 นาที (ห่างจากครั้งก่อน ≥3 นาที) — เฉพาะเมื่อมีแชทที่รอ "ฉัน" ตอบ
+// ของฉัน = บัญชีที่แบ่งงานรายแชท: แชทที่ฉันรับผิดชอบ · บัญชีที่ไม่แบ่ง: ทุกแชทที่รอตอบ · + แชทที่แท็กถึงฉัน (ทุกบัญชี)
+const RMD_AWAY_MS = 60 * 1000, RMD_GAP_MS = 3 * 60 * 1000;
+let rmdHiddenAt = 0, rmdShownAt = 0;
+function remindRows(){
+  if(!me) return [];
+  const own = useOwner(), sla = slaSec(), rows = [];
+  chats.forEach(c => {
+    if(c.exclude_kpi || c.status === 'resolved') return;
+    const mine = isWaiting(c) && (!own || c.assignee_email === me.email), men = myMentions(c)[0];
+    if(!mine && !men) return;
+    const since = mine && men ? (Date.parse(c.awaiting_since) < Date.parse(men.s) ? c.awaiting_since : men.s) : mine ? c.awaiting_since : men.s;
+    const age = elapsedSec(since, null);
+    rows.push({ c, men, age, over:age > sla });
+  });
+  return rows.sort((a, b) => b.age - a.age);
+}
+function showRemind(why){
+  if(!started || !notiPrefs.remind || $('rmdOv') || !acct) return;
+  if(document.querySelector('.modal.open') || $('modal')?.classList.contains('open')) return;   // กำลังทำอย่างอื่นในหน้าต่างอยู่ — ไม่แทรก
+  const rows = remindRows(); if(!rows.length) return;
+  if(why === 'return' && Date.now() - rmdShownAt < RMD_GAP_MS) return;
+  rmdShownAt = Date.now();
+  const nOver = rows.filter(r => r.over).length, nMen = rows.filter(r => r.men).length, MAX = 8;
+  const sparks = [[14, 22, 0], [82, 18, .7], [24, 70, 1.3], [76, 64, .35], [52, 12, 1.0]]
+    .map(([x, y, d]) => `<i class="rmd-spark" style="left:${x}%;top:${y}%;animation-delay:${d}s"></i>`).join('');
+  const items = rows.slice(0, MAX).map((r, i) => `<button class="rmd-it" style="--i:${i}" data-id="${esc(r.c.id)}" onclick="remindOpen(this.dataset.id)">
+      ${avatarHtml(r.c)}
+      <span class="rmd-tx"><b>${esc(chatName(r.c))}</b><span>${r.men ? `<i>@ แท็กคุณ</i>` : ''}${esc(r.c.last_message || (r.men ? (r.men.b || '') + ' แท็กคุณ' : 'รอคำตอบ'))}</span></span>
+      <span class="rmd-w ${r.over ? 'over' : ''}">${r.over ? 'เกิน · ' : 'รอ '}${fmtDur(r.age)}</span></button>`).join('');
+  const go = nMen === rows.length ? 'mention' : useOwner() ? 'mine' : 'awaiting';
+  const ov = document.createElement('div');
+  ov.className = 'rmd-ov'; ov.id = 'rmdOv';
+  ov.innerHTML = `<div class="rmd" role="dialog" aria-modal="true" aria-label="อย่าลืมตอบแชท">
+    <div class="rmd-hd">${sparks}<button class="rmd-x" onclick="closeRemind()" aria-label="ปิด">✕</button>
+      <div class="rmd-bell">🔔</div>
+      <h3>อย่าลืมตอบแชทนะ!</h3>
+      <p>มี <b style="color:#fff">${nf(rows.length)} แชท</b> รอคุณตอบอยู่${nOver ? ` · <b>เกินเวลาแล้ว ${nf(nOver)}</b>` : ''}${nMen ? ` · แท็กถึงคุณ ${nf(nMen)}` : ''}</p></div>
+    <div class="rmd-list">${items}${rows.length > MAX ? `<div class="rmd-more">และอีก ${nf(rows.length - MAX)} แชท</div>` : ''}</div>
+    <div class="rmd-ft"><button class="btn btn-outline" onclick="closeRemind()">ไว้ทีหลัง</button>
+      <button class="btn btn-gold" onclick="remindAll('${go}')">ดูทั้งหมด ›</button></div></div>`;
+  ov.addEventListener('click', e => { if(e.target === ov) closeRemind(); });
+  document.body.appendChild(ov);
+  if(notiPrefs.sound && why === 'open') beep('warn');
+}
+function closeRemind(){
+  const ov = $('rmdOv'); if(!ov || ov.classList.contains('out')) return;
+  ov.classList.add('out'); setTimeout(() => ov.remove(), 230);
+}
+function remindOpen(id){ closeRemind(); setView('chat'); openChat(id); }
+function remindAll(f){ closeRemind(); setView('chat'); setListFilter(f); $('convList').scrollTop = 0; }
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && $('rmdOv')) closeRemind(); });
+document.addEventListener('visibilitychange', () => {
+  if(document.hidden){ rmdHiddenAt = Date.now(); return; }
+  // กลับเข้าแอพ: รอรอบดึงข้อมูลใหม่ (realtime/auto refresh) สักครู่ก่อน ตัวเลขจะได้เป็นปัจจุบัน
+  if(rmdHiddenAt && Date.now() - rmdHiddenAt >= RMD_AWAY_MS) setTimeout(() => showRemind('return'), 1800);
+  rmdHiddenAt = 0;
+});
 function startSlaWatch(){
   if(slaTimer) clearInterval(slaTimer);
   slaTimer = setInterval(slaWatch, 30000);
@@ -4623,6 +4733,7 @@ function notiCardHtml(){
         ${chk('ntSla', P.sla, '🔴 เกิน SLA แล้ว', `รอเกิน ${sla} นาทีแล้วยังไม่มีใครตอบ — เตือนเองแม้ซัพไม่ได้ทักมาใหม่`)}
         ${useOwner() ? chk('ntAssign', P.assign, '👤 มีคนตั้งให้ฉันเป็นผู้รับผิดชอบแชท') : ''}
         ${chk('ntMention', P.mention, '@ มีคนแท็กฉันในแชทกลุ่ม', 'เตือนทันทีที่โดนแท็ก และเตือนใกล้ครบ/เกิน SLA ของงานที่โดนแท็ก (ตามช่อง 🟠/🔴 ด้านบน) · เตือนเสมอไม่ว่าแชทนั้นใครรับผิดชอบ')}
+        ${chk('ntRemind', P.remind, '🔔 ป๊อปอัป "อย่าลืมตอบแชทนะ" ตอนเปิดแอพ', 'เด้งรายชื่อแชทที่รอคุณตอบ (และแชทที่แท็กถึงคุณ) ตอนเปิดแอพ หรือกลับเข้าแอพหลังออกไปเกิน 1 นาที')}
         ${chk('ntOrphan', P.orphan, useOwner() ? '❓ แชทใหม่ที่ยังไม่มีผู้รับผิดชอบ' : '❓ แชทใหม่เข้ามา', 'เหมาะกับหัวหน้า — ถ้าเปิดไว้ตอนกำลังนำเข้าประวัติจะเตือนเยอะ')}
       </div>
       <div class="field"><label>ช่องทาง</label>
@@ -4643,7 +4754,7 @@ function notiPermLabel(){
 function saveNotiPrefs(){
   const g = (id, k) => { const e = $(id); if(e) notiPrefs[k] = e.type === 'checkbox' ? e.checked : e.value; };
   // ntAssign ไม่มีในบัญชีที่ไม่แบ่งงานรายแชท — g() ข้ามช่องที่ไม่มีให้แล้ว ค่าเดิมของบัญชีอื่นจึงไม่ถูกล้าง
-  g('ntScope', 'scope'); g('ntMsg', 'msg'); g('ntWarn', 'warn'); g('ntSla', 'sla'); g('ntAssign', 'assign'); g('ntOrphan', 'orphan'); g('ntMention', 'mention');
+  g('ntScope', 'scope'); g('ntMsg', 'msg'); g('ntWarn', 'warn'); g('ntSla', 'sla'); g('ntAssign', 'assign'); g('ntOrphan', 'orphan'); g('ntMention', 'mention'); g('ntRemind', 'remind');
   g('ntSound', 'sound'); g('ntPopup', 'popup'); g('ntWork', 'workOnly');
   notiSave(); renderBell(); syncPushPrefs();
   if(notiPrefs.popup) askNotifyPermission();
@@ -5541,6 +5652,7 @@ async function enterAccount(id){
   renderAcctHeader(); applyPeerWords(); fillPersonDD();
   setView(view);
   showToast(`เปิดบัญชี ${a.name} แล้ว`, 'info', 1800);
+  rmdShownAt = 0; setTimeout(() => showRemind('open'), 1200);     // v2.31 สลับบัญชี = รายการรอตอบของบัญชีนั้น
 }
 // ป้ายคงที่ในหน้าแดชบอร์ด/ค้นหาที่เรียกอีกฝั่งของแชท — จัดซื้อ = ซัพพลายเออร์ · แผนกอื่น = ลูกค้า
 function applyPeerWords(){
@@ -5574,6 +5686,7 @@ async function showApp(){
   setTimeout(checkUpdate, 5000); setInterval(checkUpdate, 30 * 60 * 1000);
   document.addEventListener('visibilitychange', () => { if(!document.hidden) checkUpdate(); });   // แจ้งเตือน: โหลดค่าตั้ง (scope ขึ้นกับสิทธิ์) แล้วเริ่มเฝ้า SLA
   setView(LS.get('pur.view') || 'chat');
+  setTimeout(() => showRemind('open'), 1500);                      // v2.31 ป๊อปอัป "อย่าลืมตอบแชทนะ"
   // ตัวเลข "รอมานาน" เดินตามเวลาจริง
   // ตัวเลข "รอมานาน" เดินตามเวลาจริง — ข้ามตอนแอพถูกซ่อน ไม่มีใครดูอยู่ก็ไม่ต้องเปลืองแรงเครื่อง
   setInterval(() => {
