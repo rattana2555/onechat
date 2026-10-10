@@ -2880,15 +2880,29 @@ function openEditChat(){
   const c = chatById.get(activeId); if(!c) return;
   openModal('ข้อมูลแชท', `
     <div class="field"><label>ชื่อจาก LINE</label><div class="txt-sm">${esc(c.title || '—')} <span class="txt-muted">· ${c.kind === 'user' ? 'แชท 1:1' : 'กลุ่ม'}</span></div></div>
-    <div class="field"><label>ชื่อที่ทีมตั้ง (เช่น ชื่อ${peer()} + รหัส PU)</label><input class="input" id="edSupplier" value="${esc(c.supplier_name || '')}" placeholder="เช่น บจก. วัสดุก่อสร้าง A">
+    <div class="field"><label>ชื่อที่ทีมตั้ง (เช่น ชื่อ${peer()} + รหัส PU)</label><input class="input" id="edSupplier" value="${esc(c.supplier_name || '')}" placeholder="เช่น บจก. วัสดุก่อสร้าง A" oninput="edNameCount()">
+      <span class="mini" id="edNameCnt"></span>
       ${c.oa_chat_id ? `<span class="mini">แก้แล้ว<b>ชื่อเล่นใน LINE OA Manager เปลี่ยนตามเอง</b>ภายในราว 1–2 นาที (ต้องมีเครื่องที่ติดส่วนขยายเปิดแท็บ chat.line.biz ไว้)${c.oa_alias_pending ? ` · <span class="lv-warn-txt">กำลังรอเปลี่ยนใน OA เป็น "${esc(c.oa_alias_pending)}"</span>` : ''}</span>` : ''}</div>
     <div class="field"><label>โน้ต</label><textarea class="input" id="edNote" rows="3" placeholder="เช่น เซลส์ชื่อคุณเอ โทร 08x-xxx-xxxx · ส่งของทุกวันพุธ">${esc(c.note || '')}</textarea></div>
     <div class="txt-sm txt-muted">LINE ID: <code style="font-size:11px">${esc(c.line_id)}</code></div>`,
     `<button class="btn btn-outline" onclick="closeModal()">ยกเลิก</button><button class="btn btn-gold" onclick="saveEditChat()">บันทึก</button>`);
+  edNameCount();
+}
+// v2.36 ชื่อเล่นใน LINE OA Manager ตั้งได้ไม่เกิน 20 ตัวอักษร → ชื่อที่ทีมตั้งในแอพจำกัดเท่ากัน (นับตามตัวอักษรจริง อิโมจิ = 1)
+const NAME_MAX = 20;
+const nameLen = t => [...String(t || '').trim()].length;
+function edNameCount(){
+  const el = $('edNameCnt'), inp = $('edSupplier'); if(!el || !inp) return;
+  const n = nameLen(inp.value), over = n > NAME_MAX;
+  el.innerHTML = `${n}/${NAME_MAX} ตัวอักษร${over ? ' — <b class="lv-crit-txt">ยาวเกิน ชื่อเล่นใน LINE ตั้งได้ไม่เกิน 20 ตัวอักษร</b>' : ''}`;
+  el.style.color = over ? 'var(--st-crit)' : '';
+  inp.style.borderColor = over ? 'var(--st-crit)' : '';
 }
 async function saveEditChat(){
-  const id = activeId; const supplier = $('edSupplier').value.trim(), note = $('edNote').value.trim(); closeModal();
+  const id = activeId; const supplier = $('edSupplier').value.trim(), note = $('edNote').value.trim();
   const c0 = chatById.get(id), renamed = !!supplier && supplier !== (c0?.supplier_name || '');
+  if(renamed && nameLen(supplier) > NAME_MAX){ showToast(`ชื่อยาว ${nameLen(supplier)} ตัวอักษร — ตั้งได้ไม่เกิน ${NAME_MAX} ตัวอักษร (เท่าชื่อเล่นใน LINE)`, 'warning', 5000); $('edSupplier').focus(); return; }
+  closeModal();
   try{
     await rpc('pur_update_chat', { p_chat:id, p_supplier:supplier || null, p_note:note || null });
     patchChat(id, { supplier_name:supplier || null, note:note || null, ...(renamed && c0?.oa_chat_id ? { oa_alias_pending:supplier } : {}) });
