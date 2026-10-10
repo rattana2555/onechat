@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.32">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.33">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.32">
-<title>Rattana One Chat v2.32</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.33">
+<title>Rattana One Chat v2.33</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -404,6 +404,10 @@ body.dark .sender .stf{color:var(--gold-light)}
 .emo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(42px,1fr));gap:2px}
 .emo-grid button{font-size:25px;line-height:1;height:44px;border:0;background:none;border-radius:8px;cursor:pointer;font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif}
 .emo-grid button:hover,.stk-grid button:hover{background:var(--bg)}
+/* v2.33 แผงอิโมจิในการ์ดข้อความตอบด่วน (คอมไม่มีคีย์บอร์ดอิโมจิ) */
+.qr-emo{margin-top:8px;max-height:240px;overflow-y:auto;border:1px solid var(--border);border-radius:14px;padding:4px 8px 8px;background:var(--card-bg)}
+.qr-emo[hidden]{display:none}
+.qr-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .stk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:4px}
 .stk-grid button{border:0;background:none;padding:6px;border-radius:12px;cursor:pointer;aspect-ratio:1;min-width:0}
 .stk-grid img{width:100%;height:100%;object-fit:contain;display:block}
@@ -1017,7 +1021,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
     <div class="lg-err" id="lgErr"></div>
     <div class="lg-wait" role="status"><div class="lg-spin"></div><b id="lgWaitMsg">กำลังเปิดแอพ…</b><div class="sub" id="lgWaitSub"></div>
       <div class="acts"><button class="btn btn-gold" type="button" onclick="retryGate()">ลองใหม่เดี๋ยวนี้</button><button class="btn btn-outline" type="button" onclick="doLogout()">ออกจากระบบ</button></div></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.32 · 10/10/2569</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.33 · 10/10/2569</div>
   </div>
 </div>
 
@@ -1067,7 +1071,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.32</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.33</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -1322,7 +1326,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.32 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.33 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1356,6 +1360,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 //  v2.30: จอคอม/แท็บเล็ต (≥768px) แถวชิปกรองขึ้นบรรทัดใหม่ — เดิมเลื่อนข้างแบบซ่อนแถบเลื่อน ชิปท้ายแถวเหมือนหายไป
 //  v2.31: ป๊อปอัป "อย่าลืมตอบแชทนะ!" ตอนเปิด/กลับเข้าแอพ (รายการแชทที่รอฉันตอบ + แท็กถึงฉัน) · พนักงานพิมพ์จาก LINE ส่วนตัวอยู่ฝั่งซ้ายแบบ LINE จริง (ป้ายทีม)
 //  v2.32: ป๊อปอัปเตือนเด้งตอนหน้าต่างกลับมาได้โฟกัสด้วย (คอม Alt+Tab) · ข้อความตอบด่วนแก้ได้ทุกคนในทีมของบัญชี (pur-quick-replies.sql)
+//  v2.33: แผงอิโมจิในการ์ดข้อความตอบด่วน (คอมไม่มีคีย์บอร์ดอิโมจิ)
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
@@ -4943,7 +4948,27 @@ async function saveHours(){
 function quickCardHtml(){
   const q = settings.quick_replies || [];
   return `<div class="card card-gold"><div class="card-head"><h3>⚡ ข้อความตอบด่วน · ${esc(acctName())}</h3><div class="hint">ปุ่มลัดเหนือช่องพิมพ์ในหน้าแชท · ใช้ร่วมกันทั้งทีมของบัญชี ${esc(acctName())} (แก้ได้ทุกคนในทีม) · หนึ่งบรรทัดต่อหนึ่งข้อความ · ไม่เกิน 30 ข้อความ</div></div>
-    <div class="card-body"><textarea class="input" id="qrText" rows="6">${esc(q.join('\n'))}</textarea><div class="mt-8"><button class="btn btn-gold" onclick="saveQuick()">💾 บันทึก</button></div></div></div>`;
+    <div class="card-body"><textarea class="input" id="qrText" rows="6">${esc(q.join('\n'))}</textarea>
+      <div class="qr-emo" id="qrEmo" hidden></div>
+      <div class="qr-acts"><button class="btn btn-gold" onclick="saveQuick()">💾 บันทึก</button>
+        <button class="btn btn-outline" id="qrEmoBtn" onmousedown="event.preventDefault()" onclick="toggleQrEmo()">😊 อิโมจิ</button></div></div></div>`;
+}
+// v2.33 แผงอิโมจิของการ์ดข้อความตอบด่วน — ชุดเดียวกับช่องพิมพ์ในหน้าแชท · กดแล้วแทรกตรงเคอร์เซอร์ในช่องข้อความ
+function toggleQrEmo(){
+  const p = $('qrEmo'); if(!p) return;
+  if(!p.hidden){ p.hidden = true; return; }
+  const rec = lsList('pur.emjRecent');
+  const grid = list => `<div class="emo-grid">${list.map(e => `<button type="button" data-e="${esc(e)}" onmousedown="event.preventDefault()">${esc(e)}</button>`).join('')}</div>`;
+  p.innerHTML = (rec.length ? `<div class="emo-h">ใช้ล่าสุด</div>${grid(rec)}` : '') + EMOJI_SETS.map(([t, list]) => `<div class="emo-h">${t}</div>${grid(list)}`).join('');
+  p.onclick = ev => { const b = ev.target.closest('button[data-e]'); if(b) insQrEmoji(b.dataset.e); };
+  p.hidden = false;
+}
+function insQrEmoji(e){
+  const t = $('qrText'); if(!t) return;
+  const a = t.selectionStart ?? t.value.length, b = t.selectionEnd ?? t.value.length;
+  t.value = t.value.slice(0, a) + e + t.value.slice(b);
+  try{ t.focus(); t.setSelectionRange(a + e.length, a + e.length); }catch(_){}
+  pushRecent('pur.emjRecent', e, 24);
 }
 async function saveQuick(){
   const arr = $('qrText').value.split('\n').map(s => s.trim()).filter(Boolean);
