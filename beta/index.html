@@ -2883,7 +2883,8 @@ function openEditChat(){
     <div class="field"><label>ชื่อที่ทีมตั้ง (เช่น ชื่อ${peer()} + รหัส PU)</label><input class="input" id="edSupplier" value="${esc(c.supplier_name || '')}" placeholder="เช่น บจก. วัสดุก่อสร้าง A" oninput="edNameCount()">
       <span class="mini" id="edNameCnt"></span>
       ${c.oa_chat_id ? `<span class="mini">แก้แล้ว<b>ชื่อเล่นใน LINE OA Manager เปลี่ยนตามเอง</b>ภายในราว 1–2 นาที (ต้องมีเครื่องที่ติดส่วนขยายเปิดแท็บ chat.line.biz ไว้)${c.oa_alias_pending ? ` · <span class="lv-warn-txt">กำลังรอเปลี่ยนใน OA เป็น "${esc(c.oa_alias_pending)}"</span>` : ''}</span>` : ''}</div>
-    <div class="field"><label>โน้ต</label><textarea class="input" id="edNote" rows="3" placeholder="เช่น เซลส์ชื่อคุณเอ โทร 08x-xxx-xxxx · ส่งของทุกวันพุธ">${esc(c.note || '')}</textarea></div>
+    <div class="field"><label>โน้ต</label><textarea class="input" id="edNote" rows="3" placeholder="เช่น เซลส์ชื่อคุณเอ โทร 08x-xxx-xxxx · ส่งของทุกวันพุธ">${esc(c.note || '')}</textarea>
+      ${c.oa_chat_id ? `<span class="mini">แก้แล้ว<b>เพิ่มเป็นโน้ตใน LINE OA Manager ให้เอง</b>ภายในราว 1–2 นาที (ส่วนขยาย 3.5 ขึ้นไป · เปิดแท็บ chat.line.biz ไว้) · แก้แต่ละครั้ง = โน้ตใหม่ใน OA (โน้ตเดิมใน OA ยังอยู่)${c.oa_note_pending ? ` · <span class="lv-warn-txt">กำลังรอเพิ่มใน OA</span>` : ''}</span>` : ''}</div>
     <div class="txt-sm txt-muted">LINE ID: <code style="font-size:11px">${esc(c.line_id)}</code></div>`,
     `<button class="btn btn-outline" onclick="closeModal()">ยกเลิก</button><button class="btn btn-gold" onclick="saveEditChat()">บันทึก</button>`);
   edNameCount();
@@ -2905,8 +2906,10 @@ async function saveEditChat(){
   closeModal();
   try{
     await rpc('pur_update_chat', { p_chat:id, p_supplier:supplier || null, p_note:note || null });
-    patchChat(id, { supplier_name:supplier || null, note:note || null, ...(renamed && c0?.oa_chat_id ? { oa_alias_pending:supplier } : {}) });
-    showToast(renamed && c0?.oa_chat_id ? 'บันทึกแล้ว ✓ — ชื่อเล่นใน OA จะเปลี่ยนตามภายในราว 1–2 นาที' : 'บันทึกแล้ว ✓', 'success', 4500);
+    const noteChanged = !!note && note !== (c0?.note || '');
+    patchChat(id, { supplier_name:supplier || null, note:note || null, ...(renamed && c0?.oa_chat_id ? { oa_alias_pending:supplier } : {}), ...(noteChanged && c0?.oa_chat_id ? { oa_note_pending:note } : {}) });
+    const toOa = [renamed && 'ชื่อเล่น', noteChanged && 'โน้ต'].filter(Boolean);
+    showToast(toOa.length && c0?.oa_chat_id ? `บันทึกแล้ว ✓ — ${toOa.join(' และ ')}ใน OA จะอัปเดตภายในราว 1–2 นาที` : 'บันทึกแล้ว ✓', 'success', 4500);
   }
   catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
 }
