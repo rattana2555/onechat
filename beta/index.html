@@ -405,6 +405,10 @@ body.dark .sender .stf{color:var(--gold-light)}
 .emo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(42px,1fr));gap:2px}
 .emo-grid button{font-size:25px;line-height:1;height:44px;border:0;background:none;border-radius:8px;cursor:pointer;font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif}
 .emo-grid button:hover,.stk-grid button:hover{background:var(--bg)}
+/* v2.33 แผงอิโมจิในการ์ดข้อความตอบด่วน (คอมไม่มีคีย์บอร์ดอิโมจิ) */
+.qr-emo{margin-top:8px;max-height:240px;overflow-y:auto;border:1px solid var(--border);border-radius:14px;padding:4px 8px 8px;background:var(--card-bg)}
+.qr-emo[hidden]{display:none}
+.qr-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .stk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:4px}
 .stk-grid button{border:0;background:none;padding:6px;border-radius:12px;cursor:pointer;aspect-ratio:1;min-width:0}
 .stk-grid img{width:100%;height:100%;object-fit:contain;display:block}
@@ -4944,7 +4948,27 @@ async function saveHours(){
 function quickCardHtml(){
   const q = settings.quick_replies || [];
   return `<div class="card card-gold"><div class="card-head"><h3>⚡ ข้อความตอบด่วน · ${esc(acctName())}</h3><div class="hint">ปุ่มลัดเหนือช่องพิมพ์ในหน้าแชท · ใช้ร่วมกันทั้งทีมของบัญชี ${esc(acctName())} (แก้ได้ทุกคนในทีม) · หนึ่งบรรทัดต่อหนึ่งข้อความ · ไม่เกิน 30 ข้อความ</div></div>
-    <div class="card-body"><textarea class="input" id="qrText" rows="6">${esc(q.join('\n'))}</textarea><div class="mt-8"><button class="btn btn-gold" onclick="saveQuick()">💾 บันทึก</button></div></div></div>`;
+    <div class="card-body"><textarea class="input" id="qrText" rows="6">${esc(q.join('\n'))}</textarea>
+      <div class="qr-emo" id="qrEmo" hidden></div>
+      <div class="qr-acts"><button class="btn btn-gold" onclick="saveQuick()">💾 บันทึก</button>
+        <button class="btn btn-outline" id="qrEmoBtn" onmousedown="event.preventDefault()" onclick="toggleQrEmo()">😊 อิโมจิ</button></div></div></div>`;
+}
+// v2.33 แผงอิโมจิของการ์ดข้อความตอบด่วน — ชุดเดียวกับช่องพิมพ์ในหน้าแชท · กดแล้วแทรกตรงเคอร์เซอร์ในช่องข้อความ
+function toggleQrEmo(){
+  const p = $('qrEmo'); if(!p) return;
+  if(!p.hidden){ p.hidden = true; return; }
+  const rec = lsList('pur.emjRecent');
+  const grid = list => `<div class="emo-grid">${list.map(e => `<button type="button" data-e="${esc(e)}" onmousedown="event.preventDefault()">${esc(e)}</button>`).join('')}</div>`;
+  p.innerHTML = (rec.length ? `<div class="emo-h">ใช้ล่าสุด</div>${grid(rec)}` : '') + EMOJI_SETS.map(([t, list]) => `<div class="emo-h">${t}</div>${grid(list)}`).join('');
+  p.onclick = ev => { const b = ev.target.closest('button[data-e]'); if(b) insQrEmoji(b.dataset.e); };
+  p.hidden = false;
+}
+function insQrEmoji(e){
+  const t = $('qrText'); if(!t) return;
+  const a = t.selectionStart ?? t.value.length, b = t.selectionEnd ?? t.value.length;
+  t.value = t.value.slice(0, a) + e + t.value.slice(b);
+  try{ t.focus(); t.setSelectionRange(a + e.length, a + e.length); }catch(_){}
+  pushRecent('pur.emjRecent', e, 24);
 }
 async function saveQuick(){
   const arr = $('qrText').value.split('\n').map(s => s.trim()).filter(Boolean);
