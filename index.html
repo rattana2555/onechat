@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.37">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.38">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.37">
-<title>Rattana One Chat v2.37</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.38">
+<title>Rattana One Chat v2.38</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -377,6 +377,31 @@ body.dark .sender .stf{color:var(--gold-light)}
 .photo{max-width:min(260px,70vw);max-height:320px;border-radius:var(--radius-md);display:block;cursor:pointer;background:var(--border);min-width:60px;min-height:40px}
 .rq{width:26px;height:26px;border-radius:50%;color:var(--muted);font-size:14px;display:flex;align-items:center;justify-content:center;opacity:.45;flex-shrink:0}
 .rq:hover{opacity:1;background:var(--card-bg);color:var(--text)}
+.msg-grp:hover .rq{opacity:.9}
+/* v2.38 แตะค้าง / คลิกขวาที่ข้อความ = เมนูแบบ LINE (ตอบกลับ · คัดลอก · ดูรูป) */
+@media (hover:none){ .bubble{-webkit-touch-callout:none} }
+.msg-grp.pressed .bubble{filter:brightness(.93);transition:filter .15s}
+#msgMenu button:disabled{opacity:.5;cursor:default;background:none}
+#msgMenu .mm-note{padding:2px 12px 6px 34px;font-size:11px;color:var(--muted);font-weight:500;max-width:250px;line-height:1.4}
+/* v2.38 ดูรูปในแอพ (ไม่เด้งออกไปเบราว์เซอร์) */
+#lb{position:fixed;inset:0;z-index:9600;background:rgba(8,12,24,.94);display:none;flex-direction:column;animation:lbIn .18s ease-out}
+#lb.open{display:flex}
+@keyframes lbIn{from{opacity:0}to{opacity:1}}
+#lb .lb-bar{display:flex;align-items:center;gap:8px;padding:max(10px,env(safe-area-inset-top)) 12px 10px;color:#fff;flex-shrink:0}
+#lb .lb-ttl{flex:1;min-width:0;font-size:13px;line-height:1.35;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#lb .lb-btn{width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.12);color:#fff;font-size:18px;display:grid;place-items:center;cursor:pointer;flex-shrink:0}
+#lb .lb-btn:hover{background:rgba(255,255,255,.24)}
+#lb .lb-stage{flex:1;min-height:0;overflow:auto;display:flex;align-items:center;justify-content:center;touch-action:pinch-zoom pan-x pan-y}
+#lb .lb-stage img{max-width:100%;max-height:100%;object-fit:contain;cursor:zoom-in;user-select:none;-webkit-user-drag:none}
+#lb.zoom .lb-stage{display:block}
+#lb.zoom .lb-stage img{max-width:none;max-height:none;cursor:zoom-out;margin:auto;display:block}
+#lb .lb-nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;font-size:22px;cursor:pointer;display:grid;place-items:center}
+#lb .lb-nav:hover{background:rgba(255,255,255,.28)}
+#lb .lb-nav[hidden]{display:none}
+#lb .lb-prev{left:12px} #lb .lb-next{right:12px}
+#lb .lb-foot{text-align:center;color:rgba(255,255,255,.6);font-size:11.5px;padding:8px 12px max(10px,env(safe-area-inset-bottom));flex-shrink:0}
+/* v2.38 ลากเส้นแบ่งปรับความกว้างรายการแชท (คอม/แท็บเล็ต · จำแยกตามคนที่ล็อกอิน) */
+.pane-split{display:none}
 .msg-time{font-size:10px;color:var(--sub);padding:0 5px;display:flex;gap:5px;align-items:center;flex-wrap:wrap}
 .fa .msg-time{justify-content:flex-end}
 .mk-fail{color:var(--st-crit);font-weight:600}
@@ -387,6 +412,9 @@ body.dark .sender .stf{color:var(--gold-light)}
 .quoting{display:none;align-items:center;gap:8px;padding:6px 12px;background:var(--card-bg);border-top:1px solid var(--border);font-size:12px;color:var(--muted)}
 .quoting.show{display:flex}
 .quoting .qtext{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-left:3px solid var(--gold);padding-left:8px;color:var(--text)}
+.quoting .qbox{flex:1;min-width:0}
+.quoting .qbox .quote.ql{max-width:none;margin:0;cursor:default;background:var(--row-alt);color:var(--text)}
+.quoting .qhd{font-size:11px;font-weight:700;color:var(--gold);margin-bottom:3px}
 .reply-note{display:none;align-items:center;gap:8px;padding:9px 12px;background:rgba(243,156,18,.12);border-top:1px solid rgba(243,156,18,.35);font-size:12px;line-height:1.5}
 .reply-note.show{display:flex}
 /* safe-area ล่าง: v2.24 แถบล่างลอยและหลบตอนเปิดแชท → มือถือก็ใส่ที่ช่องพิมพ์ (บล็อก max-width:767px) · จอ ≥768px ดูบล็อก DESKTOP */
@@ -834,7 +862,12 @@ select.input{appearance:auto}
   .app-hdr{padding:0 16px;gap:11px}
   .top-tabs{display:flex}
   .bottom-nav{display:none}
-  .list-pane{position:static;width:340px;border-right:1px solid var(--border);flex-shrink:0}
+  .list-pane{position:static;width:var(--list-w,340px);border-right:1px solid var(--border);flex-shrink:0}
+  .pane-split{display:block;width:7px;margin:0 -4px 0 -3px;cursor:col-resize;position:relative;z-index:5;flex-shrink:0;touch-action:none}
+  .pane-split::after{content:'';position:absolute;top:0;bottom:0;left:3px;width:1px;background:transparent;transition:background .15s}
+  .pane-split:hover::after,.pane-split.drag::after{background:var(--gold);width:3px;left:2px}
+  body.pane-dragging{cursor:col-resize;user-select:none}
+  body.pane-dragging iframe{pointer-events:none}
   .chat-pane{position:static;transform:none;flex:1}
   .reply-bar{padding-bottom:max(8px,env(safe-area-inset-bottom))}  /* nav ถูกซ่อน → ช่องพิมพ์ติดขอบจอจริง (iPad/iPhone แนวนอน) */
   .back-btn{display:none}
@@ -1031,7 +1064,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
     <div class="lg-err" id="lgErr"></div>
     <div class="lg-wait" role="status"><div class="lg-spin"></div><b id="lgWaitMsg">กำลังเปิดแอพ…</b><div class="sub" id="lgWaitSub"></div>
       <div class="acts"><button class="btn btn-gold" type="button" onclick="retryGate()">ลองใหม่เดี๋ยวนี้</button><button class="btn btn-outline" type="button" onclick="doLogout()">ออกจากระบบ</button></div></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.37 · 12/10/2569</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.38 · 12/10/2569</div>
   </div>
 </div>
 
@@ -1081,7 +1114,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.37</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.38</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -1132,6 +1165,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
       <div class="conv-list" id="convList"><div class="conv-empty">กำลังโหลด…</div></div>
       <div class="ctx-menu" id="listMenu" role="menu"></div>
     </div>
+    <div class="pane-split" id="paneSplit" title="ลากเพื่อปรับความกว้าง · ดับเบิลคลิก = ขนาดเดิม"></div>
 
     <div class="chat-pane" id="chatPane">
       <div class="chat-empty" id="chatEmpty">
@@ -1156,7 +1190,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
         <button class="new-pill" id="newPill" onclick="jumpBottom()">ข้อความใหม่ ↓</button>
         <div class="qr-wrap" id="qrWrap"></div>
         <div class="quoting" id="quoting">
-          <span>↩ ตอบกลับ:</span><span class="qtext" id="quoteText"></span>
+          <div class="qbox"><div class="qhd">↩ ตอบกลับ</div><div id="quoteText"></div></div>
           <button class="btn btn-outline btn-sm" onclick="clearQuote()" title="ยกเลิกการอ้างถึง"><span data-ic="x"></span></button>
         </div>
         <div class="reply-note" id="replyNote"></div>
@@ -1325,6 +1359,16 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 <button id="backToTop" onclick="scrollTopActive()" title="กลับขึ้นบน">↑</button>
 
 <!-- MODAL (generic) -->
+<div class="ctx-menu" id="msgMenu" role="menu"></div>
+<div id="lb" role="dialog" aria-label="ดูรูป">
+  <div class="lb-bar"><div class="lb-ttl" id="lbTtl"></div>
+    <button class="lb-btn" onclick="lbSave()" title="บันทึกรูปลงเครื่อง">⬇</button>
+    <button class="lb-btn" onclick="lbClose()" title="ปิด (Esc)">✕</button></div>
+  <div class="lb-stage" id="lbStage" onclick="if(event.target===this)lbClose()"><img id="lbImg" alt="" onclick="lbZoom(event)"></div>
+  <button class="lb-nav lb-prev" id="lbPrev" onclick="lbGo(-1)" title="รูปก่อนหน้า (←)">‹</button>
+  <button class="lb-nav lb-next" id="lbNext" onclick="lbGo(1)" title="รูปถัดไป (→)">›</button>
+  <div class="lb-foot" id="lbFoot"></div>
+</div>
 <div class="modal-overlay" id="modal" onclick="if(event.target===this) closeModal()">
   <div class="modal">
     <div class="modal-head"><h3 id="modalTitle"></h3><button class="modal-close" onclick="closeModal()" aria-label="ปิด" title="ปิด">×</button></div>
@@ -1338,7 +1382,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.37 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.38 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1377,6 +1421,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 //  v2.35: ส่งไฟล์จากแอพ (ปุ่ม 📎 · ลากไฟล์มาวาง) — อัปตรงเข้าที่เก็บด้วยลิงก์ครั้งเดียว (pur-send v2.4) ลูกค้าได้ลิงก์ดาวน์โหลด
 //  v2.36: รหัส LINE พนักงาน → Google Sheet อัตโนมัติ (การ์ดผู้ดูแลระบบ) · ชื่อที่ทีมตั้ง ≤20 ตัวอักษร · โน้ตในแอพ → โน้ตใน OA (ส่วนขยาย 3.5)
 //  v2.37: ตอบกลับแบบ LINE (ชื่อ+รูปย่อ · กดเลื่อนไปข้อความต้นทาง) · แท็กผู้รับผิดชอบสินค้าอัตโนมัติ (pur-product-tag) · เพิ่มสมาชิกอัตโนมัติจากทะเบียนพนักงาน
+//  v2.38: ตอบกลับแบบ LINE ด้วยเมนูคลิกขวา/แตะค้าง (ตอบกลับ · คัดลอก · ดูรูป · บันทึกรูป · ตอบข้อความของทีมเองได้ คู่กับ pur-send v2.5) · กดรูปดูในแอพ (เลื่อน/ซูม/บันทึก) · ลากปรับความกว้างรายการแชท (จำตามคนที่ล็อกอิน) · แก้กล่องอ้างถึงหายหลังรีเฟรช
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
@@ -2230,7 +2275,7 @@ function bubbleBody(m){
   if(sc) return [`<div class="sc-head">📋 การ์ดจาก${esc(sc)}</div><div>${esc(c)}</div><div class="sc-note">แอพไม่ได้รับเนื้อการ์ด — ดูรายละเอียดใน LINE</div>`, false];
   switch(m.msg_type){
     case 'sticker': return [`<img class="sticker" src="${esc(c)}" alt="สติกเกอร์" loading="lazy">`, true];
-    case 'image':   return [`<img class="photo" ${mediaAttr(c)} alt="รูปภาพ" loading="lazy" onclick="if(this.src)window.open(this.src,'_blank')">`, true];
+    case 'image':   return [`<img class="photo" ${mediaAttr(c)} alt="รูปภาพ" loading="lazy" onclick="lbOpen(this)">`, true];
     case 'video':   return [`<video class="photo" ${mediaAttr(c)} controls preload="metadata"></video>`, true];
     case 'audio':   return [`<audio ${mediaAttr(c)} controls preload="metadata" style="max-width:240px"></audio>`, true];
     case 'file':    return [`<a href="#" ${mediaAttr(c, 'data-url')} onclick="openFile(event,this)">📎 ${esc(m.file_name || 'เปิดไฟล์แนบ')}</a>`, false];
@@ -2518,7 +2563,7 @@ function renderMsgs(msgs){
     if(m.unsent) bubble = '<div class="bubble unsent">ข้อความถูกยกเลิก</div>';
     else { const [inner, media] = bubbleBody(m); bubble = `<div class="bubble ${media ? 'media' : ''}">${qHtml}${inner}</div>`; }
     const who = out ? `${m.staff_email ? memberName(m.staff_email) : (m.sender_name || sysCardOf(m) || (m.via === 'oa' ? 'แอดมิน OA' : 'คนในบริษัท'))} · ${viaLabel(m.via)}` : (c && c.kind !== 'user' ? (m.sender_name || 'สมาชิกกลุ่ม') : '');
-    const canQuote = !out && m.quote_token && !m.unsent && c && c.is_active;
+    const canQuote = canQuoteMsg(m, c);
     html += `<div class="msg-grp ${right ? 'fa' : 'fc'}${staffLine ? ' staff' : ''}" data-mid="${m.id}">
       ${staffLine ? `<div class="sender">${esc(m.staff_email ? memberName(m.staff_email) : (m.sender_name || 'คนในบริษัท'))}<span class="stf">ทีม</span></div>` : !out && who ? `<div class="sender">${esc(who)}</div>` : ''}
       <div class="bubble-row">${bubble}${canQuote ? `<button class="rq" onclick="startQuote('${m.id}')" title="ตอบกลับข้อความนี้">↩</button>` : ''}</div>
@@ -2584,10 +2629,162 @@ async function openFile(e, a){
 }
 function startQuote(id){
   const m = (msgCache[activeId] || []).find(x => x.id === id); if(!m) return;
+  if(!canQuoteMsg(m, chatById.get(activeId))) return showToast(quoteWhyNot(m), 'info', 4000);
   quoting = { id, token:m.quote_token, preview:previewOf(m), lineId:m.line_msg_id };
-  $('quoteText').textContent = quoting.preview; $('quoting').classList.add('show'); $('replyInp').focus();
+  const box = $('quoteText'); box.innerHTML = quoteHtml(m, chatById.get(activeId)); box.querySelector('button')?.removeAttribute('onclick');
+  resolveMedia(box);
+  $('quoting').classList.add('show'); $('replyInp').focus();
 }
-function clearQuote(){ quoting = null; $('quoting').classList.remove('show'); }
+// v2.38 ตอบกลับแบบ LINE ต้องมี quoteToken จาก LINE: ข้อความที่เข้ามาทาง webhook + ที่ทีมส่งจากแอพ (pur-send v2.5 ขึ้นไป)
+// ข้อความที่พิมพ์ใน OA Manager / ประวัติที่นำเข้า / ส่งจากแอพก่อน v2.38 ไม่มี → ตอบกลับไม่ได้ (LINE ไม่ให้)
+function canQuoteMsg(m, c){ return !!(m && m.quote_token && !m.unsent && !m.tmp && c && c.is_active && !isOaOnly(c)); }
+function quoteWhyNot(m){
+  if(m.unsent) return 'ข้อความนี้ถูกยกเลิกแล้ว';
+  if(m.via === 'oa') return 'ข้อความที่พิมพ์ใน OA Manager ตอบกลับจากแอพไม่ได้ (LINE ไม่ส่งรหัสอ้างอิงมาให้)';
+  if(m.is_history) return 'ข้อความประวัติที่นำเข้าก่อนใช้ระบบ ตอบกลับไม่ได้';
+  return 'ข้อความนี้ตอบกลับแบบ LINE ไม่ได้ (ไม่มีรหัสอ้างอิงจาก LINE)';
+}
+// ── v2.38 เมนูข้อความ: คลิกขวา (คอม) / แตะค้าง (มือถือ) ──
+let mmId = null, lpTimer = null, lpFired = false;
+function openMsgMenu(id, x, y){
+  const m = (msgCache[activeId] || []).find(z => z.id === id), menu = $('msgMenu'); if(!m || !menu) return;
+  if(m.sender_type === 'system' || m.via === 'system') return;
+  const c = chatById.get(activeId), canQ = canQuoteMsg(m, c), txt = m.msg_type === 'text' || m.msg_type === 'location' ? String(m.content || '') : '';
+  mmId = id;
+  menu.innerHTML = `<div class="hd">${esc(previewOf(m) || 'ข้อความ')}</div>`
+    + `<button onclick="mmDo('quote')" ${canQ ? '' : 'disabled'}>↩ ตอบกลับ</button>`
+    + (canQ || m.unsent ? '' : `<div class="mm-note">${esc(quoteWhyNot(m))}</div>`)
+    + (txt && !m.unsent ? `<button onclick="mmDo('copy')">📋 คัดลอกข้อความ</button>` : '')
+    + (m.msg_type === 'image' && !m.unsent ? `<button onclick="mmDo('view')">🔍 ดูรูป</button><button onclick="mmDo('save')">⬇ บันทึกรูป</button>` : '');
+  menu.classList.add('open');
+  const w = menu.offsetWidth, h = menu.offsetHeight;
+  menu.style.left = Math.max(8, Math.min(x, innerWidth - w - 8)) + 'px';
+  menu.style.top  = Math.max(8, Math.min(y, innerHeight - h - 8)) + 'px';
+}
+function closeMsgMenu(){ $('msgMenu')?.classList.remove('open'); mmId = null; }
+async function mmDo(act){
+  const id = mmId; closeMsgMenu();
+  const m = (msgCache[activeId] || []).find(z => z.id === id); if(!m) return;
+  if(act === 'quote') return startQuote(id);
+  if(act === 'copy'){
+    try{ await navigator.clipboard.writeText(String(m.content || '')); showToast('คัดลอกแล้ว', 'success', 1500); }
+    catch(_){ showToast('คัดลอกไม่ได้ — ลากคลุมข้อความแล้วกด Ctrl+C แทน', 'warning'); }
+    return;
+  }
+  const img = $('msgsArea').querySelector(`[data-mid="${id}"] img.photo`);
+  if(act === 'view' && img) lbOpen(img);
+  if(act === 'save' && img) saveImg(img.src);
+}
+function bindMsgActions(){
+  const area = $('msgsArea'); if(!area) return;
+  const grpOf = t => t && t.closest && t.closest('.msg-grp[data-mid]');
+  // คอม: คลิกขวา · Android: แตะค้างก็ยิง contextmenu ด้วย · ถ้าลากคลุมข้อความอยู่ ปล่อยเมนูของเบราว์เซอร์ (คัดลอกบางส่วน)
+  area.addEventListener('contextmenu', e => {
+    const g = grpOf(e.target); if(!g || !e.target.closest('.bubble')) return;
+    if(String(window.getSelection?.() || '').trim()) return;
+    e.preventDefault(); if(lpFired) return;
+    openMsgMenu(g.dataset.mid, e.clientX, e.clientY);
+  });
+  // iPhone ไม่มี contextmenu → จับแตะค้าง 0.45 วิ เอง (ขยับนิ้ว = เลื่อนจอ ยกเลิก)
+  let sx = 0, sy = 0, held = null;
+  const cancel = () => { clearTimeout(lpTimer); lpTimer = null; held?.classList.remove('pressed'); held = null; };
+  area.addEventListener('touchstart', e => {
+    const g = grpOf(e.target); lpFired = false; if(!g || !e.target.closest('.bubble') || e.touches.length > 1) return;
+    sx = e.touches[0].clientX; sy = e.touches[0].clientY; held = g; g.classList.add('pressed');
+    lpTimer = setTimeout(() => { const id = held?.dataset.mid; cancel(); if(id){ lpFired = true; navigator.vibrate?.(12); openMsgMenu(id, sx, sy + 12); } }, 450);
+  }, { passive:true });
+  area.addEventListener('touchmove', e => { if(lpTimer && Math.hypot(e.touches[0].clientX - sx, e.touches[0].clientY - sy) > 10) cancel(); }, { passive:true });
+  area.addEventListener('touchend', e => { if(lpFired && e.cancelable) e.preventDefault(); cancel(); });
+  area.addEventListener('touchcancel', cancel, { passive:true });
+  area.addEventListener('click', e => { if(lpFired){ e.preventDefault(); e.stopPropagation(); lpFired = false; } }, true);   // แตะค้างแล้วยกนิ้ว ไม่ให้นับเป็นการแตะรูป/ลิงก์
+  area.addEventListener('scroll', closeMsgMenu, { passive:true });
+}
+document.addEventListener('click', e => { if(!e.target.closest('#msgMenu')) closeMsgMenu(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeMsgMenu(); });
+
+// ── v2.38 ดูรูปในแอพ: เลื่อนดูรูปอื่นในแชทเดียวกัน · กดรูป = ซูม · บันทึกลงเครื่อง ──
+let lbList = [], lbIdx = 0;
+function lbOpen(img){
+  if(!img || !img.src) return;
+  lbList = [...$('msgsArea').querySelectorAll('img.photo')].filter(x => x.src);
+  lbIdx = lbList.indexOf(img); if(lbIdx < 0){ lbList = [img]; lbIdx = 0; }
+  const wasOpen = $('lb').classList.contains('open');
+  $('lb').classList.add('open'); lbShow();
+  if(!wasOpen) history.pushState({ lb:1 }, '');      // ปุ่มย้อนกลับของมือถือ = ปิดรูป ไม่ออกจากแอพ
+}
+function lbShow(){
+  const img = lbList[lbIdx]; if(!img) return;
+  const lb = $('lb'), m = (msgCache[activeId] || []).find(x => x.id === img.closest('[data-mid]')?.dataset.mid);
+  lb.classList.remove('zoom'); $('lbImg').src = img.src;
+  const who = m ? (m.direction === 'out' ? (m.staff_email ? memberName(m.staff_email) : (m.sender_name || acctName())) : (m.sender_name || chatName(chatById.get(activeId) || {}))) : '';
+  $('lbTtl').innerHTML = `<b>${esc(who)}</b>${m ? '<br>' + esc(thDayLong(m.sent_at) + ' ' + thTime(m.sent_at)) : ''}`;
+  $('lbPrev').hidden = lbIdx <= 0; $('lbNext').hidden = lbIdx >= lbList.length - 1;
+  $('lbFoot').textContent = (lbList.length > 1 ? `รูปที่ ${lbIdx + 1} / ${lbList.length} ในแชทนี้ · ` : '') + 'กดที่รูปเพื่อซูม';
+}
+function lbGo(d){ const n = lbIdx + d; if(n < 0 || n >= lbList.length) return; lbIdx = n; lbShow(); }
+function lbZoom(e){
+  const lb = $('lb'), st = $('lbStage'), on = !lb.classList.contains('zoom');
+  const r = e.target.getBoundingClientRect(), fx = (e.clientX - r.left) / r.width, fy = (e.clientY - r.top) / r.height;
+  lb.classList.toggle('zoom', on);
+  if(on) requestAnimationFrame(() => { st.scrollLeft = st.scrollWidth * fx - st.clientWidth / 2; st.scrollTop = st.scrollHeight * fy - st.clientHeight / 2; });
+}
+function lbClose(fromPop){
+  if(!$('lb').classList.contains('open')) return;
+  $('lb').classList.remove('open', 'zoom'); $('lbImg').removeAttribute('src');
+  if(!fromPop && history.state?.lb) history.back();
+}
+window.addEventListener('popstate', () => lbClose(true));
+function lbSave(){ const img = lbList[lbIdx]; if(img?.src) saveImg(img.src); }
+async function saveImg(src){
+  const name = `rattana-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.jpg`;
+  try{
+    const blob = await (await fetch(src)).blob(), u = URL.createObjectURL(blob);
+    const a = Object.assign(document.createElement('a'), { href:u, download:name }); document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(u), 4000);
+  }catch(_){ window.open(src, '_blank'); }
+}
+document.addEventListener('keydown', e => {
+  if(!$('lb')?.classList.contains('open')) return;
+  if(e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); lbClose(); }
+  else if(e.key === 'ArrowLeft') lbGo(-1); else if(e.key === 'ArrowRight') lbGo(1);
+}, true);
+// ปัดซ้าย/ขวาบนรูป (มือถือ) = รูปถัดไป/ก่อนหน้า · ตอนซูมอยู่ไม่ปัด
+(() => { let x0 = 0, y0 = 0;
+  document.addEventListener('touchstart', e => { if(e.target.closest?.('#lbStage') && e.touches.length === 1){ x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; } }, { passive:true });
+  document.addEventListener('touchend', e => {
+    if(!e.target.closest?.('#lbStage') || $('lb').classList.contains('zoom') || !x0) return;
+    const dx = e.changedTouches[0].clientX - x0, dy = Math.abs(e.changedTouches[0].clientY - y0); x0 = 0;
+    if(Math.abs(dx) > 60 && dy < 60) lbGo(dx < 0 ? 1 : -1);
+  }, { passive:true });
+})();
+
+// ── v2.38 ลากปรับความกว้างรายการแชท · จำแยกตามอีเมลคนที่ล็อกอิน (เครื่องนั้น) ──
+const LISTW_MIN = 260;
+const listWKey = () => 'pur.listw.' + (me?.email || '');
+function listWMax(){ return Math.max(LISTW_MIN, Math.min(760, window.innerWidth - 420)); }
+function setListW(w, save){
+  const v = Math.round(Math.max(LISTW_MIN, Math.min(listWMax(), w)));
+  document.documentElement.style.setProperty('--list-w', v + 'px');
+  if(save) LS.set(listWKey(), String(v));
+  return v;
+}
+function applyListW(){ const v = +LS.get(listWKey()); if(v) setListW(v); else document.documentElement.style.removeProperty('--list-w'); }
+function bindPaneSplit(){
+  const sp = $('paneSplit'), lp = $('listPane'); if(!sp || !lp) return;
+  sp.addEventListener('pointerdown', e => {
+    if(e.button !== 0) return;
+    e.preventDefault(); sp.setPointerCapture(e.pointerId);
+    const x0 = e.clientX, w0 = lp.getBoundingClientRect().width;
+    sp.classList.add('drag'); document.body.classList.add('pane-dragging');
+    const mv = ev => setListW(w0 + ev.clientX - x0);
+    const up = ev => { sp.removeEventListener('pointermove', mv); sp.removeEventListener('pointerup', up); sp.removeEventListener('pointercancel', up);
+      sp.classList.remove('drag'); document.body.classList.remove('pane-dragging'); setListW(w0 + ev.clientX - x0, true); };
+    sp.addEventListener('pointermove', mv); sp.addEventListener('pointerup', up); sp.addEventListener('pointercancel', up);
+  });
+  sp.addEventListener('dblclick', () => { LS.set(listWKey(), ''); document.documentElement.style.removeProperty('--list-w'); showToast('คืนความกว้างเดิมแล้ว', 'info', 1500); });
+  window.addEventListener('resize', () => { const v = +LS.get(listWKey()); if(v) setListW(v); });
+}
+function clearQuote(){ quoting = null; $('quoting').classList.remove('show'); $('quoteText').innerHTML = ''; }
 
 // ── SEND ──
 // ฝั่งแอพแสดงฟองทันที → Edge Function บันทึกลงฐานข้อมูล (สถานะ sending) แล้วยิงเข้า LINE
@@ -2616,7 +2813,7 @@ async function sendText(){
                   quoted_line_msg_id:q?.lineId || null, quotePreview:q?.preview || null };
   (msgCache[chatId] || (msgCache[chatId] = [])).push(local);
   if(activeId === chatId){ renderMsgs(msgCache[chatId]); scrollBottom(); }
-  reconcile(local, await callFn({ action:'text', chatId, text, quoteToken:q?.token || null }));
+  reconcile(local, await callFn({ action:'text', chatId, text, quoteToken:q?.token || null, quotedLineMsgId:q?.lineId || null }));
 }
 function onPickImage(inp){ const f = inp.files && inp.files[0]; inp.value = ''; if(f) sendImage(f); }
 // ── v2.26 วางรูปจากคลิปบอร์ด (Ctrl+V) / ลากรูปมาวางในแชท → ดูตัวอย่างแล้วกดส่ง (กันวางผิดแล้วส่งถึงซัพทันที) ──
@@ -5968,6 +6165,7 @@ async function enterAccount(id){
   const switching = !!acct;
   acct = a; LS.set('pur.acct', String(a.id));
   me = { ...(meRow || {}), role:a.role };
+  applyListW();
   if(DEMO){ demoEnter(); renderAcctHeader(); if(started) setView(view); else await showApp(); return; }
   if(!started){ await showApp(); return; }
   if(switching) resetAccountState();
@@ -6270,7 +6468,7 @@ function demoDash(){
 
 // ── เริ่มทำงาน (ต้องอยู่ท้ายสุด หลังประกาศตัวแปรทั้งหมด) ──
 (function init(){
-  bindListTouch(); bindChatDrop();
+  bindListTouch(); bindChatDrop(); bindMsgActions(); bindPaneSplit();
   document.documentElement.style.setProperty('--mark', `url("${MARK}")`); $('favicon').href = MARK; $('chartTip').style.position = 'fixed';
   const pref = LS.get('pur.dark');
   if(pref === '1') document.body.classList.add('dark');   // v2.23 ค่าเริ่มต้น = สว่าง (ขาว) เสมอ ไม่ตามธีมของเครื่อง · เลือกมืดไว้เองยังเป็นมืด
