@@ -10,10 +10,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.39">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.40">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.39">
-<title>[ทดสอบ] Rattana One Chat v2.39</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.40">
+<title>[ทดสอบ] Rattana One Chat v2.40</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -1105,7 +1105,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
     <div class="lg-err" id="lgErr"></div>
     <div class="lg-wait" role="status"><div class="lg-spin"></div><b id="lgWaitMsg">กำลังเปิดแอพ…</b><div class="sub" id="lgWaitSub"></div>
       <div class="acts"><button class="btn btn-gold" type="button" onclick="retryGate()">ลองใหม่เดี๋ยวนี้</button><button class="btn btn-outline" type="button" onclick="doLogout()">ออกจากระบบ</button></div></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.39 · 12/10/2569</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.40 · 12/10/2569</div>
   </div>
 </div>
 
@@ -1155,7 +1155,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.39</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.40</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -1423,7 +1423,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.39 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.40 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1464,6 +1464,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 //  v2.37: ตอบกลับแบบ LINE (ชื่อ+รูปย่อ · กดเลื่อนไปข้อความต้นทาง) · แท็กผู้รับผิดชอบสินค้าอัตโนมัติ (pur-product-tag) · เพิ่มสมาชิกอัตโนมัติจากทะเบียนพนักงาน
 //  v2.38: ตอบกลับแบบ LINE ด้วยเมนูคลิกขวา/แตะค้าง (ตอบกลับ · คัดลอก · ดูรูป · บันทึกรูป · ตอบข้อความของทีมเองได้ คู่กับ pur-send v2.5) · กดรูปดูในแอพ (เลื่อน/ซูม/บันทึก) · ลากปรับความกว้างรายการแชท (จำตามคนที่ล็อกอิน) · แก้กล่องอ้างถึงหายหลังรีเฟรช
 //  v2.39: ป้ายห้อยสินค้าใต้ข้อความ (แกว่งตอนรอตอบ · ตอบแล้วนิ่ง+✓ · เล็ก ไม่บังฟอง) · ผู้รับผิดชอบเปิดแชท → เลื่อนไปข้อความสินค้าของตัวเอง · ปุ่ม "🏷 ดูข้อความ" ในแถบงาน (คู่กับ pur-product-tag-append.sql)
+//  v2.40: แถบเหนือแชทย่อเหลือแถวเดียว (ชิป ⏱ รอตอบ · 🏷/@ งานแท็ก กดไปข้อความต้นเรื่อง · 👥 ทีมเคยตอบ · ▾ รายละเอียดเต็ม) — เดิมบังแชทครึ่งจอบนมือถือ
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
