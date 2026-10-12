@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.38">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.39">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.38">
-<title>Rattana One Chat v2.38</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.39">
+<title>Rattana One Chat v2.39</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -199,6 +199,27 @@ body.dark .tagchips .tchip:hover{color:#9cc2ff}body.dark .tagchips .tchip .n{col
 .msr-note{padding:8px 14px;font-size:11.5px;color:var(--muted)}
 @keyframes msgFlash{0%,60%{box-shadow:0 0 0 3px rgba(250,178,25,.9)}100%{box-shadow:0 0 0 3px rgba(250,178,25,0)}}
 .msg-grp.flash .bubble{animation:msgFlash 2.4s ease-out}
+/* v2.39 ป้ายห้อยใต้ข้อความที่ถามถึงสินค้า — ห้อยเชือก แกว่งเบาๆ ระหว่างรอผู้รับผิดชอบตอบ · ตอบแล้วนิ่ง + ✓ */
+.ptags{display:flex;flex-wrap:wrap;gap:3px 8px;padding:0 8px;position:relative;z-index:0}
+.bubble-row{position:relative;z-index:1}   /* ป้ายห้อยแกว่งยังไงก็อยู่ใต้ฟอง ไม่บังข้อความ */
+.fa .ptags{justify-content:flex-end}
+.ptag{position:relative;display:inline-flex;flex-direction:column;align-items:center;transform-origin:50% 0;border:0;background:none;padding:0;font:inherit;cursor:pointer}
+.ptag .pt-str{width:1.5px;height:6px;background:linear-gradient(var(--gold),rgba(201,168,76,.45))}
+.ptag .pt-card{position:relative;display:inline-flex;align-items:center;gap:3px;max-width:170px;padding:1px 7px 1px 12px;font-size:10px;font-weight:600;line-height:1.4;
+  color:#6b4e0e;background:linear-gradient(135deg,#fff6d8,#ffe8a8);border:1px solid rgba(201,168,76,.75);border-radius:3px 7px 7px 3px;box-shadow:0 1px 4px rgba(160,120,20,.16)}
+.ptag .pt-card::before{content:'';position:absolute;left:4px;top:50%;width:4px;height:4px;margin-top:-2px;border-radius:50%;background:var(--card-bg);box-shadow:inset 0 0 0 1px rgba(201,168,76,.9)}
+.ptag .pt-card b{font-weight:800;color:#3d2c05;white-space:nowrap}
+.ptag .pt-card span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.ptag.live{animation:ptSwing 2.6s ease-in-out infinite}
+.ptag.live .pt-card::after{content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.75) 50%,transparent 65%);background-size:250% 100%;animation:ptShine 3.2s ease-in-out infinite;pointer-events:none}
+.ptag.mine .pt-card{background:linear-gradient(135deg,#ffe9a6,#ffcf4d);border-color:#d9a514;box-shadow:0 1px 6px rgba(217,165,20,.32)}
+.ptag.done .pt-card{background:var(--row-alt);border-color:var(--border);color:var(--muted);box-shadow:none}
+.ptag.done .pt-card b{color:var(--muted)}
+.ptag.done .pt-str{background:var(--border)}
+body.dark .ptag:not(.done) .pt-card{color:#3d2c05}
+@keyframes ptSwing{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes ptShine{0%,55%{background-position:120% 0}100%{background-position:-120% 0}}
+@media (prefers-reduced-motion:reduce){ .ptag.live,.ptag.live .pt-card::after{animation:none} }
 @media (hover:none){.conv-item{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}}
 .conv-item.swiping{overflow:hidden}
 .conv-item.swiping > *{transform:translateX(var(--sx,0px));transition:transform .2s ease}
@@ -1064,7 +1085,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
     <div class="lg-err" id="lgErr"></div>
     <div class="lg-wait" role="status"><div class="lg-spin"></div><b id="lgWaitMsg">กำลังเปิดแอพ…</b><div class="sub" id="lgWaitSub"></div>
       <div class="acts"><button class="btn btn-gold" type="button" onclick="retryGate()">ลองใหม่เดี๋ยวนี้</button><button class="btn btn-outline" type="button" onclick="doLogout()">ออกจากระบบ</button></div></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.38 · 12/10/2569</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.39 · 12/10/2569</div>
   </div>
 </div>
 
@@ -1114,7 +1135,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.38</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.39</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -1382,7 +1403,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.38 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.39 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1422,6 +1443,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 //  v2.36: รหัส LINE พนักงาน → Google Sheet อัตโนมัติ (การ์ดผู้ดูแลระบบ) · ชื่อที่ทีมตั้ง ≤20 ตัวอักษร · โน้ตในแอพ → โน้ตใน OA (ส่วนขยาย 3.5)
 //  v2.37: ตอบกลับแบบ LINE (ชื่อ+รูปย่อ · กดเลื่อนไปข้อความต้นทาง) · แท็กผู้รับผิดชอบสินค้าอัตโนมัติ (pur-product-tag) · เพิ่มสมาชิกอัตโนมัติจากทะเบียนพนักงาน
 //  v2.38: ตอบกลับแบบ LINE ด้วยเมนูคลิกขวา/แตะค้าง (ตอบกลับ · คัดลอก · ดูรูป · บันทึกรูป · ตอบข้อความของทีมเองได้ คู่กับ pur-send v2.5) · กดรูปดูในแอพ (เลื่อน/ซูม/บันทึก) · ลากปรับความกว้างรายการแชท (จำตามคนที่ล็อกอิน) · แก้กล่องอ้างถึงหายหลังรีเฟรช
+//  v2.39: ป้ายห้อยสินค้าใต้ข้อความ (แกว่งตอนรอตอบ · ตอบแล้วนิ่ง+✓ · เล็ก ไม่บังฟอง) · ผู้รับผิดชอบเปิดแชท → เลื่อนไปข้อความสินค้าของตัวเอง · ปุ่ม "🏷 ดูข้อความ" ในแถบงาน (คู่กับ pur-product-tag-append.sql)
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
@@ -2159,7 +2181,12 @@ async function openChat(id){
   $('chatEmpty').style.display = 'none'; $('chatContent').style.display = 'flex';
   if(window.innerWidth < 768) $('chatPane').classList.add('open');
   $('msgsArea').innerHTML = '<div class="conv-empty">กำลังโหลดข้อความ…</div>';
-  try{ const msgs = await loadMsgs(id); if(activeId !== id) return; renderMsgs(msgs); renderList(); scrollBottom(); }
+  try{
+    const msgs = await loadMsgs(id); if(activeId !== id) return; renderMsgs(msgs); renderList();
+    const mineProd = myMentions(c).some(isProdTag);
+    if(!mineProd) scrollBottom();
+    else setTimeout(async () => { if(activeId === id && !(await jumpToProdMsg(id, me.email, true))) scrollBottom(); }, 80);
+  }
   catch(e){ showToast('โหลดข้อความไม่ได้: ' + e.message, 'error'); }
 }
 function closeChat(){
@@ -2203,7 +2230,7 @@ function renderStrips(c){
   }
   mentionsOpen(c).forEach(x => {
     const a = elapsedSec(x.s, null), o = a > slaSec(), mine = x.e === me?.email;
-    h += `<div class="strip ment ${o ? 'over' : ''}">@ <b>${mine ? 'คุณ' : esc(memberName(x.e))}</b> ${isProdTag(x) ? `ถูกแท็กเพราะเป็นผู้รับผิดชอบสินค้า <b>${esc(String(x.b).replace(/^🏷\s*/, ''))}</b>` : `โดนแท็ก${x.b ? ` (โดย ${esc(x.b)})` : ''}`} · รอคำตอบมา <b>${fmtDur(a)}</b>${o ? ' — <b>เกิน SLA แล้ว</b>' : ''}${mine ? ' · พิมพ์ตอบในแชทนี้ = ปิดงาน' : ''}${mine || isSup() ? `<button class="btn btn-outline btn-sm strip-btn" data-id="${esc(x.id)}" onclick="dismissMention(this.dataset.id)">ไม่ต้องตอบ</button>` : ''}</div>`;
+    h += `<div class="strip ment ${o ? 'over' : ''}">@ <b>${mine ? 'คุณ' : esc(memberName(x.e))}</b> ${isProdTag(x) ? `ถูกแท็กเพราะเป็นผู้รับผิดชอบสินค้า <b>${esc(String(x.b).replace(/^🏷\s*/, ''))}</b> <button class="btn btn-outline btn-sm strip-btn" data-e="${esc(x.e)}" onclick="jumpToProdMsg(activeId,this.dataset.e)" title="เลื่อนไปที่ข้อความที่ถามถึงสินค้านี้">🏷 ดูข้อความ</button>` : `โดนแท็ก${x.b ? ` (โดย ${esc(x.b)})` : ''}`} · รอคำตอบมา <b>${fmtDur(a)}</b>${o ? ' — <b>เกิน SLA แล้ว</b>' : ''}${mine ? ' · พิมพ์ตอบในแชทนี้ = ปิดงาน' : ''}${mine || isSup() ? `<button class="btn btn-outline btn-sm strip-btn" data-id="${esc(x.id)}" onclick="dismissMention(this.dataset.id)">ไม่ต้องตอบ</button>` : ''}</div>`;
   });
   if(!c.is_active) h += `<div class="strip off">⚠️ ${c.kind === 'user' ? `ผู้ติดต่อบล็อกบัญชี LINE ${esc(acctName())} — ส่งข้อความหาไม่ได้จนกว่าจะปลดบล็อก` : `บัญชี LINE ${esc(acctName())} ไม่ได้อยู่ในกลุ่มนี้แล้ว — เชิญกลับเข้ากลุ่มก่อนจึงจะส่งได้`}</div>`;
   if(c.exclude_kpi) h += `<div class="strip info">📵 แชทนี้ไม่นับในสถิติ</div>`;
@@ -2538,6 +2565,32 @@ async function quoteJump(lineId){
   el.scrollIntoView({ block:'center', behavior:'smooth' });
   el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
 }
+// v2.39 ป้ายห้อย: ข้อความนี้ทำให้ใครถูกแท็กเพราะเป็นผู้รับผิดชอบสินค้า (pur_messages.prod_tags จาก pur_auto_tag)
+// แกว่ง = คนนั้นยังมีงานแท็กค้างในแชทนี้ · นิ่ง + ✓ = ตอบแล้ว/ปิดงานแล้ว · กดป้าย = ดูว่าใครดูแลสินค้านี้
+function ptagsHtml(m, c){
+  const tags = Array.isArray(m.prod_tags) ? m.prod_tags : []; if(!tags.length) return '';
+  const open = new Set(mentionsOpen(c).filter(isProdTag).map(x => x.e));
+  return `<div class="ptags">${tags.map(t => {
+    const live = open.has(t.e), mine = t.e === me?.email, prod = String(t.l || '').replace(/^🏷\s*/, '');
+    const who = mine ? 'คุณ' : memberName(t.e);
+    return `<button class="ptag ${live ? 'live' : 'done'}${mine && live ? ' mine' : ''}" title="${esc(`${who} ดูแลสินค้า ${prod}${live ? ' · รอตอบอยู่' : ' · ตอบแล้ว'}`)}" onclick="showToast(this.title,'info',3500)">`
+      + `<span class="pt-str"></span><span class="pt-card">🏷 <b>${esc(who)}</b><span>${esc(prod)}</span>${live ? '' : ' ✓'}</span></button>`;
+  }).join('')}</div>`;
+}
+// v2.39 ผู้รับผิดชอบสินค้าเปิดแชท → เลื่อนไปที่ข้อความสินค้าของตัวเองที่ยังรอตอบ (ข้อความล่าสุดที่มีป้ายของเขา) + กระพริบ
+async function jumpToProdMsg(chatId, email, quiet){
+  const c = chatById.get(chatId); if(!c || activeId !== chatId) return false;
+  const job = mentionsOpen(c).find(x => isProdTag(x) && x.e === email); if(!job) return false;
+  const pick = () => { const l = msgCache[chatId] || [];
+    for(let i = l.length - 1; i >= 0; i--) if((l[i].prod_tags || []).some(t => t.e === email)) return l[i];
+    return job.m ? l.find(x => x.id === job.m) : null; };
+  for(let i = 0; i < 15 && !pick() && activeId === chatId && msgMeta[chatId]?.hasMore; i++) await loadOlder();
+  const m = pick(), el = m && $('msgsArea').querySelector(`[data-mid="${m.id}"]`);
+  if(!el || activeId !== chatId){ if(!quiet) showToast('ไม่พบข้อความที่ถามถึงสินค้า (อาจเก่ามาก)', 'info'); return false; }
+  el.scrollIntoView({ block:'center', behavior:quiet ? 'auto' : 'smooth' });
+  el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+  return true;
+}
 function renderMsgs(msgs){
   const area = $('msgsArea'); const c = chatById.get(activeId);
   if(!msgs || !msgs.length){ area.innerHTML = '<div class="conv-empty">ยังไม่มีข้อความ</div>'; return; }
@@ -2567,6 +2620,7 @@ function renderMsgs(msgs){
     html += `<div class="msg-grp ${right ? 'fa' : 'fc'}${staffLine ? ' staff' : ''}" data-mid="${m.id}">
       ${staffLine ? `<div class="sender">${esc(m.staff_email ? memberName(m.staff_email) : (m.sender_name || 'คนในบริษัท'))}<span class="stf">ทีม</span></div>` : !out && who ? `<div class="sender">${esc(who)}</div>` : ''}
       <div class="bubble-row">${bubble}${canQuote ? `<button class="rq" onclick="startQuote('${m.id}')" title="ตอบกลับข้อความนี้">↩</button>` : ''}</div>
+      ${!m.unsent ? ptagsHtml(m, c) : ''}
       <div class="msg-time">${thTime(m.sent_at)}${staffLine ? ' · LINE ส่วนตัว' : out ? ` · ${esc(who)} ${sendMark(m)}` : (m.is_ack ? ' · <span title="ข้อความรับทราบ ไม่นับเป็นข้อความที่ต้องตอบ">รับทราบ</span>' : '')}</div>
     </div>`;
   });
@@ -3256,7 +3310,7 @@ function onMsgUpdate(m){
   if(!x) return;
   // รวมกรณีไฟล์แนบที่เพิ่งดึงกลับมาจาก LINE (ป้ายข้อความ → รูป/ไฟล์จริง) และเครดิตคนตอบที่เพิ่งจับคู่ได้
   Object.assign(x, { status:m.status, error:m.error, unsent:m.unsent, line_msg_id:m.line_msg_id, quote_token:m.quote_token,
-                     msg_type:m.msg_type, content:m.content, file_name:m.file_name, card:m.card, staff_email:m.staff_email, sender_name:m.sender_name });
+                     msg_type:m.msg_type, content:m.content, file_name:m.file_name, card:m.card, staff_email:m.staff_email, sender_name:m.sender_name, prod_tags:m.prod_tags });
   renderMsgs(list);
 }
 
@@ -6422,8 +6476,9 @@ function demoProductTags(){
   const c2 = mkChat('dpt2', 'กลุ่ม คลัง W4 · เช็คสต็อก', 'ปาล์ม: องุ่นขวดเข้ามาไหมครับ ลูกค้าถามหา', 72);
   c2.mention_open = [{ id:'dptm2', e:staff[0] || 'bee@demo', s:at(72), b:'🏷 องุ่น น้ำมันถั่วเหลือง 1ลิตร' }];
   d.chats.unshift(c1, c2);
-  msgCache.dpt1 = [msg('dpt1', 1, 'เอ็ม สาขานครปฐม', 'สวัสดีครับ', 12), msg('dpt1', 2, 'เอ็ม สาขานครปฐม', 'มาม่าน้ำข้น & มาม่าน้ำใส เข้าวันไหนครับ ลูกค้าถามหาหลายคน', 8)];
-  msgCache.dpt2 = [msg('dpt2', 1, 'ปาล์ม คลัง W4', 'องุ่นขวดเข้ามาไหมครับ ลูกค้าถามหา', 72)];
+  msgCache.dpt1 = [msg('dpt1', 1, 'เอ็ม สาขานครปฐม', 'สวัสดีครับ', 12), { ...msg('dpt1', 2, 'เอ็ม สาขานครปฐม', 'มาม่าน้ำข้น & มาม่าน้ำใส เข้าวันไหนครับ ลูกค้าถามหาหลายคน', 8), prod_tags:[{ e:'admin@demo', l:'🏷 มาม่า ต้มยำกุ้งน้ำข้น 55ก.' }] },
+                   msg('dpt1', 3, 'เอ็ม สาขานครปฐม', 'ขอบคุณครับ', 6)];
+  msgCache.dpt2 = [{ ...msg('dpt2', 1, 'ปาล์ม คลัง W4', 'องุ่นขวดเข้ามาไหมครับ ลูกค้าถามหา', 72), prod_tags:[{ e:staff[0] || 'bee@demo', l:'🏷 องุ่น น้ำมันถั่วเหลือง 1ลิตร' }] }];
 }
 function demoProdMatch(text){
   const t = String(text || ''), ask = /(เข้า|มา|ไหม|มั้ย|ยัง|สั่ง|หมด|ขาด|เหลือ|\?)/.test(t);
