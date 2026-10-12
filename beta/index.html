@@ -4954,7 +4954,7 @@ let peopleQ = '';
 function renderSettings(){
   if(view !== 'set') return;
   const sup = isSup();
-  $('setContent').innerHTML = linkCardHtml() + notiCardHtml() + (isAdmin() ? accountsCardHtml() + accessCardHtml() + lineSheetCardHtml() : '') + (sup ? teamCardHtml() + peopleCardHtml() + hoursCardHtml() : '') + quickCardHtml() + (sup ? tagsCardHtml() + whCardHtml() + prodCardHtml() + ackCardHtml() + quotaCardHtml() : '') + (isAdmin() ? adminCardHtml() : '') + (sup ? aboutCardHtml() : '');   // v2.22 พนักงานเห็นแค่ของตัวเอง (ผูก LINE · แจ้งเตือน · ข้อความตอบด่วน)
+  $('setContent').innerHTML = linkCardHtml() + notiCardHtml() + (isAdmin() ? accountsCardHtml() + accessCardHtml() + lineSheetCardHtml() : '') + (sup ? teamCardHtml() + peopleCardHtml() + hoursCardHtml() : '') + quickCardHtml() + tagsCardHtml() + (sup ? whCardHtml() + (acct?.slug === 'purchase' ? prodCardHtml() : '') + ackCardHtml() + quotaCardHtml() : '') + (isAdmin() ? adminCardHtml() : '') + (sup ? aboutCardHtml() : '');   // v2.22 พนักงานเห็นแค่ของตัวเอง (ผูก LINE · แจ้งเตือน · ข้อความตอบด่วน · v2.41 + ป้ายสถานะแชท) · v2.41 การ์ดแท็กสินค้าเฉพาะบัญชีจัดซื้อ
   if(sup && peopleOpen) renderPeopleRows();
   if(sup && oaAdmins === null && !DEMO) loadOaAdmins();
 }
@@ -5393,7 +5393,7 @@ async function saveQuick(){
 function tagsCardHtml(){
   const t = settings.chat_tags || [];
   return `<div class="card card-gold"><div class="card-head"><h3>🏷 ป้ายสถานะแชท · ${esc(acctName())}</h3>
-    <div class="hint">ป้ายที่ทีมติดให้แชทได้ เช่น รอของ / รอราคา / รอเอกสาร · ใช้กรองรายการแชท ไม่เกี่ยวกับสถิติ · หนึ่งบรรทัดต่อป้าย (ไม่เกิน 12 ป้าย ป้ายละ 20 ตัวอักษร) · ลบป้ายออก = ถอดป้ายนั้นจากทุกแชท</div></div>
+    <div class="hint">ป้ายที่ทีมติดให้แชทได้ เช่น รอของ / รอราคา / รอเอกสาร · ใช้ร่วมกันทั้งทีมของบัญชี ${esc(acctName())} (แก้ได้ทุกคนในทีม · บัญชีอื่นมีชุดของตัวเอง) · ใช้กรองรายการแชท ไม่เกี่ยวกับสถิติ · หนึ่งบรรทัดต่อป้าย (ไม่เกิน 12 ป้าย ป้ายละ 20 ตัวอักษร) · ลบป้ายออก = ถอดป้ายนั้นจากทุกแชท</div></div>
     <div class="card-body"><textarea class="input" id="tagText" rows="5">${esc(t.join('\n'))}</textarea><div class="mt-8"><button class="btn btn-gold" onclick="saveTagPalette()">💾 บันทึก</button></div></div></div>`;
 }
 // v2.29 ป้ายคลังส่งจากชีทลูกค้า (หัวหน้า) — ชื่อ LINE มีรหัสลูกค้า → ติดป้ายคลังตามชีท · ลิงก์ชีทเก็บฝั่งเซิร์ฟเวอร์ (pur_private)
@@ -5525,6 +5525,9 @@ async function clearWhSheet(){
 }
 async function saveTagPalette(){
   const arr = $('tagText').value.split('\n').map(s => s.trim()).filter(Boolean);
+  // v2.41 พนักงานแก้ได้แล้ว → ลบป้ายที่ยังติดอยู่ในแชท ถามก่อน (ลบ = ถอดจากทุกแชทของบัญชี)
+  const gone = (settings.chat_tags || []).filter(t => !arr.includes(t) && chats.some(c => (c.tags || []).includes(t)));
+  if(gone.length && !confirm(`ลบป้าย "${gone.join('", "')}" = ถอดป้ายนี้ออกจากทุกแชทของบัญชีนี้ด้วย ตกลงไหม?`)) return;
   try{ await rpc('pur_save_chat_tags', { p_account:acct.id, p_tags:arr }); await loadSettings(); await loadChats(); showToast('บันทึกป้ายแล้ว ✓', 'success'); }
   catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
 }
