@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.36">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.37">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.36">
-<title>Rattana One Chat v2.36</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.37">
+<title>Rattana One Chat v2.37</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -361,6 +361,16 @@ body.dark .sender .stf{color:var(--gold-light)}
 .sc-note{font-size:11px;opacity:.7;margin-top:6px;padding-top:5px;border-top:1px solid rgba(255,255,255,.25)}
 .bubble a{color:inherit;text-decoration:underline}
 .quote{font-size:11px;opacity:.85;border-left:3px solid var(--gold);padding:2px 8px;margin:0 0 6px;border-radius:2px;background:rgba(0,0,0,.06);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
+/* v2.37 ตอบกลับแบบ LINE: ชื่อคนส่ง + ข้อความ/รูปย่อของข้อความที่ถูกตอบ · กดแล้วเลื่อนไปที่ข้อความนั้น */
+.quote.ql{display:flex;align-items:center;gap:8px;width:100%;max-width:300px;min-width:150px;padding:6px 8px 6px 10px;border:0;border-left:3px solid var(--gold);border-radius:8px;
+  font:inherit;font-size:12px;color:inherit;text-align:left;cursor:pointer;opacity:1;white-space:normal}
+.quote.ql:hover{background:rgba(0,0,0,.1)}
+.fa .quote.ql:hover{background:rgba(255,255,255,.22)}
+.quote.ql .q-tx{flex:1;min-width:0}
+.quote.ql .q-tx b{display:block;font-size:11.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.quote.ql .q-tx span{display:block;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.quote.ql .q-th{width:38px;height:38px;flex-shrink:0;border-radius:6px;object-fit:cover;background:rgba(0,0,0,.08)}
+.quote.ql .q-ic{width:38px;height:38px;flex-shrink:0;border-radius:6px;display:grid;place-items:center;font-size:18px;background:rgba(0,0,0,.08)}
 .fa .quote{background:rgba(255,255,255,.14)}
 .media .quote{margin-bottom:4px}
 .sticker{width:120px;height:120px;object-fit:contain;display:block}
@@ -1021,7 +1031,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
     <div class="lg-err" id="lgErr"></div>
     <div class="lg-wait" role="status"><div class="lg-spin"></div><b id="lgWaitMsg">กำลังเปิดแอพ…</b><div class="sub" id="lgWaitSub"></div>
       <div class="acts"><button class="btn btn-gold" type="button" onclick="retryGate()">ลองใหม่เดี๋ยวนี้</button><button class="btn btn-outline" type="button" onclick="doLogout()">ออกจากระบบ</button></div></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.36 · 10/10/2569</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.37 · 12/10/2569</div>
   </div>
 </div>
 
@@ -1071,7 +1081,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.36</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.37</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -1328,7 +1338,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.36 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.37 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1366,6 +1376,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 //  v2.34: แชท "ไม่นับสถิติ" ไม่โชว์เวลารอ/เกิน SLA/ปุ่มไม่ต้องตอบ และไม่ถูกดันขึ้นบนตอนเรียงรอนานสุด
 //  v2.35: ส่งไฟล์จากแอพ (ปุ่ม 📎 · ลากไฟล์มาวาง) — อัปตรงเข้าที่เก็บด้วยลิงก์ครั้งเดียว (pur-send v2.4) ลูกค้าได้ลิงก์ดาวน์โหลด
 //  v2.36: รหัส LINE พนักงาน → Google Sheet อัตโนมัติ (การ์ดผู้ดูแลระบบ) · ชื่อที่ทีมตั้ง ≤20 ตัวอักษร · โน้ตในแอพ → โน้ตใน OA (ส่วนขยาย 3.5)
+//  v2.37: ตอบกลับแบบ LINE (ชื่อ+รูปย่อ · กดเลื่อนไปข้อความต้นทาง) · แท็กผู้รับผิดชอบสินค้าอัตโนมัติ (pur-product-tag) · เพิ่มสมาชิกอัตโนมัติจากทะเบียนพนักงาน
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
@@ -1761,6 +1772,9 @@ const isWaiting = c => !!c.awaiting_since && c.status !== 'resolved' && !c.exclu
 // v2.28 งานโดนแท็กที่ยังไม่ตอบ (trigger เขียนลง pur_chats.mention_open) — [{ id, e:อีเมลคนที่โดนแท็ก, s:เริ่ม, b:ชื่อคนแท็ก }]
 const mentionsOpen = c => !c || c.exclude_kpi || !Array.isArray(c.mention_open) ? [] : c.mention_open;
 const myMentions = c => me ? mentionsOpen(c).filter(x => x.e === me.email) : [];
+// v2.37 งานแท็กจากระบบจับชื่อสินค้า (by_name = "🏷 ชื่อสินค้า") — คำอธิบายต่างจากโดนคน @ ตรงๆ
+const isProdTag = x => String(x?.b || '').startsWith('🏷');
+const tagWho = x => isProdTag(x) ? `มีคนพูดถึงสินค้าที่คุณดูแล (${String(x.b).replace(/^🏷\s*/, '')})` : (x.b ? `${x.b} แท็กคุณ` : 'มีคนแท็กคุณ');
 function chipCounts(){
   const open = chats.filter(c => c.status !== 'resolved');
   return { all: chats.length, awaiting: chats.filter(isWaiting).length, mention: chats.filter(c => myMentions(c).length).length,
@@ -2144,7 +2158,7 @@ function renderStrips(c){
   }
   mentionsOpen(c).forEach(x => {
     const a = elapsedSec(x.s, null), o = a > slaSec(), mine = x.e === me?.email;
-    h += `<div class="strip ment ${o ? 'over' : ''}">@ <b>${mine ? 'คุณ' : esc(memberName(x.e))}</b> โดนแท็ก${x.b ? ` (โดย ${esc(x.b)})` : ''} · รอคำตอบมา <b>${fmtDur(a)}</b>${o ? ' — <b>เกิน SLA แล้ว</b>' : ''}${mine ? ' · พิมพ์ตอบในแชทนี้ = ปิดงาน' : ''}${mine || isSup() ? `<button class="btn btn-outline btn-sm strip-btn" data-id="${esc(x.id)}" onclick="dismissMention(this.dataset.id)">ไม่ต้องตอบ</button>` : ''}</div>`;
+    h += `<div class="strip ment ${o ? 'over' : ''}">@ <b>${mine ? 'คุณ' : esc(memberName(x.e))}</b> ${isProdTag(x) ? `ถูกแท็กเพราะเป็นผู้รับผิดชอบสินค้า <b>${esc(String(x.b).replace(/^🏷\s*/, ''))}</b>` : `โดนแท็ก${x.b ? ` (โดย ${esc(x.b)})` : ''}`} · รอคำตอบมา <b>${fmtDur(a)}</b>${o ? ' — <b>เกิน SLA แล้ว</b>' : ''}${mine ? ' · พิมพ์ตอบในแชทนี้ = ปิดงาน' : ''}${mine || isSup() ? `<button class="btn btn-outline btn-sm strip-btn" data-id="${esc(x.id)}" onclick="dismissMention(this.dataset.id)">ไม่ต้องตอบ</button>` : ''}</div>`;
   });
   if(!c.is_active) h += `<div class="strip off">⚠️ ${c.kind === 'user' ? `ผู้ติดต่อบล็อกบัญชี LINE ${esc(acctName())} — ส่งข้อความหาไม่ได้จนกว่าจะปลดบล็อก` : `บัญชี LINE ${esc(acctName())} ไม่ได้อยู่ในกลุ่มนี้แล้ว — เชิญกลับเข้ากลุ่มก่อนจึงจะส่งได้`}</div>`;
   if(c.exclude_kpi) h += `<div class="strip info">📵 แชทนี้ไม่นับในสถิติ</div>`;
@@ -2454,6 +2468,31 @@ function paintReadMarks(){
     }
   });
 }
+// v2.37 กล่องอ้างถึงแบบ LINE — ใครส่ง + ข้อความ (หรือรูปย่อ/ไอคอนถ้าเป็นรูป สติกเกอร์ วิดีโอ ไฟล์)
+function quoteHtml(q, c){
+  const who = q.direction === 'out'
+    ? (q.staff_email ? memberName(q.staff_email) : (q.sender_name || sysCardOf(q) || (q.via === 'oa' ? 'แอดมิน OA' : acctName())))
+    : (q.sender_name || (c ? chatName(c) : ''));
+  let th = '', tx = previewOf(q);
+  if(q.unsent) tx = 'ข้อความถูกยกเลิก';
+  else if(q.msg_type === 'image'){ th = `<img class="q-th" ${mediaAttr(q.content || '')} alt="" loading="lazy">`; tx = 'รูปภาพ'; }
+  else if(q.msg_type === 'sticker'){ th = `<img class="q-th" src="${esc(q.content || '')}" alt="" loading="lazy" style="object-fit:contain;background:none">`; tx = 'สติกเกอร์'; }
+  else if(q.msg_type === 'video'){ th = '<span class="q-ic">🎬</span>'; tx = 'วิดีโอ'; }
+  else if(q.msg_type === 'file'){ th = '<span class="q-ic">📎</span>'; tx = q.file_name || 'ไฟล์'; }
+  else if(q.msg_type === 'audio'){ th = '<span class="q-ic">🎤</span>'; tx = 'ข้อความเสียง'; }
+  return `<button class="quote ql" data-q="${esc(q.line_msg_id || '')}" onclick="quoteJump(this.dataset.q)" title="กดเพื่อเลื่อนไปที่ข้อความนี้"><span class="q-tx"><b>${esc(who)}</b><span>${esc(tx)}</span></span>${th}</button>`;
+}
+// กดกล่องอ้างถึง → เลื่อนไปที่ข้อความต้นทาง (ยังไม่ได้โหลด = โหลดข้อความเก่าเพิ่มจนเจอ สูงสุด 25 หน้า) แล้วกระพริบ
+async function quoteJump(lineId){
+  if(!lineId || !activeId) return;
+  const chatId = activeId;
+  const find = () => { const m = (msgCache[chatId] || []).find(x => x.line_msg_id === lineId); return m ? $('msgsArea').querySelector(`[data-mid="${m.id}"]`) : null; };
+  for(let i = 0; i < 25 && !find() && activeId === chatId && msgMeta[chatId]?.hasMore; i++) await loadOlder();
+  const el = find();
+  if(!el || activeId !== chatId) return showToast('ไม่พบข้อความที่ถูกตอบ (อาจเก่ามากหรือถูกลบ)', 'info');
+  el.scrollIntoView({ block:'center', behavior:'smooth' });
+  el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+}
 function renderMsgs(msgs){
   const area = $('msgsArea'); const c = chatById.get(activeId);
   if(!msgs || !msgs.length){ area.innerHTML = '<div class="conv-empty">ยังไม่มีข้อความ</div>'; return; }
@@ -2472,7 +2511,9 @@ function renderMsgs(msgs){
     // v2.31 ฝั่งขวา = ส่งในนามบัญชี OA (แอพ / OA Manager / ระบบ) · พนักงานพิมพ์จาก LINE ส่วนตัวอยู่ฝั่งซ้ายแบบสมาชิกกลุ่ม (เหมือน LINE จริง)
     const staffLine = out && m.via === 'line', right = out && !staffLine;
     const quoted = m.quoted_line_msg_id && byLine.get(m.quoted_line_msg_id);
-    const qHtml = quoted ? `<div class="quote">↩ ${esc(previewOf(quoted))}</div>` : (m.quotePreview ? `<div class="quote">↩ ${esc(m.quotePreview)}</div>` : '');
+    const qHtml = quoted ? quoteHtml(quoted, c)
+      : m.quotePreview ? `<div class="quote">↩ ${esc(m.quotePreview)}</div>`
+      : m.quoted_line_msg_id ? `<button class="quote ql" data-q="${esc(m.quoted_line_msg_id)}" onclick="quoteJump(this.dataset.q)" title="กดเพื่อเลื่อนไปที่ข้อความที่ถูกตอบ"><span class="q-tx"><b>↩ ตอบกลับข้อความก่อนหน้า</b><span>กดเพื่อดูข้อความ</span></span></button>` : '';
     let bubble;
     if(m.unsent) bubble = '<div class="bubble unsent">ข้อความถูกยกเลิก</div>';
     else { const [inner, media] = bubbleBody(m); bubble = `<div class="bubble ${media ? 'media' : ''}">${qHtml}${inner}</div>`; }
@@ -3229,7 +3270,7 @@ function notiMentions(c){
   if(DEMO || !settings || !notiPrefs.on || !notiPrefs.mention || !c) return;
   const sla = slaSec(), warnAt = Math.round(sla * .8);
   myMentions(c).forEach(x => {
-    const age = elapsedSec(x.s, null), by = x.b ? `${x.b} แท็กคุณ` : 'มีคนแท็กคุณ';
+    const age = elapsedSec(x.s, null), by = tagWho(x);
     if(age >= sla) pushNoti('sla', c, `${by} · รอคำตอบมา ${fmtDur(age)} (SLA ${settings.sla_minutes} นาที)`, `msla|${x.id}`, true);
     else if(age >= warnAt) pushNoti('warn', c, `${by} · รอมา ${fmtDur(age)} · อีก ${fmtDur(sla - age)} จะเกิน SLA`, `mwarn|${x.id}`, true);
     else pushNoti('mention', c, `${by}ในกลุ่มนี้ · ตอบภายใน ${settings.sla_minutes} นาที`, `mention|${x.id}`, true);
@@ -4614,7 +4655,7 @@ let peopleQ = '';
 function renderSettings(){
   if(view !== 'set') return;
   const sup = isSup();
-  $('setContent').innerHTML = linkCardHtml() + notiCardHtml() + (isAdmin() ? accountsCardHtml() + accessCardHtml() + lineSheetCardHtml() : '') + (sup ? teamCardHtml() + peopleCardHtml() + hoursCardHtml() : '') + quickCardHtml() + (sup ? tagsCardHtml() + whCardHtml() + ackCardHtml() + quotaCardHtml() : '') + (isAdmin() ? adminCardHtml() : '') + (sup ? aboutCardHtml() : '');   // v2.22 พนักงานเห็นแค่ของตัวเอง (ผูก LINE · แจ้งเตือน · ข้อความตอบด่วน)
+  $('setContent').innerHTML = linkCardHtml() + notiCardHtml() + (isAdmin() ? accountsCardHtml() + accessCardHtml() + lineSheetCardHtml() : '') + (sup ? teamCardHtml() + peopleCardHtml() + hoursCardHtml() : '') + quickCardHtml() + (sup ? tagsCardHtml() + whCardHtml() + prodCardHtml() + ackCardHtml() + quotaCardHtml() : '') + (isAdmin() ? adminCardHtml() : '') + (sup ? aboutCardHtml() : '');   // v2.22 พนักงานเห็นแค่ของตัวเอง (ผูก LINE · แจ้งเตือน · ข้อความตอบด่วน)
   if(sup && peopleOpen) renderPeopleRows();
   if(sup && oaAdmins === null && !DEMO) loadOaAdmins();
 }
@@ -4721,7 +4762,7 @@ function accessCardHtml(){
   return `<div class="card card-gold" id="accessCard"><div class="card-head"><h3><span class="hb">${ic('users')}</span>สิทธิ์เข้าบัญชี</h3>
     <div class="hint">ใครเข้าบัญชีไหนได้ และเป็นหัวหน้าหรือพนักงานของบัญชีนั้น · ผู้ดูแลระบบเข้าได้ทุกบัญชีเสมอ · คนที่ได้บัญชีเดียวจะเข้าบัญชีนั้นเลยไม่ต้องผ่านหน้าเลือก ·
       คนใหม่ให้เพิ่มที่การ์ด "ทีม" ของบัญชีนั้นก่อน (สลับบัญชีที่หัวแอพ) · เลือก <b>—</b> = ถอดออกจากบัญชีนั้น · ช่อง <b>จัดการ</b> = ลบออกจากระบบ หรือตั้ง/ลดผู้ดูแลระบบ · ถอดสิทธิ์แล้วสถิติเดิมของคนนั้นยังอยู่</div></div>
-    <div class="tbl-wrap"><table class="tbl"><thead><tr><th style="cursor:default">สมาชิก</th>${accounts.map(a => `<th style="cursor:default">${esc(a.name)}</th>`).join('')}<th style="cursor:default">จัดการ</th></tr></thead><tbody>
+    ${staffSyncLine()}<div class="tbl-wrap"><table class="tbl"><thead><tr><th style="cursor:default">สมาชิก</th>${accounts.map(a => `<th style="cursor:default">${esc(a.name)}</th>`).join('')}<th style="cursor:default">จัดการ</th></tr></thead><tbody>
     ${shown.length ? shown.map(p => `<tr class="${p.active && has(p) ? '' : 'dim'}"><td><b>${esc(p.nick || p.name || p.email)}</b><div class="mini">${esc(p.email)}${has(p) ? '' : ' · ไม่มีสิทธิ์เข้าบัญชีไหน'}</div></td>${accounts.map(a => `<td>${cell(p, a)}</td>`).join('')}<td>${manage(p)}</td></tr>`).join('')
       : `<tr class="empty-row"><td colspan="${accounts.length + 2}">${accessMx === null ? 'กำลังโหลด…' : 'ยังไม่มีสมาชิก'}</td></tr>`}
     </tbody></table></div>
@@ -5077,6 +5118,79 @@ function whCardHtml(){
       ${cfg.url ? `<button class="btn btn-outline" onclick="syncWhSheet()">🔄 ซิงก์เดี๋ยวนี้</button> <button class="btn btn-outline" onclick="clearWhSheet()">เลิกใช้</button>` : ''}
     </div></div>`;
 }
+// ═══ v2.37 แท็กผู้รับผิดชอบสินค้าอัตโนมัติ (หัวหน้า) ═══
+// ชีทสินค้า (ชื่อสินค้า → เวนเดอร์) + ชีทเวนเดอร์ (เวนเดอร์ → ผู้รับผิดชอบ) · จับในข้อความ/รูปที่เข้าแชท → เปิดงาน "แท็กถึงคุณ" ให้ผู้รับผิดชอบ
+let prodInfo = null, prodInfoAcct = 0, prodTest = '';
+function prodCardHtml(){
+  if(prodInfoAcct !== acct.id){ prodInfoAcct = acct.id; prodTest = '';
+    prodInfo = DEMO ? { cfg:{ pddt_url:'https://docs.google.com/spreadsheets/d/(ตัวอย่าง)', vendor_url:'https://docs.google.com/spreadsheets/d/(ตัวอย่าง)', enabled:true, stop:['มีโอ'] },
+                        sync:{ at:new Date().toISOString(), products:13124, owned:11959, unmapped:[] } } : null;
+    if(!DEMO) loadProdInfo(); }
+  const cfg = prodInfo?.cfg || {}, sy = prodInfo?.sync, on = cfg.pddt_url && cfg.enabled !== false;
+  const inp = (id, v, ph, w) => `<input class="input" id="${id}" value="${esc(v || '')}" placeholder="${esc(ph)}"${w ? ` style="width:${w}"` : ''}>`;
+  return `<div class="card card-gold" id="prodCard"><div class="card-head"><h3>🏷 แท็กผู้รับผิดชอบสินค้าอัตโนมัติ · ${esc(acctName())}</h3>
+    <div class="hint">มีคนพิมพ์ชื่อสินค้า/ยี่ห้อ (หรือส่งรูปสินค้า — ถ้าเปิดอ่านรูปไว้) ในแชท → ระบบหาผู้รับผิดชอบจากชีท แล้วเปิดงาน <b>"แท็กถึงคุณ"</b> ให้คนนั้น นับเวลาตอบ + แจ้งเตือนเหมือนโดน @ ·
+      ไม่ส่งอะไรเข้า LINE · ไม่แท็กถ้าผู้รับผิดชอบสินค้าเป็นผู้รับผิดชอบแชทอยู่แล้ว · จับแค่ยี่ห้อได้เฉพาะข้อความที่ถาม/ขอ (เข้า · มีไหม · ยัง · สั่ง · หมด · ขาด · ?) · ซิงก์ชีทใหม่ทุกวัน 05:40</div></div>
+    <div class="card-body">
+      <div class="field"><label>ชีทสินค้า (เช่น PDDT) — ชื่อสินค้า / เวนเดอร์</label>${inp('prUrl', cfg.pddt_url, 'https://docs.google.com/spreadsheets/d/…#gid=…')}
+        <div style="display:flex;gap:8px;margin-top:6px">${inp('prName', cfg.name_col || 'A', 'A', '80px')}${inp('prVend', cfg.vendor_col || 'BH', 'BH', '80px')}<span class="mini" style="align-self:center">คอลัมน์ชื่อสินค้า · คอลัมน์เวนเดอร์</span></div></div>
+      <div class="field"><label>ชีทเวนเดอร์ (เช่น Vendor_Data) — เวนเดอร์ / ผู้รับผิดชอบ (ชื่อเล่น)</label>${inp('prVUrl', cfg.vendor_url, 'https://docs.google.com/spreadsheets/d/…#gid=…')}
+        <div style="display:flex;gap:8px;margin-top:6px">${inp('prVName', cfg.vname_col || 'B', 'B', '80px')}${inp('prOwner', cfg.owner_col || 'D', 'D', '80px')}<span class="mini" style="align-self:center">คอลัมน์ชื่อเวนเดอร์ · คอลัมน์ผู้รับผิดชอบ</span></div></div>
+      <div class="field"><label>คำที่ไม่ใช่ยี่ห้อ (ระบบจับผิด) — หนึ่งบรรทัดต่อคำ</label><textarea class="input" id="prStop" rows="3" placeholder="เช่น บ้าน · เด็ก · เคลียร์">${esc((cfg.stop || []).join('\n'))}</textarea></div>
+      <label class="check ${cfg.enabled !== false ? 'on' : ''}" style="margin-bottom:8px"><input type="checkbox" id="prOn" ${cfg.enabled !== false ? 'checked' : ''} onchange="this.parentElement.classList.toggle('on',this.checked)"> เปิดใช้การแท็กอัตโนมัติ</label>
+      <div class="mini mb-12" id="prStat">${prodInfo === null ? 'กำลังโหลด…' : sy ? `ซิงก์ล่าสุด ${thDateTime(sy.at)} · สินค้า ${nf(sy.products)} รายการ · มีผู้รับผิดชอบ ${nf(sy.owned)}${(sy.unmapped || []).length ? ` · <span class="lv-warn-txt">ชื่อในชีทที่ไม่ตรงกับพนักงานในทีม: ${sy.unmapped.map(esc).join(', ')}</span>` : ''}` : (cfg.pddt_url ? 'ยังไม่เคยซิงก์' : 'ยังไม่ได้ตั้ง')}</div>
+      <button class="btn btn-gold" onclick="saveProdSheet()">💾 บันทึก + ซิงก์</button>
+      ${cfg.pddt_url ? `<button class="btn btn-outline" onclick="syncProdSheet()">🔄 ซิงก์เดี๋ยวนี้</button> <button class="btn btn-outline" onclick="clearProdSheet()">เลิกใช้</button>` : ''}
+      ${on ? `<div class="field mt-12"><label>ลองพิมพ์ข้อความ ดูว่าระบบจะแท็กใคร (ไม่เปิดงานจริง)</label>
+        <div style="display:flex;gap:8px"><input class="input" id="prTry" placeholder="เช่น มาม่าน้ำข้นเข้าวันไหนครับ" onkeydown="if(event.key==='Enter')testProd()"><button class="btn btn-outline" onclick="testProd()">ลอง</button></div>
+        <div class="mini mt-8" id="prTryOut">${prodTest}</div></div>` : ''}
+    </div></div>`;
+}
+async function loadProdInfo(){
+  try{ const { data, error } = await sb.rpc('pur_product_sheet_info', { p_account:acct.id }); if(error) throw error; prodInfo = data || {}; }
+  catch(e){ console.warn('prod info:', e.message); prodInfo = {}; }
+  const el = $('prodCard'); if(el) el.outerHTML = prodCardHtml();
+}
+async function prodCall(body){
+  const { data:{ session } } = await sb.auth.getSession();
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/pur-product-tag`, { method:'POST',
+    headers:{ 'Content-Type':'application/json', apikey:SUPABASE_ANON, Authorization:`Bearer ${session?.access_token || ''}` }, body:JSON.stringify(body) });
+  const r = await res.json().catch(() => ({ ok:false, error:`HTTP ${res.status}` }));
+  if(!r.ok) throw new Error(r.error || `HTTP ${res.status}`);
+  return r;
+}
+async function saveProdSheet(){
+  const v = id => ($(id)?.value || '').trim();
+  const cfg = { pddt_url:v('prUrl'), name_col:v('prName').toUpperCase() || 'A', vendor_col:v('prVend').toUpperCase() || 'BH',
+                vendor_url:v('prVUrl'), vname_col:v('prVName').toUpperCase() || 'B', owner_col:v('prOwner').toUpperCase() || 'D',
+                stop:v('prStop').split('\n').map(x => x.trim()).filter(Boolean).slice(0, 200), enabled:!!$('prOn')?.checked };
+  if(!cfg.pddt_url || !cfg.vendor_url) return showToast('วางลิงก์ชีทให้ครบทั้งสองช่อง', 'info');
+  try{ await rpc('pur_save_product_sheet', { p_account:acct.id, p_cfg:cfg }); }catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); return; }
+  await syncProdSheet();
+}
+async function syncProdSheet(){
+  if(DEMO) return showToast('โหมดตัวอย่าง — ไม่ได้ซิงก์จริง', 'info');
+  const st = $('prStat'); if(st) st.textContent = 'กำลังดึงชีทสินค้าและเวนเดอร์… (ชีทใหญ่ใช้เวลาราว 20–40 วินาที)';
+  try{ const r = await prodCall({ action:'sync', accountId:acct.id }); showToast(`ซิงก์แล้ว — สินค้า ${nf(r.products)} รายการ · มีผู้รับผิดชอบ ${nf(r.owned)}`, 'success', 6000); }
+  catch(e){ showToast('ซิงก์ไม่สำเร็จ: ' + e.message, 'error', 8000); }
+  prodInfo = null; prodInfoAcct = 0; loadProdInfo();
+}
+async function clearProdSheet(){
+  if(!confirm('เลิกใช้การแท็กผู้รับผิดชอบสินค้าของบัญชีนี้? (งานแท็กที่เปิดไปแล้วยังอยู่)')) return;
+  try{ await rpc('pur_save_product_sheet', { p_account:acct.id, p_cfg:{} }); showToast('เลิกใช้แล้ว', 'success'); }catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
+  prodInfo = null; prodInfoAcct = 0; loadProdInfo();
+}
+async function testProd(){
+  const t = ($('prTry')?.value || '').trim(); if(!t) return;
+  const out = $('prTryOut'); if(out) out.textContent = 'กำลังลอง…';
+  try{
+    const r = DEMO ? { hits:demoProdMatch(t), image:false } : await prodCall({ action:'test', accountId:acct.id, text:t });
+    prodTest = r.hits.length ? '→ จะแท็ก: ' + r.hits.map(h => `<b>${esc(h.owner)}</b> (${esc(h.label.replace(/^🏷\s*/, ''))}${h.how === 'brand' ? ' · จับจากยี่ห้อ' : ''})`).join(' · ')
+      : '→ ไม่แท็กใคร (ไม่เจอชื่อสินค้า หรือจับได้แค่ยี่ห้อแต่ข้อความไม่ได้ถาม/ขอ)';
+    prodTest += ` <span class="txt-muted">· อ่านรูป: ${r.image ? 'เปิดแล้ว' : 'ยังไม่ได้ตั้งคีย์ Gemini'}</span>`;
+  }catch(e){ prodTest = 'ลองไม่สำเร็จ: ' + esc(e.message); }
+  if(out) out.innerHTML = prodTest;
+}
 async function loadWhInfo(){
   try{ const { data, error } = await sb.rpc('pur_customer_sheet_info', { p_account:acct.id }); if(error) throw error; whInfo = data || {}; }
   catch(e){ console.warn('wh info:', e.message); whInfo = {}; }
@@ -5138,6 +5252,39 @@ async function loadQuota(){
   if(!r.ok){ box.innerHTML = `<span class="txt-danger">${esc(r.error || 'ดูไม่ได้')}</span>`; return; }
   const limit = r.type === 'limited' ? r.limit : null;
   box.innerHTML = `ใช้ไปแล้ว <b style="font-size:20px">${nf(r.used || 0)}</b> ${limit ? `จาก ${nf(limit)} ข้อความ (${pct(r.used || 0, limit)})` : 'ข้อความ · แพ็กเกจไม่จำกัด'}`;
+}
+// ═══ v2.37 เพิ่มสมาชิกเข้าบัญชี LINE ของแผนกอัตโนมัติ จากทะเบียนพนักงาน (ผู้ดูแลระบบ) ═══
+// กติกา (ตั้งที่ฐานข้อมูล pur_private 'staff_sync_rules'): แผนก + คลัง (คอลัมน์ B หัว "W") + ชื่อเล่น → บัญชี · เพิ่มอย่างเดียว ไม่ลบ · คนที่ถูกลบ/ถอดสิทธิ์แล้วไม่เพิ่มกลับ
+// v2.37 ผู้ใช้ขอหน้าตาแบบเดิม — ไม่มีการ์ดแก้กติกา มีแค่บรรทัดสถานะ + ปุ่มซิงก์ในการ์ด "สิทธิ์เข้าบัญชี"
+let ssInfo = null;
+function staffSyncLine(){
+  if(ssInfo === null && !DEMO){ ssInfo = {}; loadStaffSync(); }
+  const last = ssInfo?.last;
+  if(!(ssInfo?.rules || []).length && !last) return '';
+  const accName = id => accounts.find(a => a.id === +id)?.name || ('บัญชี ' + id);
+  const added = (last?.added_list || []).map(x => `${esc(x.nick)} → ${esc(accName(x.account))}`).join(' · ');
+  return `<div class="mini" id="ssLine" style="padding:0 16px 10px;line-height:1.7">🔄 เพิ่มสมาชิกอัตโนมัติจากทะเบียนพนักงาน ทุกวัน 05:50 (เพิ่มอย่างเดียว · คนที่ลบ/ถอดสิทธิ์แล้วไม่เพิ่มกลับ) ·
+    ${last ? `ล่าสุด ${thDateTime(last.at)} · เพิ่มใหม่ <b>${nf(last.added || 0)}</b>${added ? ` (${added})` : ''}` : 'ยังไม่เคยซิงก์'}
+    <button class="btn btn-outline btn-sm" style="margin-left:6px" onclick="runStaffSync()">ซิงก์เดี๋ยวนี้</button></div>`;
+}
+function refreshStaffSyncCard(){ const el = $('accessCard'); if(el) el.outerHTML = accessCardHtml(); }
+async function loadStaffSync(){
+  try{ const { data, error } = await sb.rpc('pur_staff_sync_info'); if(error) throw error; ssInfo = data || {}; }
+  catch(e){ console.warn('staff sync info:', e.message); ssInfo = {}; }
+  refreshStaffSyncCard();
+}
+async function runStaffSync(){
+  if(DEMO) return showToast('โหมดตัวอย่าง — ไม่ได้ซิงก์จริง', 'info');
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/pur-sheet`, { method:'POST',
+      headers:{ 'Content-Type':'application/json', apikey:SUPABASE_ANON, Authorization:`Bearer ${session?.access_token || ''}` }, body:JSON.stringify({ action:'staffSync' }) });
+    const r = await res.json();
+    if(!r.ok) throw new Error(r.error || `HTTP ${res.status}`);
+    showToast(`ซิงก์แล้ว — เพิ่มใหม่ ${nf(r.added || 0)} สิทธิ์ · มีอยู่แล้ว ${nf(r.already || 0)}`, 'success', 6000);
+    accessMx = null;
+  }catch(e){ showToast('ซิงก์ไม่สำเร็จ: ' + e.message, 'error', 8000); }
+  ssInfo = null; loadStaffSync();
 }
 // ═══ v2.36 รหัส LINE พนักงาน → Google Sheet อัตโนมัติ (ผู้ดูแลระบบ) ═══
 // ชีทรัน Apps Script ทุกชั่วโมง ดึงรายการล่าสุดจาก pur-sheet ด้วยโทเคนของชีท (สร้างที่นี่ · สร้างใหม่ = โทเคนเก่าใช้ไม่ได้)
@@ -6061,7 +6208,32 @@ function demoAccessMx(){
   rows.push({ email:'admin@demo', nick:'แอดมิน', name:'ผู้ดูแลระบบ', global_role:'admin', active:true, account_id:null, role:null, pu_code:null });
   return rows;
 }
+// v2.37 โหมดตัวอย่าง: แท็กผู้รับผิดชอบสินค้า — กลุ่มสาขาถามถึงสินค้า → ระบบแท็กผู้รับผิดชอบสินค้าให้เอง
+const DEMO_PROD = [['มาม่า', 'มาม่า ต้มยำกุ้งน้ำข้น 55ก.'], ['องุ่น', 'องุ่น น้ำมันถั่วเหลือง 1ลิตร'], ['ฉัตร', 'ฉัตร ข้าวหอมมะลิ 5กก.'], ['นิสชิน', 'นิสชิน คัพนูดเดิ้ล ต้มยำ 60ก.'], ['เป๊ปซี่', 'เป๊ปซี่ 345มล.'], ['โลแลน', 'โลแลน เนเจอร์โค้ด แชมพู 250มล.']];
+function demoProductTags(){
+  const d = demoAll[1]; if(!d || d.chats.some(c => c.id === 'dpt1')) return;
+  const staff = [...d.members.values()].filter(m => m.role !== 'admin').map(m => m.email);
+  const now = Date.now(), at = min => new Date(now - min * 60000).toISOString();
+  const mkChat = (id, title, last, min) => ({ id, account_id:1, kind:'group', line_id:'L' + id, title, supplier_name:title, member_count:23, assignee_email:null,
+    status:'open', exclude_kpi:false, is_active:true, unread_count:1, last_message:last, last_message_at:at(min), last_inbound_at:at(min),
+    awaiting_since:null, open_wait_id:null, note:null, avatar_url:null, mention_open:[] });
+  const msg = (cid, k, who, text, min) => ({ id:`${cid}-m${k}`, chat_id:cid, account_id:1, via:'line', direction:'in', sender_type:'supplier', sender_name:who,
+    msg_type:'text', content:text, status:'sent', sent_at:at(min), line_msg_id:`${cid}-l${k}`, is_history:false, unsent:false });
+  const c1 = mkChat('dpt1', 'กลุ่ม สาขานครปฐม · สอบถามสินค้า', 'เอ็ม: มาม่าน้ำข้น & มาม่าน้ำใส เข้าวันไหนครับ', 8);
+  c1.mention_open = [{ id:'dptm1', e:'admin@demo', s:at(8), b:'🏷 มาม่า ต้มยำกุ้งน้ำข้น 55ก.' }];
+  const c2 = mkChat('dpt2', 'กลุ่ม คลัง W4 · เช็คสต็อก', 'ปาล์ม: องุ่นขวดเข้ามาไหมครับ ลูกค้าถามหา', 72);
+  c2.mention_open = [{ id:'dptm2', e:staff[0] || 'bee@demo', s:at(72), b:'🏷 องุ่น น้ำมันถั่วเหลือง 1ลิตร' }];
+  d.chats.unshift(c1, c2);
+  msgCache.dpt1 = [msg('dpt1', 1, 'เอ็ม สาขานครปฐม', 'สวัสดีครับ', 12), msg('dpt1', 2, 'เอ็ม สาขานครปฐม', 'มาม่าน้ำข้น & มาม่าน้ำใส เข้าวันไหนครับ ลูกค้าถามหาหลายคน', 8)];
+  msgCache.dpt2 = [msg('dpt2', 1, 'ปาล์ม คลัง W4', 'องุ่นขวดเข้ามาไหมครับ ลูกค้าถามหา', 72)];
+}
+function demoProdMatch(text){
+  const t = String(text || ''), ask = /(เข้า|มา|ไหม|มั้ย|ยัง|สั่ง|หมด|ขาด|เหลือ|\?)/.test(t);
+  const owners = { 'มาม่า':'อ้อย', 'องุ่น':'บุ๊ค', 'ฉัตร':'อ้อย', 'นิสชิน':'อ้อย', 'เป๊ปซี่':'โบว์', 'โลแลน':'ขนุน' };
+  return DEMO_PROD.filter(([b]) => t.includes(b)).filter(([b, n]) => ask || n.split(' ').slice(1).some(w => t.includes(w))).map(([b, n]) => ({ owner:owners[b], label:'🏷 ' + n, how:'product' }));
+}
 function demoEnter(){
+  if(acct?.id === 1) demoProductTags();
   const d = demoAll[acct.id];
   members = d.members; chats = d.chats; chatById = new Map(chats.map(c => [c.id, c])); demoWaits = d.waits;
   applySettings(d.settings);
