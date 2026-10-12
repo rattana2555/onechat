@@ -5122,7 +5122,10 @@ function whCardHtml(){
 // ชีทสินค้า (ชื่อสินค้า → เวนเดอร์) + ชีทเวนเดอร์ (เวนเดอร์ → ผู้รับผิดชอบ) · จับในข้อความ/รูปที่เข้าแชท → เปิดงาน "แท็กถึงคุณ" ให้ผู้รับผิดชอบ
 let prodInfo = null, prodInfoAcct = 0, prodTest = '';
 function prodCardHtml(){
-  if(prodInfoAcct !== acct.id){ prodInfo = DEMO ? {} : null; prodInfoAcct = acct.id; prodTest = ''; if(!DEMO) loadProdInfo(); }
+  if(prodInfoAcct !== acct.id){ prodInfoAcct = acct.id; prodTest = '';
+    prodInfo = DEMO ? { cfg:{ pddt_url:'https://docs.google.com/spreadsheets/d/(ตัวอย่าง)', vendor_url:'https://docs.google.com/spreadsheets/d/(ตัวอย่าง)', enabled:true, stop:['มีโอ'] },
+                        sync:{ at:new Date().toISOString(), products:13124, owned:11959, unmapped:[] } } : null;
+    if(!DEMO) loadProdInfo(); }
   const cfg = prodInfo?.cfg || {}, sy = prodInfo?.sync, on = cfg.pddt_url && cfg.enabled !== false;
   const inp = (id, v, ph, w) => `<input class="input" id="${id}" value="${esc(v || '')}" placeholder="${esc(ph)}"${w ? ` style="width:${w}"` : ''}>`;
   return `<div class="card card-gold" id="prodCard"><div class="card-head"><h3>🏷 แท็กผู้รับผิดชอบสินค้าอัตโนมัติ · ${esc(acctName())}</h3>
@@ -5181,7 +5184,7 @@ async function testProd(){
   const t = ($('prTry')?.value || '').trim(); if(!t) return;
   const out = $('prTryOut'); if(out) out.textContent = 'กำลังลอง…';
   try{
-    const r = await prodCall({ action:'test', accountId:acct.id, text:t });
+    const r = DEMO ? { hits:demoProdMatch(t), image:false } : await prodCall({ action:'test', accountId:acct.id, text:t });
     prodTest = r.hits.length ? '→ จะแท็ก: ' + r.hits.map(h => `<b>${esc(h.owner)}</b> (${esc(h.label.replace(/^🏷\s*/, ''))}${h.how === 'brand' ? ' · จับจากยี่ห้อ' : ''})`).join(' · ')
       : '→ ไม่แท็กใคร (ไม่เจอชื่อสินค้า หรือจับได้แค่ยี่ห้อแต่ข้อความไม่ได้ถาม/ขอ)';
     prodTest += ` <span class="txt-muted">· อ่านรูป: ${r.image ? 'เปิดแล้ว' : 'ยังไม่ได้ตั้งคีย์ Gemini'}</span>`;
@@ -6205,7 +6208,32 @@ function demoAccessMx(){
   rows.push({ email:'admin@demo', nick:'แอดมิน', name:'ผู้ดูแลระบบ', global_role:'admin', active:true, account_id:null, role:null, pu_code:null });
   return rows;
 }
+// v2.37 โหมดตัวอย่าง: แท็กผู้รับผิดชอบสินค้า — กลุ่มสาขาถามถึงสินค้า → ระบบแท็กผู้รับผิดชอบสินค้าให้เอง
+const DEMO_PROD = [['มาม่า', 'มาม่า ต้มยำกุ้งน้ำข้น 55ก.'], ['องุ่น', 'องุ่น น้ำมันถั่วเหลือง 1ลิตร'], ['ฉัตร', 'ฉัตร ข้าวหอมมะลิ 5กก.'], ['นิสชิน', 'นิสชิน คัพนูดเดิ้ล ต้มยำ 60ก.'], ['เป๊ปซี่', 'เป๊ปซี่ 345มล.'], ['โลแลน', 'โลแลน เนเจอร์โค้ด แชมพู 250มล.']];
+function demoProductTags(){
+  const d = demoAll[1]; if(!d || d.chats.some(c => c.id === 'dpt1')) return;
+  const staff = [...d.members.values()].filter(m => m.role !== 'admin').map(m => m.email);
+  const now = Date.now(), at = min => new Date(now - min * 60000).toISOString();
+  const mkChat = (id, title, last, min) => ({ id, account_id:1, kind:'group', line_id:'L' + id, title, supplier_name:title, member_count:23, assignee_email:null,
+    status:'open', exclude_kpi:false, is_active:true, unread_count:1, last_message:last, last_message_at:at(min), last_inbound_at:at(min),
+    awaiting_since:null, open_wait_id:null, note:null, avatar_url:null, mention_open:[] });
+  const msg = (cid, k, who, text, min) => ({ id:`${cid}-m${k}`, chat_id:cid, account_id:1, via:'line', direction:'in', sender_type:'supplier', sender_name:who,
+    msg_type:'text', content:text, status:'sent', sent_at:at(min), line_msg_id:`${cid}-l${k}`, is_history:false, unsent:false });
+  const c1 = mkChat('dpt1', 'กลุ่ม สาขานครปฐม · สอบถามสินค้า', 'เอ็ม: มาม่าน้ำข้น & มาม่าน้ำใส เข้าวันไหนครับ', 8);
+  c1.mention_open = [{ id:'dptm1', e:'admin@demo', s:at(8), b:'🏷 มาม่า ต้มยำกุ้งน้ำข้น 55ก.' }];
+  const c2 = mkChat('dpt2', 'กลุ่ม คลัง W4 · เช็คสต็อก', 'ปาล์ม: องุ่นขวดเข้ามาไหมครับ ลูกค้าถามหา', 72);
+  c2.mention_open = [{ id:'dptm2', e:staff[0] || 'bee@demo', s:at(72), b:'🏷 องุ่น น้ำมันถั่วเหลือง 1ลิตร' }];
+  d.chats.unshift(c1, c2);
+  msgCache.dpt1 = [msg('dpt1', 1, 'เอ็ม สาขานครปฐม', 'สวัสดีครับ', 12), msg('dpt1', 2, 'เอ็ม สาขานครปฐม', 'มาม่าน้ำข้น & มาม่าน้ำใส เข้าวันไหนครับ ลูกค้าถามหาหลายคน', 8)];
+  msgCache.dpt2 = [msg('dpt2', 1, 'ปาล์ม คลัง W4', 'องุ่นขวดเข้ามาไหมครับ ลูกค้าถามหา', 72)];
+}
+function demoProdMatch(text){
+  const t = String(text || ''), ask = /(เข้า|มา|ไหม|มั้ย|ยัง|สั่ง|หมด|ขาด|เหลือ|\?)/.test(t);
+  const owners = { 'มาม่า':'อ้อย', 'องุ่น':'บุ๊ค', 'ฉัตร':'อ้อย', 'นิสชิน':'อ้อย', 'เป๊ปซี่':'โบว์', 'โลแลน':'ขนุน' };
+  return DEMO_PROD.filter(([b]) => t.includes(b)).filter(([b, n]) => ask || n.split(' ').slice(1).some(w => t.includes(w))).map(([b, n]) => ({ owner:owners[b], label:'🏷 ' + n, how:'product' }));
+}
 function demoEnter(){
+  if(acct?.id === 1) demoProductTags();
   const d = demoAll[acct.id];
   members = d.members; chats = d.chats; chatById = new Map(chats.map(c => [c.id, c])); demoWaits = d.waits;
   applySettings(d.settings);
