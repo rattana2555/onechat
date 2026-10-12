@@ -4655,7 +4655,7 @@ let peopleQ = '';
 function renderSettings(){
   if(view !== 'set') return;
   const sup = isSup();
-  $('setContent').innerHTML = linkCardHtml() + notiCardHtml() + (isAdmin() ? accountsCardHtml() + accessCardHtml() + staffSyncCardHtml() + lineSheetCardHtml() : '') + (sup ? teamCardHtml() + peopleCardHtml() + hoursCardHtml() : '') + quickCardHtml() + (sup ? tagsCardHtml() + whCardHtml() + prodCardHtml() + ackCardHtml() + quotaCardHtml() : '') + (isAdmin() ? adminCardHtml() : '') + (sup ? aboutCardHtml() : '');   // v2.22 พนักงานเห็นแค่ของตัวเอง (ผูก LINE · แจ้งเตือน · ข้อความตอบด่วน)
+  $('setContent').innerHTML = linkCardHtml() + notiCardHtml() + (isAdmin() ? accountsCardHtml() + accessCardHtml() + lineSheetCardHtml() : '') + (sup ? teamCardHtml() + peopleCardHtml() + hoursCardHtml() : '') + quickCardHtml() + (sup ? tagsCardHtml() + whCardHtml() + prodCardHtml() + ackCardHtml() + quotaCardHtml() : '') + (isAdmin() ? adminCardHtml() : '') + (sup ? aboutCardHtml() : '');   // v2.22 พนักงานเห็นแค่ของตัวเอง (ผูก LINE · แจ้งเตือน · ข้อความตอบด่วน)
   if(sup && peopleOpen) renderPeopleRows();
   if(sup && oaAdmins === null && !DEMO) loadOaAdmins();
 }
@@ -4762,7 +4762,7 @@ function accessCardHtml(){
   return `<div class="card card-gold" id="accessCard"><div class="card-head"><h3><span class="hb">${ic('users')}</span>สิทธิ์เข้าบัญชี</h3>
     <div class="hint">ใครเข้าบัญชีไหนได้ และเป็นหัวหน้าหรือพนักงานของบัญชีนั้น · ผู้ดูแลระบบเข้าได้ทุกบัญชีเสมอ · คนที่ได้บัญชีเดียวจะเข้าบัญชีนั้นเลยไม่ต้องผ่านหน้าเลือก ·
       คนใหม่ให้เพิ่มที่การ์ด "ทีม" ของบัญชีนั้นก่อน (สลับบัญชีที่หัวแอพ) · เลือก <b>—</b> = ถอดออกจากบัญชีนั้น · ช่อง <b>จัดการ</b> = ลบออกจากระบบ หรือตั้ง/ลดผู้ดูแลระบบ · ถอดสิทธิ์แล้วสถิติเดิมของคนนั้นยังอยู่</div></div>
-    <div class="tbl-wrap"><table class="tbl"><thead><tr><th style="cursor:default">สมาชิก</th>${accounts.map(a => `<th style="cursor:default">${esc(a.name)}</th>`).join('')}<th style="cursor:default">จัดการ</th></tr></thead><tbody>
+    ${staffSyncLine()}<div class="tbl-wrap"><table class="tbl"><thead><tr><th style="cursor:default">สมาชิก</th>${accounts.map(a => `<th style="cursor:default">${esc(a.name)}</th>`).join('')}<th style="cursor:default">จัดการ</th></tr></thead><tbody>
     ${shown.length ? shown.map(p => `<tr class="${p.active && has(p) ? '' : 'dim'}"><td><b>${esc(p.nick || p.name || p.email)}</b><div class="mini">${esc(p.email)}${has(p) ? '' : ' · ไม่มีสิทธิ์เข้าบัญชีไหน'}</div></td>${accounts.map(a => `<td>${cell(p, a)}</td>`).join('')}<td>${manage(p)}</td></tr>`).join('')
       : `<tr class="empty-row"><td colspan="${accounts.length + 2}">${accessMx === null ? 'กำลังโหลด…' : 'ยังไม่มีสมาชิก'}</td></tr>`}
     </tbody></table></div>
@@ -5251,45 +5251,24 @@ async function loadQuota(){
   box.innerHTML = `ใช้ไปแล้ว <b style="font-size:20px">${nf(r.used || 0)}</b> ${limit ? `จาก ${nf(limit)} ข้อความ (${pct(r.used || 0, limit)})` : 'ข้อความ · แพ็กเกจไม่จำกัด'}`;
 }
 // ═══ v2.37 เพิ่มสมาชิกเข้าบัญชี LINE ของแผนกอัตโนมัติ จากทะเบียนพนักงาน (ผู้ดูแลระบบ) ═══
-// กติกา: แผนก (ช่องแผนก) + คอลัมน์ W (ว่าง = ทุกค่า) + ชื่อเล่น (ว่าง = ทุกคน) → บัญชี · เพิ่มอย่างเดียว ไม่ลบ · คนที่ถูกลบ/ถอดสิทธิ์แล้วไม่เพิ่มกลับ
-let ssInfo = null, ssRules = null;
-function staffSyncCardHtml(){
+// กติกา (ตั้งที่ฐานข้อมูล pur_private 'staff_sync_rules'): แผนก + คลัง (คอลัมน์ B หัว "W") + ชื่อเล่น → บัญชี · เพิ่มอย่างเดียว ไม่ลบ · คนที่ถูกลบ/ถอดสิทธิ์แล้วไม่เพิ่มกลับ
+// v2.37 ผู้ใช้ขอหน้าตาแบบเดิม — ไม่มีการ์ดแก้กติกา มีแค่บรรทัดสถานะ + ปุ่มซิงก์ในการ์ด "สิทธิ์เข้าบัญชี"
+let ssInfo = null;
+function staffSyncLine(){
   if(ssInfo === null && !DEMO){ ssInfo = {}; loadStaffSync(); }
-  const i = ssInfo || {}, last = i.last;
-  const rules = ssRules || (i.rules || []).map(r => ({ ...r }));
-  if(!ssRules && i.rules) ssRules = rules;
-  const accOpt = sel => accounts.map(a => `<option value="${a.id}" ${String(a.id) === String(sel) ? 'selected' : ''}>${esc(a.name)}</option>`).join('')
-    + (sel && !accounts.some(a => String(a.id) === String(sel)) ? `<option value="${esc(sel)}" selected>บัญชี ${esc(sel)}</option>` : '');
-  const rowHtml = (r, k) => `<tr>
-      <td><select class="input" style="min-width:140px" onchange="ssRules[${k}].account=+this.value">${accOpt(r.account)}</select></td>
-      <td><input class="input" value="${esc(r.dept || '')}" placeholder="เช่น ธุรการขาย" oninput="ssRules[${k}].dept=this.value.trim()"></td>
-      <td><input class="input" style="width:110px" value="${esc((r.w || []).join(', '))}" placeholder="ทุกค่า" oninput="ssRules[${k}].w=this.value.split(/[,\s]+/).filter(Boolean)"></td>
-      <td><input class="input" value="${esc((r.nicks || []).join(', '))}" placeholder="ทุกคน" oninput="ssRules[${k}].nicks=this.value.split(/[,]+/).map(x=>x.trim()).filter(Boolean)"></td>
-      <td><button class="btn btn-outline btn-sm" onclick="ssRules.splice(${k},1);refreshStaffSyncCard()" title="ลบกติกานี้">✕</button></td></tr>`;
+  const last = ssInfo?.last;
+  if(!(ssInfo?.rules || []).length && !last) return '';
   const accName = id => accounts.find(a => a.id === +id)?.name || ('บัญชี ' + id);
-  return `<div class="card card-gold" id="ssCard"><div class="card-head"><h3>👥 เพิ่มสมาชิกอัตโนมัติจากทะเบียนพนักงาน</h3>
-    <div class="hint">อ่านชีททะเบียนพนักงาน (คนที่ Status = Active และมีอีเมล) แล้วเพิ่มเข้าบัญชี LINE ตามกติกาด้านล่างเป็น <b>พนักงาน</b> · ซิงก์เองทุกวัน 05:50 ·
-      <b>เพิ่มอย่างเดียว ไม่ลบใคร</b> · คนที่ผู้ดูแลลบออกหรือถอดสิทธิ์บัญชีนั้นไปแล้ว จะไม่ถูกเพิ่มกลับ · คนที่มีอยู่แล้วไม่เปลี่ยนบทบาท</div></div>
-    <div class="card-body">${i.sheet === false ? '<div class="warn-box bad mb-12">ยังไม่ได้ตั้งชีททะเบียนพนักงาน (ตั้งในการ์ดทีม)</div>' : ''}
-      <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>บัญชี LINE</th><th>แผนก (ตรงตัว)</th><th>คอลัมน์ W</th><th>เฉพาะชื่อเล่น</th><th></th></tr></thead>
-        <tbody>${rules.length ? rules.map(rowHtml).join('') : '<tr class="empty-row"><td colspan="5">ยังไม่มีกติกา</td></tr>'}</tbody></table></div>
-      <div class="mt-8"><button class="btn btn-outline btn-sm" onclick="(ssRules=ssRules||[]).push({account:accounts[0]?.id,dept:'',w:[],nicks:[]});refreshStaffSyncCard()">+ เพิ่มกติกา</button></div>
-      <div class="mini mt-12 mb-12">${!last ? 'ยังไม่เคยซิงก์' : `ซิงก์ล่าสุด ${thDateTime(last.at)} · ตรงกติกา ${nf(last.matched || 0)} · เพิ่มใหม่ <b>${nf(last.added || 0)}</b> (สมาชิกใหม่ ${nf(last.new_members || 0)}) · มีอยู่แล้ว ${nf(last.already || 0)}`
-        + ((last.added_list || []).length ? `<br>เพิ่มล่าสุด: ${last.added_list.map(x => `${esc(x.nick)} → ${esc(accName(x.account))}`).join(' · ')}` : '')
-        + ((last.skipped_removed || []).length ? `<br><span class="txt-muted">ข้าม (ถูกลบ/ถอดสิทธิ์แล้ว): ${last.skipped_removed.map(esc).join(', ')}</span>` : '')}</div>
-      <button class="btn btn-gold" onclick="saveStaffSync()">💾 บันทึก + ซิงก์</button> <button class="btn btn-outline" onclick="runStaffSync()">🔄 ซิงก์เดี๋ยวนี้</button>
-    </div></div>`;
+  const added = (last?.added_list || []).map(x => `${esc(x.nick)} → ${esc(accName(x.account))}`).join(' · ');
+  return `<div class="mini" id="ssLine" style="padding:0 16px 10px;line-height:1.7">🔄 เพิ่มสมาชิกอัตโนมัติจากทะเบียนพนักงาน ทุกวัน 05:50 (เพิ่มอย่างเดียว · คนที่ลบ/ถอดสิทธิ์แล้วไม่เพิ่มกลับ) ·
+    ${last ? `ล่าสุด ${thDateTime(last.at)} · เพิ่มใหม่ <b>${nf(last.added || 0)}</b>${added ? ` (${added})` : ''}` : 'ยังไม่เคยซิงก์'}
+    <button class="btn btn-outline btn-sm" style="margin-left:6px" onclick="runStaffSync()">ซิงก์เดี๋ยวนี้</button></div>`;
 }
-function refreshStaffSyncCard(){ const el = $('ssCard'); if(el) el.outerHTML = staffSyncCardHtml(); }
+function refreshStaffSyncCard(){ const el = $('accessCard'); if(el) el.outerHTML = accessCardHtml(); }
 async function loadStaffSync(){
-  try{ const { data, error } = await sb.rpc('pur_staff_sync_info'); if(error) throw error; ssInfo = data || {}; ssRules = null; }
+  try{ const { data, error } = await sb.rpc('pur_staff_sync_info'); if(error) throw error; ssInfo = data || {}; }
   catch(e){ console.warn('staff sync info:', e.message); ssInfo = {}; }
   refreshStaffSyncCard();
-}
-async function saveStaffSync(){
-  const rules = (ssRules || []).filter(r => r.dept && r.account).map(r => ({ account:+r.account, dept:r.dept, w:(r.w || []).map(x => String(x).toUpperCase()), nicks:r.nicks || [] }));
-  try{ await rpc('pur_save_staff_sync_rules', { p_rules:rules }); }catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); return; }
-  await runStaffSync();
 }
 async function runStaffSync(){
   if(DEMO) return showToast('โหมดตัวอย่าง — ไม่ได้ซิงก์จริง', 'info');
