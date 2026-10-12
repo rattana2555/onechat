@@ -362,6 +362,16 @@ body.dark .sender .stf{color:var(--gold-light)}
 .sc-note{font-size:11px;opacity:.7;margin-top:6px;padding-top:5px;border-top:1px solid rgba(255,255,255,.25)}
 .bubble a{color:inherit;text-decoration:underline}
 .quote{font-size:11px;opacity:.85;border-left:3px solid var(--gold);padding:2px 8px;margin:0 0 6px;border-radius:2px;background:rgba(0,0,0,.06);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
+/* v2.37 ตอบกลับแบบ LINE: ชื่อคนส่ง + ข้อความ/รูปย่อของข้อความที่ถูกตอบ · กดแล้วเลื่อนไปที่ข้อความนั้น */
+.quote.ql{display:flex;align-items:center;gap:8px;width:100%;max-width:300px;min-width:150px;padding:6px 8px 6px 10px;border:0;border-left:3px solid var(--gold);border-radius:8px;
+  font:inherit;font-size:12px;color:inherit;text-align:left;cursor:pointer;opacity:1;white-space:normal}
+.quote.ql:hover{background:rgba(0,0,0,.1)}
+.fa .quote.ql:hover{background:rgba(255,255,255,.22)}
+.quote.ql .q-tx{flex:1;min-width:0}
+.quote.ql .q-tx b{display:block;font-size:11.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.quote.ql .q-tx span{display:block;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.quote.ql .q-th{width:38px;height:38px;flex-shrink:0;border-radius:6px;object-fit:cover;background:rgba(0,0,0,.08)}
+.quote.ql .q-ic{width:38px;height:38px;flex-shrink:0;border-radius:6px;display:grid;place-items:center;font-size:18px;background:rgba(0,0,0,.08)}
 .fa .quote{background:rgba(255,255,255,.14)}
 .media .quote{margin-bottom:4px}
 .sticker{width:120px;height:120px;object-fit:contain;display:block}
@@ -2455,6 +2465,31 @@ function paintReadMarks(){
     }
   });
 }
+// v2.37 กล่องอ้างถึงแบบ LINE — ใครส่ง + ข้อความ (หรือรูปย่อ/ไอคอนถ้าเป็นรูป สติกเกอร์ วิดีโอ ไฟล์)
+function quoteHtml(q, c){
+  const who = q.direction === 'out'
+    ? (q.staff_email ? memberName(q.staff_email) : (q.sender_name || sysCardOf(q) || (q.via === 'oa' ? 'แอดมิน OA' : acctName())))
+    : (q.sender_name || (c ? chatName(c) : ''));
+  let th = '', tx = previewOf(q);
+  if(q.unsent) tx = 'ข้อความถูกยกเลิก';
+  else if(q.msg_type === 'image'){ th = `<img class="q-th" ${mediaAttr(q.content || '')} alt="" loading="lazy">`; tx = 'รูปภาพ'; }
+  else if(q.msg_type === 'sticker'){ th = `<img class="q-th" src="${esc(q.content || '')}" alt="" loading="lazy" style="object-fit:contain;background:none">`; tx = 'สติกเกอร์'; }
+  else if(q.msg_type === 'video'){ th = '<span class="q-ic">🎬</span>'; tx = 'วิดีโอ'; }
+  else if(q.msg_type === 'file'){ th = '<span class="q-ic">📎</span>'; tx = q.file_name || 'ไฟล์'; }
+  else if(q.msg_type === 'audio'){ th = '<span class="q-ic">🎤</span>'; tx = 'ข้อความเสียง'; }
+  return `<button class="quote ql" data-q="${esc(q.line_msg_id || '')}" onclick="quoteJump(this.dataset.q)" title="กดเพื่อเลื่อนไปที่ข้อความนี้"><span class="q-tx"><b>${esc(who)}</b><span>${esc(tx)}</span></span>${th}</button>`;
+}
+// กดกล่องอ้างถึง → เลื่อนไปที่ข้อความต้นทาง (ยังไม่ได้โหลด = โหลดข้อความเก่าเพิ่มจนเจอ สูงสุด 25 หน้า) แล้วกระพริบ
+async function quoteJump(lineId){
+  if(!lineId || !activeId) return;
+  const chatId = activeId;
+  const find = () => { const m = (msgCache[chatId] || []).find(x => x.line_msg_id === lineId); return m ? $('msgsArea').querySelector(`[data-mid="${m.id}"]`) : null; };
+  for(let i = 0; i < 25 && !find() && activeId === chatId && msgMeta[chatId]?.hasMore; i++) await loadOlder();
+  const el = find();
+  if(!el || activeId !== chatId) return showToast('ไม่พบข้อความที่ถูกตอบ (อาจเก่ามากหรือถูกลบ)', 'info');
+  el.scrollIntoView({ block:'center', behavior:'smooth' });
+  el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+}
 function renderMsgs(msgs){
   const area = $('msgsArea'); const c = chatById.get(activeId);
   if(!msgs || !msgs.length){ area.innerHTML = '<div class="conv-empty">ยังไม่มีข้อความ</div>'; return; }
@@ -2473,7 +2508,9 @@ function renderMsgs(msgs){
     // v2.31 ฝั่งขวา = ส่งในนามบัญชี OA (แอพ / OA Manager / ระบบ) · พนักงานพิมพ์จาก LINE ส่วนตัวอยู่ฝั่งซ้ายแบบสมาชิกกลุ่ม (เหมือน LINE จริง)
     const staffLine = out && m.via === 'line', right = out && !staffLine;
     const quoted = m.quoted_line_msg_id && byLine.get(m.quoted_line_msg_id);
-    const qHtml = quoted ? `<div class="quote">↩ ${esc(previewOf(quoted))}</div>` : (m.quotePreview ? `<div class="quote">↩ ${esc(m.quotePreview)}</div>` : '');
+    const qHtml = quoted ? quoteHtml(quoted, c)
+      : m.quotePreview ? `<div class="quote">↩ ${esc(m.quotePreview)}</div>`
+      : m.quoted_line_msg_id ? `<button class="quote ql" data-q="${esc(m.quoted_line_msg_id)}" onclick="quoteJump(this.dataset.q)" title="กดเพื่อเลื่อนไปที่ข้อความที่ถูกตอบ"><span class="q-tx"><b>↩ ตอบกลับข้อความก่อนหน้า</b><span>กดเพื่อดูข้อความ</span></span></button>` : '';
     let bubble;
     if(m.unsent) bubble = '<div class="bubble unsent">ข้อความถูกยกเลิก</div>';
     else { const [inner, media] = bubbleBody(m); bubble = `<div class="bubble ${media ? 'media' : ''}">${qHtml}${inner}</div>`; }
