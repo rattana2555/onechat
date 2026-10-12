@@ -352,6 +352,25 @@ body.dark .tag.wh{background:rgba(60,200,170,.14);border-color:rgba(60,200,170,.
 .strip.off{background:rgba(208,59,59,.08);color:var(--st-crit)}
 .strip.info{background:rgba(42,120,214,.08)}
 .strip b{font-weight:700}
+/* v2.40 แถบเหนือแชทย่อเหลือแถวเดียว (เดิมงานแท็กหลายงาน + ทีมที่เคยตอบ กินจอครึ่งหนึ่งบนมือถือ) · กด ▾ ดูรายละเอียดเต็ม */
+.sbar{display:flex;align-items:center;gap:6px;padding:5px 8px 5px 10px;border-bottom:1px solid var(--border);background:var(--card-bg);flex-shrink:0;min-height:36px}
+.sbar-chips{flex:1;min-width:0;display:flex;gap:5px;overflow-x:auto;scrollbar-width:none}
+.sbar-chips::-webkit-scrollbar{display:none}
+.sc{flex-shrink:0;display:inline-flex;align-items:center;gap:4px;height:25px;max-width:230px;padding:0 9px;border-radius:13px;border:1px solid var(--border);background:var(--bg);color:var(--text);font:inherit;font-size:11.5px;font-weight:600;white-space:nowrap;cursor:pointer}
+.sc span{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.sc em{font-style:normal;font-weight:700;opacity:.8}
+.sc.wait{background:rgba(250,178,25,.16);border-color:rgba(250,178,25,.55)}
+.sc.over{background:rgba(208,59,59,.12);border-color:rgba(208,59,59,.45);color:var(--st-crit)}
+.sc.ment{background:rgba(46,110,201,.1);border-color:rgba(46,110,201,.35)}
+.sc.ment.mine{background:linear-gradient(135deg,#ffe9a6,#ffcf4d);border-color:#d9a514;color:#3d2c05}
+.sc.ment.over:not(.mine){background:rgba(208,59,59,.12);border-color:rgba(208,59,59,.45)}
+.sc.off{color:var(--st-crit);border-color:rgba(208,59,59,.45)}
+.sc.muted{color:var(--muted);cursor:default}
+.sbar-tg{flex-shrink:0;height:25px;padding:0 9px;border-radius:13px;border:1px solid var(--border);background:none;color:var(--muted);font:inherit;font-size:11.5px;font-weight:600;cursor:pointer;white-space:nowrap}
+.sbar-tg:hover{color:var(--text);border-color:var(--gold)}
+.sfull{max-height:32vh;overflow-y:auto;flex-shrink:0;border-bottom:1px solid var(--border)}
+.sfull .strip:last-child{border-bottom:0}
+@media(max-width:767px){ .sfull{max-height:26vh} .sbar-tg .tg-tx{display:none} .sc{max-width:165px} .sbar-chips{mask-image:linear-gradient(90deg,#000 88%,transparent);-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent)} }
 .strip .btn-sm{margin-left:auto}
 .msgs-area{flex:1;overflow-y:auto;padding:12px 12px 6px;display:flex;flex-direction:column;gap:7px;-webkit-overflow-scrolling:touch}
 .date-sep{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:11px;margin:6px 0}
@@ -2223,8 +2242,33 @@ function renderTools(c){
   if(isSup()) h += `<span class="tool-sp"></span><button class="tool-btn ${c.exclude_kpi ? 'danger' : ''}" onclick="toggleExclude()" title="แชททดสอบ/แชทภายใน ไม่ควรนับสถิติ">${c.exclude_kpi ? '📵 ไม่นับสถิติ' : '📊 นับสถิติ'}</button>`;
   $('chatTools').innerHTML = h;
 }
+let stripsOpen = LS.get('pur.stripsOpen') === '1';
+function toggleStrips(){ stripsOpen = !stripsOpen; LS.set('pur.stripsOpen', stripsOpen ? '1' : '0'); const c = chatById.get(activeId); if(c) renderStrips(c); }
+// v2.40 กดชิปงานแท็ก → เลื่อนไปข้อความต้นเรื่อง (งานสินค้า = ข้อความล่าสุดที่มีป้ายของคนนั้น · งานแท็กคน = ข้อความที่แท็ก)
+async function jumpToMention(id){
+  const c = chatById.get(activeId), x = mentionsOpen(c).find(y => y.id === id); if(!x) return;
+  if(isProdTag(x)) return jumpToProdMsg(activeId, x.e);
+  const chatId = activeId, find = () => x.m && $('msgsArea').querySelector(`[data-mid="${x.m}"]`);
+  for(let i = 0; i < 15 && !find() && activeId === chatId && msgMeta[chatId]?.hasMore; i++) await loadOlder();
+  const el = find(); if(!el) return showToast('ไม่พบข้อความที่แท็ก (อาจเก่ามาก)', 'info');
+  el.scrollIntoView({ block:'center', behavior:'smooth' }); el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+}
 function renderStrips(c){
   let h = '';
+  const chips = [];
+  if(c.awaiting_since && !c.exclude_kpi){
+    const age = elapsedSec(c.awaiting_since, null), over = age > slaSec();
+    chips.push(`<span class="sc ${over ? 'over' : 'wait'} muted" title="${esc(peer())}รอคำตอบ · SLA ${settings.sla_minutes} นาที">⏱ <span>รอตอบ</span> <em>${fmtDur(age)}</em></span>`);
+  }
+  mentionsOpen(c).forEach(x => {
+    const a = elapsedSec(x.s, null), o = a > slaSec(), mine = x.e === me?.email, prod = isProdTag(x);
+    const what = prod ? String(x.b).replace(/^🏷\s*/, '') : (x.b ? `แท็กโดย ${x.b}` : 'โดนแท็ก');
+    chips.push(`<button class="sc ment${mine ? ' mine' : ''}${o ? ' over' : ''}" data-id="${esc(x.id)}" onclick="jumpToMention(this.dataset.id)" title="${esc(`${mine ? 'คุณ' : memberName(x.e)} · ${what} · รอ ${fmtDur(a)}${o ? ' (เกิน SLA)' : ''} — กดเพื่อไปที่ข้อความ`)}">${prod ? '🏷' : '@'} <b>${esc(mine ? 'คุณ' : memberName(x.e))}</b><span>${esc(what)}</span> <em>${fmtDur(a)}</em></button>`);
+  });
+  if(!c.is_active) chips.push(`<span class="sc off muted">⚠️ ${c.kind === 'user' ? 'ถูกบล็อก' : 'ไม่อยู่ในกลุ่มแล้ว'}</span>`);
+  if(c.exclude_kpi) chips.push(`<span class="sc muted">📵 ไม่นับสถิติ</span>`);
+  const nTeam = Object.keys(c.team_seen || {}).length;
+  if(nTeam || c.oa_assignee) chips.push(`<button class="sc" onclick="toggleStrips()" title="ทีมที่เคยตอบแชทนี้">👥 <span>ทีมเคยตอบ</span> <em>${nTeam}</em></button>`);
   if(c.awaiting_since && !c.exclude_kpi){
     const age = elapsedSec(c.awaiting_since, null), over = age > slaSec();
     h += `<div class="strip ${over ? 'over' : 'wait'}">⏱ ${peer()}รอคำตอบมา <b>${fmtDur(age)}</b>${clockMode === 'biz' ? ' (นับเวลาทำการ)' : ''} · SLA ${settings.sla_minutes} นาที${over ? ' — <b>เกินกำหนดแล้ว</b>' : ''}</div>`;
@@ -2242,7 +2286,9 @@ function renderStrips(c){
       return `<button class="tag ${t.email ? 'assg' : ''}" style="cursor:${click ? 'pointer' : 'default'}" ${click ? `data-e="${esc(t.email)}" onclick="setAssignee(this.dataset.e)" title="ตั้ง ${esc(lbl)} เป็นผู้รับผิดชอบ"` : ''}>${esc(lbl)} ${nf(t.count || 0)}${t.via === 'oa' ? ' · OA' : t.via === 'line' ? ' · LINE' : ''}</button>`; }).join(' ');
     h += `<div class="strip info">👥 ทีมที่เคยตอบแชทนี้: ${chips || '—'}${c.oa_assignee ? ` &nbsp;·&nbsp; ผู้รับผิดชอบใน OA Manager: <b>${esc(c.oa_assignee)}</b>` : ''}</div>`;
   }
-  $('chatStrips').innerHTML = h;
+  $('chatStrips').innerHTML = !chips.length ? '' : `<div class="sbar"><div class="sbar-chips">${chips.join('')}</div>`
+    + `<button class="sbar-tg" onclick="toggleStrips()" title="${stripsOpen ? 'ย่อ' : 'ดูรายละเอียด / ปุ่มไม่ต้องตอบ'}">${stripsOpen ? '▴' : '▾'}<span class="tg-tx"> ${stripsOpen ? 'ย่อ' : 'รายละเอียด'}</span></button></div>`
+    + (stripsOpen ? `<div class="sfull">${h}</div>` : '');
 }
 // v2.28 ปิดงานโดนแท็กแบบ "ไม่ต้องตอบ" (คนที่โดนแท็กเอง หรือหัวหน้า) — แถบหายเองเมื่อ realtime ส่งแชทที่อัปเดตมา
 async function dismissMention(id){
