@@ -1618,9 +1618,9 @@ const signedCache = new Map();        // storage path → {url, exp}
 // (เดิมลิงก์ 1 ชม. อยู่แค่ในหน่วยความจำ รีเฟรชทีไรลิงก์ใหม่ = โหลดทุกรูปใหม่หมด กินแบนด์วิดท์ของแพ็กเกจฟรี)
 const SIGN_TTL_S = 24 * 3600, SIGN_KEY = 'pur.signed', SIGN_MAX = 1000;
 try{ const o = JSON.parse(LS.get(SIGN_KEY) || '{}'), now = Date.now();
-     for(const [p, v] of Object.entries(o)) if(Array.isArray(v) && v[1] > now) signedCache.set(p, { url:v[0], exp:v[1] }); }catch(_){}
+     for(const [p, v] of Object.entries(o)) if(Array.isArray(v) && v[1] > now && !String(v[0]).startsWith('blob:')) signedCache.set(p, { url:v[0], exp:v[1] }); }catch(_){}
 function saveSigned(){
-  const now = Date.now(), keep = [...signedCache].filter(([, v]) => v.exp > now).slice(-SIGN_MAX);
+  const now = Date.now(), keep = [...signedCache].filter(([, v]) => v.exp > now && !String(v.url).startsWith('blob:')).slice(-SIGN_MAX);   // v2.45 blob: ใช้ได้แค่หน้านี้
   LS.set(SIGN_KEY, JSON.stringify(Object.fromEntries(keep.map(([p, v]) => [p, [v.url, v.exp]]))));
 }
 const forceReply  = new Set();        // แชทที่ผู้ใช้กด "ลองส่งดูอยู่ดี"
@@ -1773,12 +1773,14 @@ async function loadMembers(){
   members = new Map((data || []).map(r => [r.email, r]));
 }
 async function loadPeople(){ const rows = await fetchAll('pur_people', q => q.order('last_seen_at', { ascending:false })); people = new Map(rows.map(r => [r.line_user_id, r])); }
-async function loadSettings(){ const { data, error } = await sb.from('pur_settings').select('*').eq('id', acct.id).maybeSingle(); if(error) throw new Error(error.message); applySettings(data); }
+async function loadSettings(){ const aid = acct.id; const { data, error } = await sb.from('pur_settings').select('*').eq('id', aid).maybeSingle(); if(error) throw new Error(error.message); if(acct?.id !== aid) return; applySettings(data); }   // v2.45 สลับบัญชีระหว่างรอ = ทิ้งผล
 async function loadChats(){
   // ถ้ามีเหตุการณ์ realtime ค้างรอวาดอยู่ (schedulePaint 250ms) ให้ใช้ภาพ "ก่อนเหตุการณ์" ของมัน
   // ไม่งั้นภาพที่ถ่ายตรงนี้มีข้อความใหม่อยู่แล้ว + บรรทัดล้าง paintSnap ข้างล่าง = การแจ้งเตือนของข้อความนั้นหาย
   const before = paintSnap || snapshot();
-  const rows = await fetchAll('pur_chats', q => q.eq('account_id', acct.id).order('last_message_at', { ascending:false, nullsFirst:false }));
+  const aid = acct.id;
+  const rows = await fetchAll('pur_chats', q => q.eq('account_id', aid).order('last_message_at', { ascending:false, nullsFirst:false }));
+  if(acct?.id !== aid) return;                               // v2.45 สลับบัญชีระหว่างโหลด → ไม่เอาแชทบัญชีเก่ามาทับ
   chats = rows; chatById = new Map(rows.map(r => [r.id, r]));
   chatSync = maxUpdated(rows); lastFullChats = Date.now();
   if(typeof paintSnap !== 'undefined') paintSnap = null;
@@ -1847,8 +1849,11 @@ async function loadMsgs(chatId){
   // เก็บหน้าเก่าที่เลื่อนโหลดไว้แล้ว — เฉพาะเมื่อต่อกับหน้าล่าสุดได้ (ไม่มีช่องว่างตรงกลาง)
   const joined = !full || prev.some(m => ids.has(m.id));
   const older = joined ? prev.filter(m => !m.tmp && !ids.has(m.id) && Date.parse(m.sent_at) <= edge) : [];
+  // v2.45 ข้อความที่ realtime เพิ่มเข้ามาระหว่างรอผล (ใหม่กว่าแถวล่าสุดที่ได้) — เดิมหายจากจอจนรีเฟรชใหญ่
+  const newest = rows.length ? Date.parse(rows[rows.length - 1].sent_at) : -Infinity;
+  const newer = prev.filter(m => !m.tmp && !ids.has(m.id) && Date.parse(m.sent_at) > newest);
   if(!joined || meta.hasMore === undefined) meta.hasMore = full;
-  msgCache[chatId] = [...older, ...rows, ...tmp];
+  msgCache[chatId] = [...older, ...rows, ...newer, ...tmp];
   return msgCache[chatId];
 }
 // โหลดข้อความของแชทที่เปิดอยู่ใหม่ — จำ id ไว้ก่อน await แล้วเช็คซ้ำหลัง await
@@ -2155,10 +2160,10 @@ function setListWh(w){ listWh = listWh === w ? '' : w; resetList(); renderList()
 const MSR_LIMIT = 40;
 let msr = { q:'', rows:[], loading:false, err:'' }, msrTimer = null, msrSeq = 0;
 function queueMsgSearch(){
-  clearTimeout(msrTimer);
   const q = searchQ.trim();
+  if(q.length >= 2 && q === msr.q && !msr.err) return;      // v2.45 คำเดิม (เช่น พิมพ์ช่องว่างท้าย) — อย่ายกเลิกรอบที่ตั้งเวลาไว้
+  clearTimeout(msrTimer);
   if(q.length < 2){ msr = { q:'', rows:[], loading:false, err:'' }; return; }
-  if(q === msr.q && !msr.err) return;
   msr = { q, rows:[], loading:true, err:'' };
   msrTimer = setTimeout(() => runMsgSearch(q), 350);
 }
@@ -2393,7 +2398,7 @@ function sysCardOf(m){
   const t = String(m.content || '').trim();
   return s.alts.some(r => r.test(t)) ? s.who : null;
 }
-const mediaAttr = (content, attr = 'src') => /^https?:\/\//.test(content) ? `${attr}="${esc(content)}"` : `data-path="${esc(content)}"`;
+const mediaAttr = (content, attr = 'src') => /^(https?:\/\/|blob:)/.test(content) ? `${attr}="${esc(content)}"` : `data-path="${esc(content)}"`;   // v2.45 blob: = รูปในเครื่องที่กำลังส่ง
 function bubbleBody(m){
   const c = m.content || '';
   const sc = sysCardOf(m);
@@ -2756,10 +2761,11 @@ async function loadOlder(){
   try{
     const rows = await fetchMsgPage(id, first.sent_at);
     if(activeId !== id){ meta.loading = false; return; }
-    const have = new Set(list.map(m => m.id)), add = rows.filter(r => !have.has(r.id)).reverse();
+    const cur = msgCache[id] || [];                                   // v2.45 ใช้รายการล่าสุด (ระหว่างรออาจมีข้อความใหม่/ฟองที่กำลังส่ง)
+    const have = new Set(cur.map(m => m.id)), add = rows.filter(r => !have.has(r.id)).reverse();
     meta.hasMore = rows.length === MSG_PAGE && add.length > 0;
     meta.loading = false;
-    if(add.length){ msgCache[id] = [...add, ...list]; renderMsgs(msgCache[id]); area.scrollTop = area.scrollHeight - h0 + top0; }   // คงตำแหน่งที่อ่านอยู่
+    if(add.length){ msgCache[id] = [...add, ...cur]; renderMsgs(msgCache[id]); area.scrollTop = area.scrollHeight - h0 + top0; }   // คงตำแหน่งที่อ่านอยู่
     else renderOlderBar();
   }catch(e){ meta.loading = false; if(activeId === id) renderOlderBar(); showToast('โหลดข้อความเก่าไม่ได้: ' + e.message, 'error'); }
 }
@@ -2915,7 +2921,7 @@ function csStep(d){ if(!csRes.length) return; const n = csIdx < 0 ? 0 : csIdx + 
 async function csGo(k){
   const m = csRes[k]; if(!m) return;
   csIdx = k; csCount(); csListShow(false);
-  await jumpToMsg(m.id, m.sent_at);
+  await csJumpTo(m.id, m.sent_at);
   csHighlight();
 }
 function csKey(e){
@@ -2959,10 +2965,11 @@ async function csGoDate(v){
   else { const { data } = await sb.from('pur_messages').select('id,sent_at').eq('chat_id', chatId).gte('sent_at', from).order('sent_at', { ascending:true }).limit(1); m = data?.[0]; }
   $('csDate').value = '';
   if(!m) return showToast('ไม่มีข้อความตั้งแต่วันที่เลือก', 'info');
-  if(chatId === activeId) jumpToMsg(m.id, m.sent_at, 'start');
+  if(chatId === activeId) csJumpTo(m.id, m.sent_at, 'start');
 }
 // โหลดข้อความย้อนหลังจนถึงเวลา ts ในคำขอเดียว (แทนการกดดูข้อความเก่าทีละหน้า) แล้วเลื่อนไปข้อความนั้น
-async function jumpToMsg(id, ts, block){
+// v2.45 แก้: เดิมชื่อ jumpToMsg ซ้ำกับของค้นหาในรายการแชท (v2.23) → ตัวนี้ทับ ปุ่มผลค้นหาในรายการแชทกดแล้วไม่เปิดแชท
+async function csJumpTo(id, ts, block){
   const chatId = activeId; if(!chatId) return false;
   const have = () => (msgCache[chatId] || []).some(x => x.id === id);
   if(!have() && !DEMO){
@@ -2972,8 +2979,9 @@ async function jumpToMsg(id, ts, block){
     const { data, error } = await q.order('sent_at', { ascending:false }).order('created_at', { ascending:false }).limit(3000);
     if(error){ showToast('โหลดข้อความไม่ได้: ' + error.message, 'error'); return false; }
     if(chatId !== activeId) return false;
-    const ids = new Set(list.map(x => x.id)), add = (data || []).filter(r => !ids.has(r.id)).reverse();
-    if(add.length){ msgCache[chatId] = [...add, ...list]; renderMsgs(msgCache[chatId]); }
+    const cur = msgCache[chatId] || [];
+    const ids = new Set(cur.map(x => x.id)), add = (data || []).filter(r => !ids.has(r.id)).reverse();
+    if(add.length){ msgCache[chatId] = [...add, ...cur]; renderMsgs(msgCache[chatId]); }
   }
   const el = $('msgsArea').querySelector(`[data-mid="${id}"]`);
   if(!el){ showToast('ไม่พบข้อความนี้', 'info'); return false; }
@@ -3005,6 +3013,10 @@ async function mpCheck(){
   mpAt = pos - mt[2].length - 1;
   const q = mt[2].toLowerCase(), chatId = activeId, all = await mpMembers(chatId);
   if(chatId !== activeId) return;
+  // v2.45 ระหว่างรอรายชื่อ ผู้ใช้อาจลบ @ ไปแล้ว → ตรวจข้อความในช่องอีกครั้ง
+  const now = inp.value.slice(0, inp.selectionStart).match(/(^|\s)@([^\s@]{0,20})$/);
+  if(!now || now[2].toLowerCase() !== q){ if(!now) mpHide(); else mpCheck(); return; }
+  mpAt = inp.selectionStart - now[2].length - 1;
   const ppl = all.filter(x => x.n && String(x.n).toLowerCase().includes(q)).slice(0, 40);
   mpItems = [...(!q || 'all ทุกคน'.includes(q) ? [{ all:true, n:'All' }] : []), ...ppl];
   mpSel = 0; mpRender();
@@ -3140,10 +3152,10 @@ async function verifyLocal(local, n){
   let row = null;
   try{
     const { data, error } = await sb.from('pur_messages').select('*').eq('chat_id', local.chat_id).eq('via', 'app').eq('staff_email', me.email).eq('msg_type', local.msg_type)
-      .gte('created_at', new Date(Date.parse(local.sent_at) - 60000).toISOString()).order('created_at', { ascending:false }).limit(10);
+      .gte('created_at', new Date(Date.parse(local.sent_at) - 20000).toISOString()).order('created_at', { ascending:false }).limit(10);
     if(error) throw error;
-    row = (data || []).find(x => (local.msg_type !== 'text' || x.content === local.content) && !list.some(y => y !== local && y.id === x.id))
-       || (data || []).find(x => (local.msg_type !== 'text' || x.content === local.content));
+    // v2.45 เฉพาะแถวที่ยังไม่แสดงอยู่ในแชท — เดิมไปจับ "ครับ" ก่อนหน้าที่แสดงอยู่แล้ว → ลบฟองที่ส่งไม่ถึงทิ้ง + บอกว่าส่งถึง
+    row = (data || []).find(x => (local.msg_type !== 'text' || x.content === local.content) && !list.some(y => y !== local && y.id === x.id));
   }catch(_){ if(n < 3) return setTimeout(() => verifyLocal(local, n + 1), 4000); }
   if(local.idAdopted) return verifyLocal(local, n);
   if(row){
@@ -3234,7 +3246,8 @@ function pasteAsText(){
 }
 async function sendPasted(){
   const files = pasteFiles.slice(); closeModal(); pasteFiles = []; pasteText = '';
-  for(const f of files) await sendImage(f);                // ทีละรูปตามลำดับ
+  const toChat = activeId;                                   // v2.45 จำแชทตอนกดส่ง — สลับแชทระหว่างอัปรูป รูปที่เหลือต้องไปแชทเดิม
+  for(const f of files) await sendImage(f, toChat);        // ทีละรูปตามลำดับ
   pasteUrls.forEach(u => URL.revokeObjectURL(u)); pasteUrls = [];
   $('replyInp')?.focus();
 }
@@ -3275,8 +3288,8 @@ function downscaleImage(file){
     img.src = url;
   });
 }
-async function sendImage(file){
-  if(!activeId) return; const chatId = activeId;
+async function sendImage(file, toChat){
+  const chatId = toChat || activeId; if(!chatId) return;
   if(!/^image\//.test(file.type)){ showToast('เลือกได้เฉพาะไฟล์รูปภาพ', 'warning'); return; }
   if(DEMO){ demoBlock(); return; }
   if(isOaOnly(chatById.get(chatId))){ showToast(OA_ONLY_MSG, 'warning', 4500); return; }
@@ -3583,7 +3596,7 @@ function setupRealtime(){
     .on('postgres_changes', { event:'UPDATE', schema:'public', table:'pur_messages', filter:f }, p => onMsgUpdate(p.new))
     .subscribe());
 
-  rtChannels.push(sb.channel('pur-people').on('postgres_changes', { event:'*', schema:'public', table:'pur_people' }, p => {
+  rtChannels.push(sb.channel('pur-people-' + Date.now().toString(36)).on('postgres_changes', { event:'*', schema:'public', table:'pur_people' }, p => {
     if(p.new?.line_user_id){ people.set(p.new.line_user_id, p.new); refreshPeopleCards(); }
   }).subscribe());
 }
@@ -3687,11 +3700,11 @@ function inWorkNow(){
 // key = กันเตือนซ้ำเรื่องเดียวกัน (เช่น งานรอตอบชิ้นเดิมที่เกิน SLA ไปแล้ว)
 // personal = งานของฉันเอง (โดนแท็ก) → เตือนเสมอ ไม่ขึ้นกับขอบเขต "แชทไหนบ้าง"
 function pushNoti(kind, chat, text, key, personal){
-  if(!notiPrefs.on || !notiPrefs[kind] || !(personal ? chat && !chat.exclude_kpi : notiInScope(chat))) return;
+  if(!notiPrefs.on || !notiPrefs[kind] || !(personal ? chat && (!chat.exclude_kpi || mentionsOpen(chat).length) : notiInScope(chat))) return;   // v2.45 แชทไม่นับสถิติที่มีงานแท็กสินค้า
   if(key){ if(notiFired.has(key)) return; notiFired.add(key); }
   const k = NOTI_KINDS[kind] || NOTI_KINDS.msg;
   const n = { id:'n' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), kind,
-              chat:chat.id, name:chatName(chat), text:String(text || '').slice(0, 160), at:Date.now(), read:false };
+              chat:chat.id, acct:chat.account_id || acct?.id, name:chatName(chat), text:String(text || '').slice(0, 160), at:Date.now(), read:false };
   notiList.unshift(n); if(notiList.length > NOTI_MAX) notiList.length = NOTI_MAX;
   notiSaveList(); renderBell(); if(notiOpen) renderNotiPanel();
   if(notiPrefs.workOnly && !inWorkNow()) return;                              // นอกเวลาทำการ → เก็บเงียบๆ ในศูนย์แจ้งเตือน
@@ -3751,6 +3764,7 @@ function openNoti(id){
   const n = notiList.find(x => x.id === id); if(!n) return;
   n.read = true; notiSaveList(); renderBell(); closeNoti();
   if(chatById.get(n.chat)){ setView('chat'); openChat(n.chat); }
+  else if(n.acct && n.acct !== acct?.id && typeof openChatAnyAccount === 'function') openChatAnyAccount(n.chat, n.acct);   // v2.45 แจ้งเตือนของอีกบัญชี
   else showToast('ไม่พบแชทนี้แล้ว', 'info');
 }
 function readAllNoti(){ notiList.forEach(n => n.read = true); notiSaveList(); renderBell(); renderNotiPanel(); }
@@ -3858,8 +3872,8 @@ function remindRows(){
   if(!me) return [];
   const own = useOwner(), sla = slaSec(), rows = [];
   chats.forEach(c => {
-    if(c.exclude_kpi || c.status === 'resolved') return;
-    const mine = isWaiting(c) && (!own || c.assignee_email === me.email), men = myMentions(c)[0];
+    if(c.status === 'resolved') return;
+    const mine = !c.exclude_kpi && isWaiting(c) && (!own || c.assignee_email === me.email), men = myMentions(c)[0];   // v2.45 แชทไม่นับสถิติ: เตือนเฉพาะงานแท็กสินค้า (myMentions กรองให้แล้ว)
     if(!mine && !men) return;
     const since = mine && men ? (Date.parse(c.awaiting_since) < Date.parse(men.s) ? c.awaiting_since : men.s) : mine ? c.awaiting_since : men.s;
     const age = elapsedSec(since, null);
@@ -4173,7 +4187,7 @@ async function loadDash(){
   dashLoadedAt = Date.now();
   // เลขลำดับคำขอ — เดิมทิ้งคำขอที่ซ้อนกันทั้งก้อน แต่ปุ่มช่วงเวลา/dash.preset เปลี่ยนไปแล้ว → ข้อมูลช่วงเก่าถูกวาดบนแกนช่วงใหม่
   // ตอนนี้คำขอใหม่วิ่งได้เลย ส่วนผล (และ error) ของคำขอเก่าที่กลับมาทีหลังถูกทิ้ง
-  const seq = dash.seq = (dash.seq || 0) + 1;
+  const seq = dash.seq = (dash.seq || 0) + 1, aid = acct?.id;
   const [from, to] = currentRange();
   renderRangeLabel();
   const content = $('viewDash').querySelector('.content'); if(dashLoadedOnce) content.classList.add('dim');
@@ -4188,7 +4202,7 @@ async function loadDash(){
         fetchAll('pur_mentions', q => q.eq('account_id', acct.id).gte('started_at', from.toISOString()).lt('started_at', to.toISOString()).order('started_at')).catch(noMentions),
         fetchAll('pur_mentions', q => q.eq('account_id', acct.id).is('closed_at', null).order('started_at')).catch(noMentions),
       ]);
-      if(seq !== dash.seq) return;                          // มีคำขอใหม่กว่าแล้ว — ทิ้งผลชุดนี้
+      if(seq !== dash.seq || acct?.id !== aid) return;     // มีคำขอใหม่กว่าแล้ว / v2.45 สลับบัญชีระหว่างรอ — ทิ้งผลชุดนี้
       if(rc.error) throw new Error(rc.error.message);
       const map = new Map(); [...w1, ...w2].forEach(w => map.set(w.id, withOwner(w)));
       const mm = new Map(); [...m1, ...m2].forEach(x => mm.set(x.id, x));
@@ -4862,22 +4876,28 @@ async function blastSend(){
 let blastPollT = null;
 async function loadBlastJobs(){
   if(DEMO){ blast.jobs = []; renderBlastJobs(); return; }
+  const aid = acct.id;
   const { data, error } = await sb.from('pur_blast_jobs')
     .select('id,created_by,created_at,run_at,status,total,cursor,ok,fail,errors,attach,finished_at,cancelled_by')
-    .eq('account_id', acct.id).order('created_at', { ascending:false }).limit(15);
+    .eq('account_id', aid).order('created_at', { ascending:false }).limit(15);
+  if(acct?.id !== aid) return;                                   // v2.45 สลับบัญชีระหว่างรอ
   if(error){ console.warn('blast jobs:', error.message); return; }
   blast.jobs = data || [];
   renderBlastJobs();
   clearTimeout(blastPollT);
   const live = blast.jobs.some(j => j.status === 'running' || (j.status === 'scheduled' && Date.parse(j.run_at) - Date.now() < 90000));
-  if(view === 'blast' && live) blastPollT = setTimeout(loadBlastJobs, 4000);
+  const later = blast.jobs.some(j => j.status === 'scheduled');
+  // v2.45 งานตั้งเวลาไกลกว่า 90 วิ ถามซ้ำทุก 30 วิ (เดิมไม่ถามเลย ค้าง "รอส่ง")
+  if(view === 'blast' && (live || later)) blastPollT = setTimeout(loadBlastJobs, live ? 4000 : 30000);
 }
 async function loadBlastQuota(force){
   if(DEMO || !acct) return;
   if(!force && blast.quota && blast.quota.acct === acct.id && Date.now() - blast.quotaAt < 120000) return;
   blast.quotaAt = Date.now();
-  const r = await callFn({ action:'quota', accountId:acct.id });
-  blast.quota = { acct:acct.id, ok:!!r.ok, used:Number(r.used) || 0, limit:r.type === 'limited' ? Number(r.limit) : null, error:r.error || '' };
+  const aid = acct.id;
+  const r = await callFn({ action:'quota', accountId:aid });
+  if(acct?.id !== aid) return;                                   // v2.45 สลับบัญชีระหว่างรอ
+  blast.quota = { acct:aid, ok:!!r.ok, used:Number(r.used) || 0, limit:r.type === 'limited' ? Number(r.limit) : null, error:r.error || '' };
   renderBlastBar();
 }
 const blastLeft = () => blast.quota && blast.quota.ok && blast.quota.limit != null ? Math.max(0, blast.quota.limit - blast.quota.used) : null;
@@ -5558,7 +5578,7 @@ async function saveMember(){
   const email = $('mmEmail').value.trim().toLowerCase();
   if(!email){ showToast('กรอกอีเมล', 'warning'); return; }
   try{
-    await rpc('pur_upsert_member', { p_email:email, p_nick:$('mmNick').value.trim(), p_name:$('mmName').value.trim(), p_role:$('mmRole').value, p_active:$('mmActive').checked, p_oa_name:$('mmOa').value.trim(), p_pu_code:$('mmPu') ? $('mmPu').value.trim() : '', p_account:acct.id });
+    await rpc('pur_upsert_member', { p_email:email, p_nick:$('mmNick').value.trim(), p_name:$('mmName').value.trim(), p_role:$('mmRole').value, p_active:$('mmActive').checked, p_oa_name:$('mmOa').value.trim(), p_pu_code:$('mmPu') ? $('mmPu').value.trim() : (members.get(email)?.pu_code || ''), p_account:acct.id });   // v2.45 ไม่มีช่อง PU = คงรหัสเดิม
     closeModal(); accessMx = null; await loadMembers(); await loadChats(); renderSettings(); fillPersonDD(); showToast('บันทึกสมาชิกแล้ว ✓', 'success');
   }catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
 }
@@ -5720,7 +5740,8 @@ function prodCardHtml(){
     </div></div>`;
 }
 async function loadProdInfo(){
-  try{ const { data, error } = await sb.rpc('pur_product_sheet_info', { p_account:acct.id }); if(error) throw error; prodInfo = data || {}; }
+  const aid = acct.id;
+  try{ const { data, error } = await sb.rpc('pur_product_sheet_info', { p_account:aid }); if(error) throw error; if(acct?.id !== aid) return; prodInfo = data || {}; }
   catch(e){ console.warn('prod info:', e.message); prodInfo = {}; }
   const el = $('prodCard'); if(el) el.outerHTML = prodCardHtml();
 }
@@ -5746,12 +5767,12 @@ async function syncProdSheet(){
   const st = $('prStat'); if(st) st.textContent = 'กำลังดึงชีทสินค้าและเวนเดอร์… (ชีทใหญ่ใช้เวลาราว 20–40 วินาที)';
   try{ const r = await prodCall({ action:'sync', accountId:acct.id }); showToast(`ซิงก์แล้ว — สินค้า ${nf(r.products)} รายการ · มีผู้รับผิดชอบ ${nf(r.owned)}`, 'success', 6000); }
   catch(e){ showToast('ซิงก์ไม่สำเร็จ: ' + e.message, 'error', 8000); }
-  prodInfo = null; prodInfoAcct = 0; loadProdInfo();
+  prodInfo = null; loadProdInfo();   // v2.45 เดิมตั้ง prodInfoAcct = 0 → การ์ดโหลดซ้ำอีกรอบและล้างผลทดสอบ
 }
 async function clearProdSheet(){
   if(!confirm('เลิกใช้การแท็กผู้รับผิดชอบสินค้าของบัญชีนี้? (งานแท็กที่เปิดไปแล้วยังอยู่)')) return;
   try{ await rpc('pur_save_product_sheet', { p_account:acct.id, p_cfg:{} }); showToast('เลิกใช้แล้ว', 'success'); }catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
-  prodInfo = null; prodInfoAcct = 0; loadProdInfo();
+  prodInfo = null; loadProdInfo();
 }
 async function testProd(){
   const t = ($('prTry')?.value || '').trim(); if(!t) return;
@@ -5765,7 +5786,8 @@ async function testProd(){
   if(out) out.innerHTML = prodTest;
 }
 async function loadWhInfo(){
-  try{ const { data, error } = await sb.rpc('pur_customer_sheet_info', { p_account:acct.id }); if(error) throw error; whInfo = data || {}; }
+  const aid = acct.id;
+  try{ const { data, error } = await sb.rpc('pur_customer_sheet_info', { p_account:aid }); if(error) throw error; if(acct?.id !== aid) return; whInfo = data || {}; }
   catch(e){ console.warn('wh info:', e.message); whInfo = {}; }
   const el = $('whCard'); if(el) el.outerHTML = whCardHtml();
 }
@@ -6525,12 +6547,13 @@ function resetAccountState(){
   if(activeId) closeChat();
   // ภาพ "ก่อนเหตุการณ์" ที่ realtime ของบัญชีเดิมเก็บค้างไว้ ต้องทิ้ง — ไม่งั้น loadChats เทียบกับแชทของบัญชีเดิม
   // แล้วนึกว่าแชททุกห้องของบัญชีใหม่ "เพิ่งเข้ามา" → แจ้งเตือนรัวทั้งบัญชี
-  paintSnap = null;
+  paintSnap = null; chatSync = null; lastFullChats = 0;   // v2.45 รอบซิงก์ถัดไปโหลดใหม่ทั้งบัญชี ไม่ใช้เวลาของบัญชีเก่า
   chats = []; chatById = new Map(); msgCache = {};
   for(const k in msgMeta) delete msgMeta[k];
   members = new Map();
   dash.data = { waits:[], replies:[] }; dash.person = 'all'; dashLoadedOnce = false;
   blast.picked = new Set(); blast.pu = 'all'; blast.q = ''; blast.result = null; blast.match = new Map(); blast.unmatched = [];
+  blast.jobs = []; blast.quota = null; clearTimeout(blastPollT);   // v2.45 คิว/โควตาของบัญชีเดิมไม่ค้างมาโชว์ในบัญชีใหม่
   oaAdmins = null; staffDir = null; acctStatus = null; accessMx = null;
   searchQ = ''; const si = document.querySelector('.search-inp'); if(si) si.value = '';
   renderList(); updateBadges();
