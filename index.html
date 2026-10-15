@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Rattana One Chat">
 <meta name="theme-color" content="#0d1b3e">
 <!-- แอพรุ่นก่อน v2.0 หาเลขเวอร์ชันด้วยชื่อเดิม "Rattana Purchase Chat vX" ใน 1,500 ไบต์แรก — ป้ายนี้ทำให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบ "มีเวอร์ชันใหม่" -->
-<meta name="x-app-legacy" content="Rattana Purchase Chat v2.42">
+<meta name="x-app-legacy" content="Rattana Purchase Chat v2.44">
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
-<meta name="x-app-legacy2" content="RTN Chat Hub v2.42">
-<title>Rattana One Chat v2.42</title>
+<meta name="x-app-legacy2" content="RTN Chat Hub v2.44">
+<title>Rattana One Chat v2.44</title>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -1137,7 +1137,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
     <div class="lg-err" id="lgErr"></div>
     <div class="lg-wait" role="status"><div class="lg-spin"></div><b id="lgWaitMsg">กำลังเปิดแอพ…</b><div class="sub" id="lgWaitSub"></div>
       <div class="acts"><button class="btn btn-gold" type="button" onclick="retryGate()">ลองใหม่เดี๋ยวนี้</button><button class="btn btn-outline" type="button" onclick="doLogout()">ออกจากระบบ</button></div></div>
-    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.42 · 12/10/2569</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:14px">Rattana One Chat v2.44 · 15/10/2569</div>
   </div>
 </div>
 
@@ -1187,7 +1187,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
   <i class="brand-mark" style="width:40px;height:40px" aria-hidden="true"></i>
   <div style="min-width:0" id="hdrAcct" onclick="toggleAcctMenu(event)">
     <div class="logo-text">Rattana <span>One Chat</span></div>
-    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.42</span>
+    <span class="logo-sub" id="hdrGreet">แชท LINE · v2.44</span>
   </div>
   <div class="hdr-r">
     <div class="noti-wrap" id="notiWrap">
@@ -1466,7 +1466,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Rattana One Chat v2.42 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
+//  Rattana One Chat v2.44 (เดิม RTN Chat Hub) — แชท LINE OA หลายบัญชี (จัดซื้อ · Rattana Official · Rattana Mart) + แดชบอร์ดการตอบแชท
 //  (เดิมชื่อ Rattana Purchase Chat — v2.0 22/09/2569 เพิ่มหลายบัญชี: ล็อกอินครั้งเดียว เลือกบัญชี สิทธิ์และการตั้งค่าแยกต่อบัญชี)
 //  v2.01: ส่งเร็วขึ้น — เรียก pur-send ที่โตเกียว (ข้างฐานข้อมูล) + ปลุกเครื่องไว้ตอนเริ่มพิมพ์
 //  v2.02: บัญชีเลือกได้ว่า "แบ่งงานรายแชท" หรือไม่ (pur_settings.use_assignee) — ปิดแล้วซ่อนผู้รับผิดชอบ/รหัส PU ทั้งแอพ
@@ -1510,6 +1510,8 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 //  v2.40: แถบเหนือแชทย่อเหลือแถวเดียว (ชิป ⏱ รอตอบ · 🏷/@ งานแท็ก กดไปข้อความต้นเรื่อง · 👥 ทีมเคยตอบ · ▾ รายละเอียดเต็ม) — เดิมบังแชทครึ่งจอบนมือถือ
 //  v2.41: ป้ายสถานะแชท แก้ได้ทุกคนในทีมของบัญชี (pur-chat-tags-staff.sql) · การ์ดแท็กสินค้าเฉพาะบัญชีจัดซื้อ
 //  v2.42: ค้นหาข้อความในแชทแบบ LINE (🔍/Ctrl+F · ▲▼ · ไฮไลต์ · 📅 ไปวันที่ · pur_search_chat) · @แท็กคนในกลุ่ม/All แบบ LINE (pur_chat_members · pur-send v2.6 textV2)
+//  v2.43: งานแท็กสินค้านับในแชท "ไม่นับสถิติ" ด้วย (ผู้ใช้เลือกนับเป็นงานเต็ม · pur-product-tag-excluded.sql + pur-push v2.2)
+//  v2.44: เน็ตหลุดตอนส่ง (Failed to fetch) → "กำลังตรวจว่าส่งถึงไหม…" ถามฐานข้อมูลก่อน · ไม่ถึง = ปุ่ม ↻ ส่งอีกครั้ง (ข้อความกลับช่องพิมพ์)
 //  ฐานข้อมูล: Supabase (ตาราง pur_*  ดู supabase/pur-schema.sql)
 //  ส่งข้อความ: Edge Function pur-send · รับข้อความ: pur-webhook-line
 // ═══════════════════════════════════════════════════════════
@@ -1886,7 +1888,7 @@ async function callFn(body){
     if(j.ok === undefined) j.ok = res.ok;
     if(!res.ok && !j.error) j.error = 'HTTP ' + res.status;
     return j;
-  }catch(e){ return { ok:false, error:e.message }; }
+  }catch(e){ return { ok:false, error:e.message, net:true }; }   // v2.44 net = เน็ตหลุดกลางทาง (Failed to fetch) — เซิร์ฟเวอร์อาจส่งถึงแล้วก็ได้
 }
 // ปลุก pur-send ตอนเริ่มพิมพ์ (ไม่รอผล) — เครื่องที่ว่างนานต้องบูตใหม่ + ขอ token LINE ใหม่ กดส่งแล้วรอเป็นวินาที
 // ทำไว้ระหว่างที่ยังพิมพ์อยู่ พอกดส่งจริงจะเร็ว · เว้นอย่างน้อย 1 นาทีต่อบัญชี ไม่ยิงทุกตัวอักษร
@@ -1904,7 +1906,8 @@ function warmSend(){
 // (ตัดแชทที่เสร็จแล้ว + แชท "ไม่นับสถิติ") ไม่งั้นเลขบนไอคอนกระโดดไปมาระหว่างเลขที่แอพตั้งเองกับเลขที่ push ตั้งให้
 const isWaiting = c => !!c.awaiting_since && c.status !== 'resolved' && !c.exclude_kpi;
 // v2.28 งานโดนแท็กที่ยังไม่ตอบ (trigger เขียนลง pur_chats.mention_open) — [{ id, e:อีเมลคนที่โดนแท็ก, s:เริ่ม, b:ชื่อคนแท็ก }]
-const mentionsOpen = c => !c || c.exclude_kpi || !Array.isArray(c.mention_open) ? [] : c.mention_open;
+// v2.43 แชทไม่นับสถิติ: แสดง/นับเฉพาะงานแท็กสินค้า (ผู้ใช้เลือกให้นับเป็นงานเต็ม) · @แท็กจากคนในแชทพวกนี้ยังไม่นับเหมือนเดิม
+const mentionsOpen = c => !c || !Array.isArray(c.mention_open) ? [] : c.exclude_kpi ? c.mention_open.filter(x => isProdTag(x)) : c.mention_open;
 const myMentions = c => me ? mentionsOpen(c).filter(x => x.e === me.email) : [];
 // v2.37 งานแท็กจากระบบจับชื่อสินค้า (by_name = "🏷 ชื่อสินค้า") — คำอธิบายต่างจากโดนคน @ ตรงๆ
 const isProdTag = x => String(x?.b || '').startsWith('🏷');
@@ -2610,7 +2613,8 @@ function flexHtml(card){
 
 function sendMark(m){
   if(m.status === 'sending') return `<span class="rd-s" title="กำลังส่ง">${ic('clock')}</span>`;
-  if(m.status === 'failed')  return `<span class="mk-fail" title="${esc(m.error || '')}">${ic('alert')} ${esc(m.error || 'ส่งไม่สำเร็จ')}</span>`;
+  if(m.status === 'checking') return `<span class="rd-s" title="เน็ตสะดุดตอนส่ง กำลังตรวจว่าข้อความถึงไหม">${ic('clock')} กำลังตรวจว่าส่งถึงไหม…</span>`;
+  if(m.status === 'failed')  return `<span class="mk-fail" title="${esc(m.error || '')}">${ic('alert')} ${esc(m.error || 'ส่งไม่สำเร็จ')}</span>${m.netFail ? ` <button class="btn btn-outline btn-sm" style="padding:0 8px;font-size:11px" onclick="resendLocal('${esc(m.id)}')">↻ ส่งอีกครั้ง</button>` : ''}`;
   // ช่องสถานะอ่าน — เติมทีหลังด้วย paintReadMarks() จะได้อัปเดตได้โดยไม่ต้องวาดแชทใหม่ทั้งห้อง
   return `<span class="rd" data-at="${Date.parse(m.sent_at) || 0}" data-app="${m.via === 'app' ? 1 : 0}"></span>`;
 }
@@ -3121,8 +3125,46 @@ function clearQuote(){ quoting = null; $('quoting').classList.remove('show'); $(
 // ── SEND ──
 // ฝั่งแอพแสดงฟองทันที → Edge Function บันทึกลงฐานข้อมูล (สถานะ sending) แล้วยิงเข้า LINE
 // สถิติ "ตอบแล้ว" จะนับเฉพาะเมื่อ LINE รับข้อความจริง (status = sent)
+// v2.44 เน็ตหลุดตอนกดส่ง ("Failed to fetch") — เดิมขึ้นแดงทันที ทั้งที่หลายครั้งเซิร์ฟเวอร์ส่งเข้า LINE ไปแล้ว (คำตอบแค่กลับมาไม่ถึง)
+// → ขึ้น "กำลังตรวจ…" แล้วถามฐานข้อมูลว่ามีข้อความนี้ไหม · มี = ใช้สถานะจริง · ไม่มี = ส่งไม่ถึง + ปุ่มส่งอีกครั้ง (ไม่ส่งซ้ำเอง)
+function reconcileNet(local){
+  if(local.idAdopted){ if(activeId === local.chat_id) renderMsgs(msgCache[local.chat_id] || []); showToast('เน็ตสะดุด แต่ข้อความส่งถึงแล้ว ✓', 'success', 2500); return; }
+  local.status = 'checking'; local.error = null;
+  if(activeId === local.chat_id) renderMsgs(msgCache[local.chat_id] || []);
+  setTimeout(() => verifyLocal(local, 0), 2500);
+}
+async function verifyLocal(local, n){
+  const list = msgCache[local.chat_id] || [];
+  if(local.idAdopted || !list.includes(local)){ if(activeId === local.chat_id) renderMsgs(list); return; }
+  let row = null;
+  try{
+    const { data, error } = await sb.from('pur_messages').select('*').eq('chat_id', local.chat_id).eq('via', 'app').eq('staff_email', me.email).eq('msg_type', local.msg_type)
+      .gte('created_at', new Date(Date.parse(local.sent_at) - 60000).toISOString()).order('created_at', { ascending:false }).limit(10);
+    if(error) throw error;
+    row = (data || []).find(x => (local.msg_type !== 'text' || x.content === local.content) && !list.some(y => y !== local && y.id === x.id))
+       || (data || []).find(x => (local.msg_type !== 'text' || x.content === local.content));
+  }catch(_){ if(n < 3) return setTimeout(() => verifyLocal(local, n + 1), 4000); }
+  if(local.idAdopted) return verifyLocal(local, n);
+  if(row){
+    const dup = list.find(y => y !== local && y.id === row.id);
+    if(dup){ list.splice(list.indexOf(local), 1); }
+    else Object.assign(local, row, { tmp:false, idAdopted:true, content: local.msg_type === 'image' ? local.content : row.content });
+    showToast(row.status === 'failed' ? 'ยังไม่ถึงผู้รับ: ' + (row.error || '') : 'เน็ตสะดุด แต่ข้อความส่งถึงแล้ว ✓', row.status === 'failed' ? 'warning' : 'success', 3000);
+  } else if(n < 2){ return setTimeout(() => verifyLocal(local, n + 1), 4000); }
+  else { local.status = 'failed'; local.error = 'ส่งไม่ถึง — เน็ตหลุด'; local.netFail = true; showToast('ส่งไม่ถึงเพราะเน็ตหลุด — กด "ส่งอีกครั้ง" ที่ข้อความ', 'warning', 5000); }
+  if(activeId === local.chat_id) renderMsgs(list);
+}
+function resendLocal(id){
+  const list = msgCache[activeId] || [], m = list.find(x => x.id === id); if(!m) return;
+  list.splice(list.indexOf(m), 1); renderMsgs(list);
+  if(m.msg_type === 'text'){
+    const inp = $('replyInp'); inp.value = inp.value.trim() ? m.content + '\n' + inp.value : m.content; grow(inp); syncSend(); inp.focus();
+    showToast('ข้อความกลับไปอยู่ในช่องพิมพ์แล้ว — กดส่งได้เลย', 'info', 3000);
+  } else showToast('เลือกรูป/ไฟล์แล้วส่งใหม่อีกครั้ง', 'info', 3000);
+}
 function reconcile(local, r){
   const list = msgCache[local.chat_id] || [];
+  if(!r.id && r.net) return reconcileNet(local);
   if(r.id){
     const real = list.find(x => x.id === r.id);
     if(real && real !== local){ const i = list.indexOf(local); if(i >= 0) list.splice(i, 1); real.status = r.ok ? 'sent' : 'failed'; if(r.error) real.error = r.error; }
@@ -3554,7 +3596,7 @@ function onMsgInsert(m){
   const area = $('msgsArea'), atBottom = area.scrollHeight - area.scrollTop - area.clientHeight < 160;
   // ฟองที่เราส่งเองแบบ optimistic ยังไม่มี id → รับ id จากแถวจริงแทนการเพิ่มซ้ำ
   const tmp = m.via === 'app' && m.staff_email === me.email ? list.find(x => x.tmp && !x.idAdopted && x.msg_type === m.msg_type && (m.msg_type !== 'text' || x.content === m.content)) : null;
-  if(tmp){ Object.assign(tmp, m, { tmp:false, idAdopted:true, status: tmp.status === 'sending' ? m.status : tmp.status, content: m.msg_type === 'image' ? tmp.content : m.content }); }
+  if(tmp){ Object.assign(tmp, m, { tmp:false, idAdopted:true, status: tmp.status === 'sending' || tmp.status === 'checking' ? m.status : tmp.status, content: m.msg_type === 'image' ? tmp.content : m.content }); }
   else {
     // แทรกตามเวลา — ข้อความจาก OA Manager อาจมาถึงช้ากว่าข้อความที่ใหม่กว่า
     let i = list.length; while(i > 0 && byTime(list[i - 1], m) > 0) i--;
@@ -4197,7 +4239,7 @@ function visibleMentions(){
   if(dash.kind === 'user' || dash.person === 'none') return [];
   return (dash.data.mentions || []).filter(x => {
     if(x.closed_reason === 'unsent') return false;
-    const c = chatById.get(x.chat_id); if(c && c.exclude_kpi) return false;
+    const c = chatById.get(x.chat_id); if(c && c.exclude_kpi && !(String(x.by_name || '').startsWith('🏷') && !x.by_email)) return false;   // v2.43 งานแท็กสินค้านับแม้แชทไม่นับสถิติ
     return dash.person === 'all' || x.mentioned_email === dash.person;
   }).map(x => {
     const s = Date.parse(x.started_at), answered = x.closed_reason === 'answered', open = !x.closed_at;
