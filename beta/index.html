@@ -1905,7 +1905,8 @@ function warmSend(){
 // (ตัดแชทที่เสร็จแล้ว + แชท "ไม่นับสถิติ") ไม่งั้นเลขบนไอคอนกระโดดไปมาระหว่างเลขที่แอพตั้งเองกับเลขที่ push ตั้งให้
 const isWaiting = c => !!c.awaiting_since && c.status !== 'resolved' && !c.exclude_kpi;
 // v2.28 งานโดนแท็กที่ยังไม่ตอบ (trigger เขียนลง pur_chats.mention_open) — [{ id, e:อีเมลคนที่โดนแท็ก, s:เริ่ม, b:ชื่อคนแท็ก }]
-const mentionsOpen = c => !c || c.exclude_kpi || !Array.isArray(c.mention_open) ? [] : c.mention_open;
+// v2.43 แชทไม่นับสถิติ: แสดง/นับเฉพาะงานแท็กสินค้า (ผู้ใช้เลือกให้นับเป็นงานเต็ม) · @แท็กจากคนในแชทพวกนี้ยังไม่นับเหมือนเดิม
+const mentionsOpen = c => !c || !Array.isArray(c.mention_open) ? [] : c.exclude_kpi ? c.mention_open.filter(x => isProdTag(x)) : c.mention_open;
 const myMentions = c => me ? mentionsOpen(c).filter(x => x.e === me.email) : [];
 // v2.37 งานแท็กจากระบบจับชื่อสินค้า (by_name = "🏷 ชื่อสินค้า") — คำอธิบายต่างจากโดนคน @ ตรงๆ
 const isProdTag = x => String(x?.b || '').startsWith('🏷');
@@ -4198,7 +4199,7 @@ function visibleMentions(){
   if(dash.kind === 'user' || dash.person === 'none') return [];
   return (dash.data.mentions || []).filter(x => {
     if(x.closed_reason === 'unsent') return false;
-    const c = chatById.get(x.chat_id); if(c && c.exclude_kpi) return false;
+    const c = chatById.get(x.chat_id); if(c && c.exclude_kpi && !(String(x.by_name || '').startsWith('🏷') && !x.by_email)) return false;   // v2.43 งานแท็กสินค้านับแม้แชทไม่นับสถิติ
     return dash.person === 'all' || x.mentioned_email === dash.person;
   }).map(x => {
     const s = Date.parse(x.started_at), answered = x.closed_reason === 'answered', open = !x.closed_at;
