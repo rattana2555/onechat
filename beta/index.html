@@ -2403,7 +2403,10 @@ const mediaAttr = (content, attr = 'src') => /^(https?:\/\/|blob:)/.test(content
 function bubbleBody(m){
   const c = m.content || '';
   const sc = sysCardOf(m);
-  if(sc) return [`<div class="sc-head">📋 การ์ดจาก${esc(sc)}</div><div>${esc(c)}</div><div class="sc-note">แอพไม่ได้รับเนื้อการ์ด — ดูรายละเอียดใน LINE</div>`, false];
+  // v2.46 ข้อความยาว/หลายบรรทัด = ระบบส่งเป็นข้อความธรรมดา แอพได้เนื้อหาครบแล้ว → ไม่ขึ้น "ไม่ได้รับเนื้อการ์ด"
+  if(sc) return c.length > 200 || c.includes('\n')
+    ? [`<div class="sc-head">📋 ข้อความจาก${esc(sc)}</div><div>${linkify(esc(c))}</div>`, false]
+    : [`<div class="sc-head">📋 การ์ดจาก${esc(sc)}</div><div>${esc(c)}</div><div class="sc-note">แอพไม่ได้รับเนื้อการ์ด — ดูรายละเอียดใน LINE</div>`, false];
   switch(m.msg_type){
     case 'sticker': return [`<img class="sticker" src="${esc(c)}" alt="สติกเกอร์" loading="lazy">`, true];
     case 'image':   return [`<img class="photo" ${mediaAttr(c)} alt="รูปภาพ" loading="lazy" onclick="lbOpen(this)">`, true];
