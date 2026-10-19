@@ -4257,7 +4257,7 @@ function visibleMentions(){
   const [from, to] = currentRange(); const f = +from, t = +to, sla = slaSec();
   if(dash.kind === 'user' || dash.person === 'none') return [];
   return (dash.data.mentions || []).filter(x => {
-    if(x.closed_reason === 'unsent') return false;
+    if(x.closed_reason === 'unsent' || x.closed_reason === 'member_removed') return false;   // v2.46 คนที่โดนแท็กถูกลบ/ถอดสิทธิ์ = ไม่นับ
     const c = chatById.get(x.chat_id); if(c && c.exclude_kpi && !(String(x.by_name || '').startsWith('🏷') && !x.by_email)) return false;   // v2.43 งานแท็กสินค้านับแม้แชทไม่นับสถิติ
     return dash.person === 'all' || x.mentioned_email === dash.person;
   }).map(x => {
