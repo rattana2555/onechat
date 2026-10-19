@@ -11,7 +11,23 @@
 (function(){
   var NEW = 'https://rattanaphaiboon.github.io/app/onechat/';
   var q = location.search.replace(/([?&])v=\d+&?/, '$1').replace(/[?&]$/, '');
-  location.replace(NEW + q + location.hash);
+  var to = NEW + q + location.hash, done = false;
+  function go(){ if(done) return; done = true; location.replace(to); }
+  setTimeout(go, 3000);
+  // ปิดแจ้งเตือนของลิงก์เดิมในเครื่องนี้ก่อน — กันเด้งซ้ำ 2 ครั้งเมื่อเปิดแจ้งเตือนที่ลิงก์ใหม่ (แบบเดียวกับการย้ายครั้งก่อน 26/09)
+  // (ลิงก์ทดสอบ /beta/ ใช้ service worker ตัวเดียวกัน — เปิด beta อีกครั้งระบบลงทะเบียนให้ใหม่เอง)
+  (async function(){
+    try{
+      if('serviceWorker' in navigator){
+        var regs = await navigator.serviceWorker.getRegistrations();
+        for(var i = 0; i < regs.length; i++){
+          try{ var s = await regs[i].pushManager.getSubscription(); if(s) await s.unsubscribe(); }catch(e){}
+          try{ await regs[i].unregister(); }catch(e){}
+        }
+      }
+    }catch(e){}
+    go();
+  })();
 })();
 </script>
 </head><body style="margin:0;background:#0d1b3e;color:#fff;font:15px system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;text-align:center;padding:20px">
