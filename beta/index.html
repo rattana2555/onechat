@@ -481,7 +481,7 @@ mark.hl.cur{background:#ff9f1a;box-shadow:0 0 0 2px rgba(255,159,26,.45)}
 .mk-fail{color:var(--st-crit);font-weight:600}
 .qr-wrap{display:flex;gap:6px;padding:6px 10px;overflow-x:auto;scrollbar-width:none;background:var(--card-bg);border-top:1px solid var(--border);flex-shrink:0}
 .qr-wrap::-webkit-scrollbar{display:none}
-.qchip{padding:6px 12px;border:1.5px solid var(--border);border-radius:16px;font-size:12px;font-weight:500;background:var(--bg);color:var(--text);white-space:nowrap;min-height:32px;display:flex;align-items:center}
+.qchip{max-width:min(340px,72vw);overflow:hidden;text-overflow:ellipsis;flex-shrink:0;padding:6px 12px;border:1.5px solid var(--border);border-radius:16px;font-size:12px;font-weight:500;background:var(--bg);color:var(--text);white-space:nowrap;min-height:32px;display:block;line-height:18px;text-align:left}
 .qchip:active,.qchip:hover{border-color:var(--gold);background:rgba(201,168,76,.08)}
 .quoting{display:none;align-items:center;gap:8px;padding:6px 12px;background:var(--card-bg);border-top:1px solid var(--border);font-size:12px;color:var(--muted)}
 .quoting.show{display:flex}
@@ -942,7 +942,7 @@ select.input{appearance:auto}
   .pane-split:hover::after,.pane-split.drag::after{background:var(--gold);width:3px;left:2px}
   body.pane-dragging{cursor:col-resize;user-select:none}
   body.pane-dragging iframe{pointer-events:none}
-  .chat-pane{position:static;transform:none;flex:1}
+  .chat-pane{position:static;transform:none;flex:1;min-width:0}   /* v2.47 ข้อความตอบด่วนยาวมากดันช่องแชทเกินจอ (เหมือนโดนซูม รายการแชทหาย) */
   .reply-bar{padding-bottom:max(8px,env(safe-area-inset-bottom))}  /* nav ถูกซ่อน → ช่องพิมพ์ติดขอบจอจริง (iPad/iPhone แนวนอน) */
   .back-btn{display:none}
   .msg-grp{max-width:72%}
@@ -2373,7 +2373,7 @@ function applyReplyState(c){
 }
 function renderQuick(){
   const el = $('qrWrap'); if(!el) return;
-  el.innerHTML = (settings?.quick_replies || []).map(t => `<button class="qchip" onclick="useQuick(this)">${esc(t)}</button>`).join('');
+  el.innerHTML = (settings?.quick_replies || []).map(t => `<button class="qchip" onclick="useQuick(this)" title="${esc(t)}">${esc(t)}</button>`).join('');
 }
 
 // ── MESSAGES ──
