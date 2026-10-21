@@ -1812,7 +1812,22 @@ const tsOf = v => { const t = Date.parse(v || ''); return isNaN(t) ? 0 : t; };
 const maxUpdated = rows => rows.reduce((m, r) => tsOf(r.updated_at) > tsOf(m) ? r.updated_at : m, null);
 // คืน Set ของแชทที่เปลี่ยน · null = เพิ่งโหลดเต็ม (ถือว่าอาจเปลี่ยนทุกแชท)
 async function syncChats(){
-  if(!chatSync || Date.now() - lastFullChats > FULL_CHATS_MS){ await loadChats(); return null; }
+  if(!chatSync){ await loadChats(); return null; }
+  // v2.50 ครบ 10 นาที: ขอแค่ id + updated_at (~1/20 ของแถวเต็ม · บัญชีจัดซื้อแถวเต็ม ~900 KB) — ตรงกันหมด = ไม่ต้องโหลดเต็ม
+  // มีแชทหาย/เพิ่ม/เวลาไม่ตรง (ถูกรวม/ลบ/realtime หลุด) ค่อยโหลดเต็มแบบเดิม
+  if(Date.now() - lastFullChats > FULL_CHATS_MS){
+    const aid = acct.id, ids = [];
+    for(let from = 0;; from += 1000){
+      const { data, error } = await sb.from('pur_chats').select('id,updated_at').eq('account_id', aid).order('id').range(from, from + 999);
+      if(error) throw new Error(error.message);
+      ids.push(...(data || [])); if(!data || data.length < 1000) break;
+    }
+    if(acct?.id !== aid) return new Set();
+    const edge = tsOf(chatSync) - SYNC_OVERLAP_MS;                // แถวที่ใหม่กว่านี้ รอบย่อยด้านล่างดึงให้อยู่แล้ว
+    const same = ids.length === chatById.size && ids.every(r => { const o = chatById.get(r.id); return o && (tsOf(o.updated_at) >= tsOf(r.updated_at) || tsOf(r.updated_at) > edge); });
+    if(!same){ await loadChats(); return null; }
+    lastFullChats = Date.now();
+  }
   const acctId = acct.id, since = new Date(tsOf(chatSync) - SYNC_OVERLAP_MS).toISOString();
   const { data, error } = await sb.from('pur_chats').select('*').eq('account_id', acctId).gt('updated_at', since);
   if(error) throw new Error(error.message);
@@ -6668,9 +6683,9 @@ function startAutoRefresh(){
     // แดชบอร์ดโหลดใหม่เมื่อมีแชทเปลี่ยนและห่างจากครั้งก่อน ≥2 นาที (หรือทุก 10 นาที) — realtime ส่งของใหม่มาให้อยู่แล้ว
     try{
       const changed = await syncChats(), now = Date.now();
-      if(activeId && (changed === null || (changed.has(activeId) && activeMissingMsgs()) || now - lastMsgRefresh > 5 * 60 * 1000))
+      if(activeId && (changed === null || (changed.has(activeId) && activeMissingMsgs()) || now - lastMsgRefresh > 15 * 60 * 1000))   // v2.50 5 → 15 นาที (realtime ส่งข้อความใหม่มาให้อยู่แล้ว)
         await refreshActiveMsgs();   // เช็ค activeId ซ้ำหลัง await — ไม่วาดข้อความแชทเก่าทับแชทที่เพิ่งเปิด
-      if(view === 'dash' && ((changed === null || changed.size) && now - dashLoadedAt > 2 * 60 * 1000 || now - dashLoadedAt > 10 * 60 * 1000))
+      if(view === 'dash' && ((changed === null || changed.size) && now - dashLoadedAt > 5 * 60 * 1000 || now - dashLoadedAt > 15 * 60 * 1000))   // v2.50 2/10 → 5/15 นาที (แดชบอร์ด 7 วันของจัดซื้อ ~340 KB/ครั้ง)
         await loadDash();
     }
     catch(e){ console.warn('auto refresh:', e.message); } finally{ refreshing = false; }
