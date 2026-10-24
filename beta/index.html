@@ -1457,7 +1457,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
   <button class="lb-nav lb-next" id="lbNext" onclick="lbGo(1)" title="รูปถัดไป (→)">›</button>
   <div class="lb-foot" id="lbFoot"></div>
 </div>
-<div class="modal-overlay" id="modal" onclick="if(event.target===this) closeModal()">
+<div class="modal-overlay" id="modal" onmousedown="modalDownBg = event.target === this" onclick="modalBgClick(event)">
   <div class="modal">
     <div class="modal-head"><h3 id="modalTitle"></h3><button class="modal-close" onclick="closeModal()" aria-label="ปิด" title="ปิด">×</button></div>
     <div class="modal-body" id="modalBody"></div>
@@ -1741,8 +1741,19 @@ function openModal(title, body, foot, opts){
   $('modalTitle').textContent = title; $('modalBody').innerHTML = body; $('modalFoot').innerHTML = foot || '';
   $('modal').classList.toggle('wide', !!opts?.wide);        // ตารางรายละเอียดต้องการที่กว้างกว่าฟอร์มปกติ
   $('modal').classList.add('open');
+  modalSnap = modalVals();
 }
 function closeModal(){ $('modal').classList.remove('open'); }
+// v2.51 กดพื้นหลังปิดหน้าต่างเฉพาะเมื่อกดและปล่อยบนพื้นหลังจริง และยังไม่ได้พิมพ์/แก้อะไร
+// เดิม: ลากเลือกข้อความในช่องแล้วปล่อยเมาส์นอกกล่อง = เบราว์เซอร์นับเป็นคลิกพื้นหลัง → ปิดทิ้ง ข้อมูลที่พิมพ์หาย (ผู้ใช้แจ้ง 24/10)
+let modalSnap = '', modalDownBg = false;
+const modalVals = () => [...$('modalBody').querySelectorAll('input,textarea,select')].map(e => e.type === 'checkbox' || e.type === 'radio' ? e.checked : e.value).join('\u0001');
+function modalBgClick(e){
+  const down = modalDownBg; modalDownBg = false;
+  if(e.target !== $('modal') || !down) return;
+  if(modalVals() !== modalSnap){ showToast('มีข้อมูลที่ยังไม่บันทึก — กด บันทึก หรือ ยกเลิก', 'info', 3500); return; }
+  closeModal();
+}
 function toggleDD(id){
   const p = document.querySelector(`#${id} .dd-panel`); const open = p.classList.contains('open');
   document.querySelectorAll('.dd-panel.open').forEach(x => x.classList.remove('open'));
