@@ -6023,8 +6023,8 @@ function staffSyncLine(){
   const added = (last?.added_list || []).map(x => `${esc(x.nick)} → ${esc(accName(x.account))}`).join(' · ');
   // v2.55 ซิงก์แก้ตามชีท: เปลี่ยนอีเมล (จับคู่ด้วยชื่อ-สกุล) · ชื่อเล่น · ชื่อ-สกุล
   const changed = (last?.changed || []).map(x => `${esc(x.nick)}: ${esc(x.what)} ${esc(x.from || '–')} → ${esc(x.to)}`).join(' · ');
-  return `<div class="mini" id="ssLine" style="padding:0 16px 10px;line-height:1.7">🔄 ซิงก์สมาชิกจากทะเบียนพนักงาน ทุกวัน 05:50 (เพิ่มคนใหม่ · แก้อีเมล/ชื่อเล่น/ชื่อ-สกุลตามชีท · ไม่ถอดสิทธิ์ใครเอง · คนที่ลบ/ถอดสิทธิ์แล้วไม่เพิ่มกลับ) ·
-    ${last ? `ล่าสุด ${thDateTime(last.at)} · เพิ่มใหม่ <b>${nf(last.added || 0)}</b>${added ? ` (${added})` : ''}${last.changed ? ` · แก้ตามชีท <b>${nf(last.changed.length)}</b>${changed ? ` (${changed})` : ''}` : ''}` : 'ยังไม่เคยซิงก์'}
+  return `<div class="mini" id="ssLine" style="padding:0 16px 10px;line-height:1.7">🔄 ซิงก์สมาชิกจากทะเบียนพนักงาน ทุก 5 นาที (เพิ่มคนใหม่ · แก้อีเมล/ชื่อเล่น/ชื่อ-สกุลตามชีท · ไม่ถอดสิทธิ์ใครเอง · คนที่ลบ/ถอดสิทธิ์แล้วไม่เพิ่มกลับ) ·
+    ${last ? `${last.checked ? `ตรวจล่าสุด ${thDateTime(last.checked)} · ` : ''}เปลี่ยนแปลงล่าสุด ${thDateTime(last.at)} · เพิ่มใหม่ <b>${nf(last.added || 0)}</b>${added ? ` (${added})` : ''}${last.changed ? ` · แก้ตามชีท <b>${nf(last.changed.length)}</b>${changed ? ` (${changed})` : ''}` : ''}` : 'ยังไม่เคยซิงก์'}
     <button class="btn btn-outline btn-sm" style="margin-left:6px" onclick="runStaffSync()">ซิงก์เดี๋ยวนี้</button></div>`;
 }
 function refreshStaffSyncCard(){ const el = $('accessCard'); if(el) el.outerHTML = accessCardHtml(); }
