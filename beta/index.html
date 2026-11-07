@@ -2451,8 +2451,11 @@ const SYS_CARDS = {
   rpbsale:  { who:'ระบบ ROO', alts:[/^ขออนุญาตสรุปรายละเอียดสินค้าเพิ่มเติม/, /^🧾 สรุปคำสั่งซื้อ/, /^🛍️? ?ลืมกดยืนยันออเดอร์/] },
   purchase: { who:'ระบบใบสั่งซื้อ', alts:[/^ใบสั่งซื้อ$/, /^ใบสั่งสินค้า$/, /^หนังสือขอสนับสนุน/] },   // ของก่อน 18/09 (ก่อนชีทส่งการ์ดเข้าแอพ)
 };
+// v2.56 OA Manager ส่ง bizId "__AUTO_RESPONSE" สำหรับข้อความตอบกลับอัตโนมัติ (pur_is_auto_msg นับเป็นระบบ: ไม่ปิดงาน ไม่ล้างเลขยังไม่อ่าน)
+const isOaAuto = m => m?.direction === 'out' && !m.staff_email && String(m.sender_biz_id || '').startsWith('__');
 function sysCardOf(m){
   if(!m || m.direction !== 'out' || m.via !== 'oa' || m.msg_type !== 'text' || m.card) return null;
+  if(isOaAuto(m)) return 'ระบบตอบกลับอัตโนมัติ (OA)';   // v2.56 ข้อความนอกเวลาทำการ/ทักทาย — ไม่ใช่แอดมินตอบ
   if(m.staff_email || m.sender_name || m.sender_biz_id) return null;
   const s = SYS_CARDS[acct?.slug]; if(!s) return null;
   const t = String(m.content || '').trim();
@@ -2475,7 +2478,7 @@ function bubbleBody(m){
   const c = m.content || '';
   const sc = sysCardOf(m);
   // v2.46 ข้อความยาว/หลายบรรทัด = ระบบส่งเป็นข้อความธรรมดา แอพได้เนื้อหาครบแล้ว → ไม่ขึ้น "ไม่ได้รับเนื้อการ์ด"
-  if(sc) return c.length > 200 || c.includes('\n')
+  if(sc) return c.length > 200 || c.includes('\n') || isOaAuto(m)
     ? [`<div class="sc-head">📋 ข้อความจาก${esc(sc)}</div><div>${linkify(esc(c))}</div>`, false]
     : [`<div class="sc-head">📋 การ์ดจาก${esc(sc)}</div><div>${esc(c)}</div><div class="sc-note">แอพไม่ได้รับเนื้อการ์ด — ดูรายละเอียดใน LINE</div>`, false];
   switch(m.msg_type){
