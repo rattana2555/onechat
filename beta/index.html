@@ -1218,7 +1218,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 <nav class="top-tabs">
   <button class="tab-btn active" data-v="chat" onclick="setView('chat')"><span data-ic="chat"></span>แชท <span class="nbadge" id="tb-chat"></span></button>
   <button class="tab-btn" data-v="dash" onclick="setView('dash')"><span data-ic="chart"></span>แดชบอร์ด</button>
-  <button class="tab-btn" data-v="blast" onclick="setView('blast')"><span data-ic="send"></span>บรอดแคสต์</button>
+  <button class="tab-btn" data-v="blast" onclick="openBlastApp()" title="เปิดแอพ Rattana ส่ง LINE (แท็บใหม่)"><span data-ic="send"></span>บรอดแคสต์ ↗</button>
   <button class="tab-btn" data-v="set" onclick="setView('set')"><span data-ic="settings"></span>ตั้งค่า</button>
 </nav>
 
@@ -1454,7 +1454,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 <nav class="bottom-nav">
   <button class="bni active" data-v="chat" onclick="setView('chat')"><div class="bni-icon"><span data-ic="chat"></span></div><span class="bni-label">แชท</span><span class="nbadge" id="bn-chat"></span></button>
   <button class="bni" data-v="dash" onclick="setView('dash')"><div class="bni-icon"><span data-ic="chart"></span></div><span class="bni-label">แดชบอร์ด</span></button>
-  <button class="bni" data-v="blast" onclick="setView('blast')"><div class="bni-icon"><span data-ic="send"></span></div><span class="bni-label">บรอดแคสต์</span></button>
+  <button class="bni" data-v="blast" onclick="openBlastApp()" title="เปิดแอพ Rattana ส่ง LINE"><div class="bni-icon"><span data-ic="send"></span></div><span class="bni-label">บรอดแคสต์ ↗</span></button>
   <button class="bni" data-v="set" onclick="setView('set')"><div class="bni-icon"><span data-ic="settings"></span></div><span class="bni-label">ตั้งค่า</span></button>
 </nav>
 
@@ -3551,6 +3551,9 @@ document.addEventListener('click', e => {
 function onKey(e){ if(mpKey(e)) return; if(e.key === 'Enter' && !e.shiftKey && window.innerWidth >= 768){ e.preventDefault(); sendText(); } }
 function grow(el){ el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
 function syncSend(){ $('sendBtn').classList.toggle('lit', $('replyInp').value.trim().length > 0); }
+// v2.57 ปุ่มบรอดแคสต์ → เปิดแอพ Rattana ส่ง LINE แทนหน้าบรอดแคสต์ในแอพ (ผู้ใช้ 11/11 · โค้ดหน้าเดิมยังอยู่ ไม่มีทางเข้า)
+const BLAST_APP_URL = 'https://rattanaphaiboon.github.io/app/rattana-budget-letter.html';
+function openBlastApp(){ const w = window.open(BLAST_APP_URL, '_blank'); if(w) w.opener = null; else location.href = BLAST_APP_URL; }   // ใส่ 'noopener' แล้ว window.open คืน null เสมอ → ใช้ตัด opener เอง
 function useQuick(btn){ const i = $('replyInp'); i.value = btn.textContent.trim(); i.focus(); grow(i); syncSend(); warmSend(); }
 
 // ── CHAT ACTIONS (RPC) ──
@@ -6838,7 +6841,7 @@ async function showApp(){
   notiLoad(); startSlaWatch(); askNotifyPermission(); initPush(); openChatFromHash();
   setTimeout(checkUpdate, 5000); setInterval(checkUpdate, 30 * 60 * 1000);
   document.addEventListener('visibilitychange', () => { if(!document.hidden) checkUpdate(); });   // แจ้งเตือน: โหลดค่าตั้ง (scope ขึ้นกับสิทธิ์) แล้วเริ่มเฝ้า SLA
-  setView(LS.get('pur.view') || 'chat');
+  setView((v => v === 'blast' ? 'chat' : v)(LS.get('pur.view')) || 'chat');   // v2.57 หน้าบรอดแคสต์ในแอพไม่มีทางเข้าแล้ว
   setTimeout(() => showRemind('open'), 1500);                      // v2.31 ป๊อปอัป "อย่าลืมตอบแชทนะ"
   // ตัวเลข "รอมานาน" เดินตามเวลาจริง
   // ตัวเลข "รอมานาน" เดินตามเวลาจริง — ข้ามตอนแอพถูกซ่อน ไม่มีใครดูอยู่ก็ไม่ต้องเปลืองแรงเครื่อง
