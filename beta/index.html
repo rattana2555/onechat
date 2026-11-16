@@ -195,6 +195,13 @@ body.dark .bni .nbadge{border-color:#1a2744}
 .tag.none{border-style:dashed}
 .tag.wait{background:rgba(250,178,25,.18);border-color:rgba(250,178,25,.5);color:var(--text)}
 .tag.lbl{background:rgba(46,110,201,.12);border-color:rgba(46,110,201,.4);color:#1f5aa8}
+.tag.hot{background:rgba(220,53,69,.12);border-color:rgba(220,53,69,.45);color:#c22d3b;font-weight:600}   /* v2.58 🔥/⏰ เลยเวลา */
+.tag.prom{background:rgba(46,110,201,.08);border-color:rgba(46,110,201,.35);color:#2b5fa8}
+body.dark .tag.hot{color:#ff8a94} body.dark .tag.prom{color:#9cc2ff}
+.tool-btn.prom{border-color:rgba(46,110,201,.45);color:#2b5fa8} .tool-btn.prom.late{border-color:rgba(220,53,69,.5);color:#c22d3b}
+.transcript{margin-top:6px;font-size:13px;line-height:1.55;padding:6px 8px;border-radius:8px;background:rgba(0,0,0,.05);white-space:pre-wrap}
+body.dark .transcript{background:rgba(255,255,255,.07)}
+.champ{display:inline-block;margin-left:3px;font-size:.95em}
 .tag.lbl.mine{background:rgba(201,150,30,.13);border-color:rgba(201,150,30,.45);color:#8a6410}   /* v2.56 ป้ายของฉัน */
 /* v2.28 งานโดนแท็ก — ของฉันเป็นสีทึบให้เห็นก่อน · เกิน SLA = แดง */
 .tag.ment{background:rgba(46,110,201,.1);border-color:rgba(46,110,201,.45);color:#1f5aa8;font-weight:700}
@@ -1665,8 +1672,17 @@ let activeId = null, listFilter = 'all', searchQ = '', view = 'chat', quoting = 
 let listWh = '';                    // v2.29 กรองตามป้ายคลังส่ง ('' = ไม่กรอง)
 const mentPopSeen = new Set();       // v2.29 ป้ายเด้ง "โดนแท็ก" เล่นท่าเข้าครั้งเดียวต่องาน (รายการถูกวาดใหม่บ่อย)
 let listTag = '';                   // v2.23 กรองตามป้ายสถานะแชท ('' = ไม่กรอง)
+// v2.58 🔥 ด่วน (ลูกค้าเร่ง/ไม่พอใจ ระหว่างงานรอตอบนี้) · ⏰ คำสัญญาของทีม (pur-v258-extras.sql)
+const isHot = c => !!(c && c.hot_at && c.awaiting_since && c.status !== 'resolved' && Date.parse(c.hot_at) >= Date.parse(c.awaiting_since));
+const promiseLate = c => !!(c && c.promise_due && Date.parse(c.promise_due) <= Date.now());
+const hotLabel = w => /ด่วน/.test(w || '') ? 'ด่วน' : /(รอนาน|นานมาก|ทำไมยังไม่|ยังไม่ได้รับ|หลายรอบ)/.test(w || '') ? 'ตามหลายรอบ/รอนาน' : 'ไม่พอใจ';
+const pinTop = c => (isHot(c) || promiseLate(c)) && c.status !== 'resolved' && !c.exclude_kpi;
+const hhmm = t => { const d = new Date(t); const today = new Date().toDateString() === d.toDateString(); return (today ? '' : thDateShort(d) + ' ') + thTime(d); };
 // v2.56 ป้ายของฉัน (pur-my-tags.sql) — แต่ละคนตั้งชุดป้ายเอง ติดแชทแล้วเห็นคนเดียว · ป้ายทีม (settings.chat_tags) ใช้ร่วมกันเหมือนเดิม
 let myTags = [], myChatTags = new Map();
+let awards = [];                     // v2.58 🏆 ประจำสัปดาห์ของบัญชีนี้ (สัปดาห์ล่าสุด · ติดชื่อ 7 วัน)
+const champOf = e => awards.filter(a => a.email === e).map(a => a.kind === 'fast' ? '🏆' : '🚀').join('');
+const champTag = e => { const t = champOf(e); return t ? `<span class="champ" title="${t.includes('🏆') ? 'ตอบไวที่สุดประจำสัปดาห์' : ''}${t.length > 2 ? ' · ' : ''}${t.includes('🚀') ? 'พัฒนาขึ้นมากที่สุดประจำสัปดาห์' : ''}">${t}</span>` : ''; };
 const tagPal = () => { const team = settings?.chat_tags || []; return [...team, ...myTags.filter(t => !team.includes(t))]; };
 const isMyTag = t => !(settings?.chat_tags || []).includes(t) && myTags.includes(t);
 const chatTagsOf = c => { const team = c?.tags || []; return [...team, ...(myChatTags.get(c?.id) || []).filter(t => !team.includes(t))]; };
@@ -1847,8 +1863,31 @@ async function loadMembers(){
   members = new Map((data || []).map(r => [r.email, r]));
 }
 async function loadPeople(){ const rows = await fetchAll('pur_people', q => q.order('last_seen_at', { ascending:false })); people = new Map(rows.map(r => [r.line_user_id, r])); }
-async function loadSettings(){ const aid = acct.id; const { data, error } = await sb.from('pur_settings').select('*').eq('id', aid).maybeSingle(); if(error) throw new Error(error.message); if(acct?.id !== aid) return; applySettings(data); loadMyTags(); }
+async function loadSettings(){ const aid = acct.id; const { data, error } = await sb.from('pur_settings').select('*').eq('id', aid).maybeSingle(); if(error) throw new Error(error.message); if(acct?.id !== aid) return; applySettings(data); loadMyTags(); loadAwards(); }
 // v2.56 ป้ายของฉัน: ชุดป้าย + ป้ายที่ติดแชทของบัญชีนี้ (RLS ให้เห็นแค่ของตัวเอง) · โหลดไม่ได้ (ยังไม่รัน SQL) = ไม่มีป้ายของฉัน แอพทำงานต่อ
+async function loadAwards(){
+  const aid = acct.id; awards = [];
+  if(DEMO){ const m = [...members.values()].filter(x => x.active && x.role !== 'admin'); if(m[0]) awards = [{ kind:'fast', email:m[0].email, value_sec:540, n:42, week_end:new Date().toISOString().slice(0, 10) }]; if(m[1]) awards.push({ kind:'improved', email:m[1].email, value_sec:900, prev_sec:1800, n:20, week_end:awards[0].week_end }); }
+  else try{
+    const since = new Date(Date.now() - 7 * 86400e3).toISOString().slice(0, 10);
+    const { data, error } = await sb.from('pur_week_awards').select('kind,email,value_sec,prev_sec,n,week_end').eq('account_id', aid).gte('week_end', since).order('week_end', { ascending:false });
+    if(error) throw error; if(acct?.id !== aid) return;
+    const top = data?.[0]?.week_end; awards = (data || []).filter(x => x.week_end === top);
+  }catch(e){ console.warn('awards:', e.message); }
+  renderList(); if(activeId && chatById.get(activeId)) renderChatHeader(chatById.get(activeId));
+  setTimeout(announceAwards, 1200);
+}
+// ประกาศครั้งเดียวต่อเครื่องต่อสัปดาห์ (ไม่เด้งทับทัวร์/ป๊อปอัปอื่น)
+function announceAwards(tries = 0){
+  if(!awards.length || !acct) return;
+  const key = `pur.award:${acct.id}:${awards[0].week_end}`; if(LS.get(key)) return;
+  if($('tourOv') || $('rmdOv') || $('modal')?.classList.contains('open')){ if(tries < 60) setTimeout(() => announceAwards(tries + 1), 3000); return; }
+  LS.set(key, '1');
+  const row = a => `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--border)"><div style="font-size:30px">${a.kind === 'fast' ? '🏆' : '🚀'}</div>
+    <div><div style="font-weight:700;font-size:16px">${esc(memberName(a.email))}</div><div class="txt-sm txt-muted">${a.kind === 'fast' ? `ตอบไวที่สุด · เวลาตอบกลาง ${fmtDur(a.value_sec)} จาก ${nf(a.n)} งาน` : `พัฒนาขึ้นมากที่สุด · ${fmtDur(a.prev_sec)} → ${fmtDur(a.value_sec)}`}</div></div></div>`;
+  openModal('🎉 ประจำสัปดาห์ · ' + esc(acctName()), `<div class="txt-sm txt-muted mb-8">นับเวลาทำการ 7 วันล่าสุด · ติดป้ายข้างชื่อ 1 สัปดาห์</div>${awards.map(row).join('')}`,
+    `<button class="btn btn-gold" onclick="closeModal()">ปรบมือ 👏</button>`);
+}
 async function loadMyTags(){
   const aid = acct.id;
   if(DEMO){ try{ myTags = JSON.parse(LS.get('pur.demoMyTags') || '["ตามต่อพรุ่งนี้"]'); }catch(_){ myTags = []; } renderTagChips(); return; }
@@ -2046,6 +2085,8 @@ function filteredChats(){
     if(q){ const hay = [c.supplier_name, c.title, c.last_message, c.note, c.assignee_email && memberName(c.assignee_email), ...chatTagsOf(c), c.wh_tag, c.cust_code].join(' ').toLowerCase(); if(!hay.includes(q)) return false; }
     return true;
   }).sort((a, b) => {
+    const pa = pinTop(a) ? 1 : 0, pb = pinTop(b) ? 1 : 0;   // v2.58 🔥/⏰ ขึ้นบนสุด
+    if(pa !== pb) return pb - pa;
     const recent = (Date.parse(b.last_message_at || 0) || 0) - (Date.parse(a.last_message_at || 0) || 0);
     if(listSort !== 'wait') return recent;          // แบบ LINE: ข้อความล่าสุดบนสุด แชทเก่าลงล่าง
     // รอนานสุดก่อน: งานรอตอบขึ้นก่อน (รอนานสุดบนสุด) แล้วค่อยเรียงตามข้อความล่าสุด
@@ -2212,7 +2253,11 @@ function renderList(){
     const tags = [];
     tags.push(`<span class="tag">${c.kind === 'user' ? '1:1' : `👥 กลุ่ม${c.member_count ? ' · ' + c.member_count : ''}`}</span>`);
     if(useOwner() || c.assignee_email)
-      tags.push(c.assignee_email ? `<span class="tag assg">👤 ${esc(memberName(c.assignee_email))}</span>` : `<span class="tag none">ไม่มีผู้รับผิดชอบ</span>`);
+      tags.push(c.assignee_email ? `<span class="tag assg">👤 ${esc(memberName(c.assignee_email))}${champTag(c.assignee_email)}</span>` : `<span class="tag none">ไม่มีผู้รับผิดชอบ</span>`);
+    if(isHot(c)) tags.push(`<span class="tag hot" title="ลูกค้าพิมพ์ว่า &quot;${esc(c.hot_word)}…&quot; — ดันขึ้นบนสุดจนกว่าจะตอบ">🔥 ${hotLabel(c.hot_word)}</span>`);
+    if(c.promise_due) tags.push(promiseLate(c)
+      ? `<span class="tag hot" title="${esc(c.promise_by ? memberName(c.promise_by) + ' ' : '')}สัญญาไว้: ${esc(c.promise_text || '')}">⏰ เลยเวลาที่สัญญา ${hhmm(c.promise_due)}</span>`
+      : `<span class="tag prom" title="${esc(c.promise_by ? memberName(c.promise_by) + ' ' : '')}สัญญาไว้: ${esc(c.promise_text || '')}">⏰ สัญญาไว้ ${hhmm(c.promise_due)}</span>`);
     if(age != null) tags.push(`<span class="tag wait ${over ? 'over' : ''}">⏱ รอ ${fmtDur(age)}${over ? ' · เกิน SLA' : ''}</span>`);
     if(c.wh_tag) tags.push(`<span class="tag wh" title="คลังส่งจากชีทลูกค้า${c.cust_code ? ' · รหัส ' + esc(c.cust_code) : ''}">🚚 ${esc(c.wh_tag)}</span>`);
     mentionsOpen(c).forEach(x => { const a = elapsedSec(x.s, null), o = a > sla, mine = x.e === me?.email;
@@ -2396,6 +2441,7 @@ function renderTools(c){
   h += `<button class="tool-btn ${c.status === 'resolved' ? 'done' : ''}" onclick="toggleResolve()">${c.status === 'resolved' ? '✓ เสร็จแล้ว · เปิดใหม่' : '✓ ทำเครื่องหมายเสร็จ'}</button>`;
   const pal = tagPal(), ct = chatTagsOf(c);
   h += `<button class="tool-btn" onclick="openTagMenu()" title="ป้ายสถานะแชท — ใช้กรองรายการแชท ไม่เกี่ยวกับสถิติ">🏷 ${ct.length ? esc(ct.map(t => (isMyTag(t) ? '⭐' : '') + t).join(' · ')) : 'ติดป้าย'}</button>`;   // v2.56 แสดงเสมอ — ตั้งป้ายของฉันได้จากเมนูนี้
+  if(c.promise_due) h += `<button class="tool-btn prom ${promiseLate(c) ? 'late' : ''}" onclick="clearPromise()" title="${esc(c.promise_by ? memberName(c.promise_by) + ' ' : '')}สัญญาไว้: ${esc(c.promise_text || '')} · กดเมื่อทำตามสัญญาแล้ว (ตอบลูกค้าในแชทนี้ ป้ายหายเอง)">⏰ ${promiseLate(c) ? 'เลยเวลาที่สัญญา' : 'สัญญาไว้'} ${hhmm(c.promise_due)} ✓</button>`;
   h += `<button class="tool-btn" onclick="markUnread()" title="เผลอเปิดอ่าน? ให้แชทนี้กลับไปขึ้นตัวหนาเหมือนยังไม่ได้อ่าน">● ยังไม่อ่าน</button>`;
   if(c.awaiting_since && !c.exclude_kpi) h += `<button class="tool-btn danger" onclick="dismissWait()" title="ปิดงานรอตอบโดยไม่ตอบ เช่น ข้อความไม่เกี่ยวกับเรา">🚫 ไม่ต้องตอบ</button>`;
   if(isSup()) h += `<span class="tool-sp"></span><button class="tool-btn ${c.exclude_kpi ? 'danger' : ''}" onclick="toggleExclude()" title="แชททดสอบ/แชทภายใน ไม่ควรนับสถิติ">${c.exclude_kpi ? '📵 ไม่นับสถิติ' : '📊 นับสถิติ'}</button>`;
@@ -2536,7 +2582,8 @@ function bubbleBody(m){
     case 'sticker': return [`<img class="sticker" src="${esc(c)}" alt="สติกเกอร์" loading="lazy">`, true];
     case 'image':   return [`<img class="photo" ${mediaAttr(c)} alt="รูปภาพ" loading="lazy" onclick="lbOpen(this)">`, true];
     case 'video':   return gdId(c) ? [gdLink(gdId(c), '🎬 วิดีโอ'), false] : [`<video class="photo" ${mediaAttr(c)} controls preload="metadata"></video>`, true];
-    case 'audio':   return gdId(c) ? [gdLink(gdId(c), '🎵 เสียง'), false] : [`<audio ${mediaAttr(c)} controls preload="metadata" style="max-width:240px"></audio>`, true];
+    case 'audio':   return [(gdId(c) ? gdLink(gdId(c), '🎵 เสียง') : `<audio ${mediaAttr(c)} controls preload="metadata" style="max-width:240px"></audio>`)
+                       + (m.transcript ? `<div class="transcript" title="ถอดเสียงอัตโนมัติ (อาจผิดบ้าง)">📝 ${esc(m.transcript)}</div>` : ''), !gdId(c) && !m.transcript];   // v2.58 ถอดเสียง
     case 'file':    return [`<a href="#" ${mediaAttr(c, 'data-url')} onclick="openFile(event,this)">📎 ${esc(m.file_name || 'เปิดไฟล์แนบ')}</a>`, false];
     // การ์ด Flex จากระบบภายใน (เช่น ระบบใบสั่งซื้อ) — วาดให้เหมือนที่ซัพพลายเออร์เห็นใน LINE
     case 'flex': {
@@ -2848,7 +2895,7 @@ function renderMsgs(msgs){
     let bubble;
     if(m.unsent) bubble = '<div class="bubble unsent">ข้อความถูกยกเลิก</div>';
     else { const [inner, media] = bubbleBody(m); bubble = `<div class="bubble ${media ? 'media' : ''}">${qHtml}${inner}</div>`; }
-    const who = out ? `${m.staff_email ? memberName(m.staff_email) : (m.sender_name || sysCardOf(m) || (m.via === 'oa' ? 'แอดมิน OA' : 'คนในบริษัท'))} · ${viaLabel(m.via)}` : (c && c.kind !== 'user' ? (m.sender_name || 'สมาชิกกลุ่ม') : '');
+    const who = out ? `${m.staff_email ? memberName(m.staff_email) + champOf(m.staff_email) : (m.sender_name || sysCardOf(m) || (m.via === 'oa' ? 'แอดมิน OA' : 'คนในบริษัท'))} · ${viaLabel(m.via)}` : (c && c.kind !== 'user' ? (m.sender_name || 'สมาชิกกลุ่ม') : '');
     const canQuote = canQuoteMsg(m, c);
     html += `<div class="msg-grp ${right ? 'fa' : 'fc'}${staffLine ? ' staff' : ''}" data-mid="${m.id}">
       ${staffLine ? `<div class="sender">${esc(m.staff_email ? memberName(m.staff_email) : (m.sender_name || 'คนในบริษัท'))}<span class="stf">ทีม</span></div>` : !out && who ? `<div class="sender">${esc(who)}</div>` : ''}
@@ -3600,9 +3647,9 @@ function tourSteps(){
     { sel:'.search-wrap', title:'ค้นหา + เรียงลำดับ', body:`ค้นหาชื่อแชท ข้อความ หรือเลข PO ได้ · ปุ่ม <b>⇅</b> สลับเรียง "ข้อความล่าสุด" กับ "รอตอบนานสุด"` },
     { sel:'#listChips', title:'ตัวกรองแชท', body:`<ul><li><b>รอตอบ</b> = แชทที่ยังไม่มีใครตอบ (ตัวเลขนี้คือ KPI)</li><li><b>@ แท็กถึงฉัน</b> = มีคนแท็กคุณในกลุ่ม</li>${owner ? '<li><b>ของฉัน</b> = แชทที่คุณรับผิดชอบ</li>' : ''}<li><b>เสร็จแล้ว</b> = แชทที่ปิดเรื่องแล้ว</li></ul>` },
     { sel:'#tagChips', title:'🏷 ป้ายสถานะแชท', body:`กดป้ายเพื่อกรองแชท · <b>ป้ายทีม</b> (สีฟ้า) ทุกคนเห็น · <b>⭐ ป้ายของฉัน</b> (สีทอง) เห็นคนเดียว ตั้งชื่อเองได้` },
-    { sel:'#convList', title:'รายการแชท', body:`ตัวหนา = ยังไม่อ่าน · <b>⏱ รอ…</b> = เวลาที่ลูกค้ารอ (แดง = เกินกำหนด) · จุด <b>L</b>/<b>f</b> ที่มุมรูป = มาจาก LINE / Facebook<br>กดแชทเพื่อเปิดอ่านและตอบ` },
-    { sel:'#chatTools', title:'เครื่องมือในแชท', body:`เมื่อเปิดแชทจะมีแถบนี้:<ul>${owner ? '<li><b>👤 ผู้รับผิดชอบ</b> / <b>✋ รับเรื่องเอง</b></li>' : ''}<li><b>✓ ทำเครื่องหมายเสร็จ</b> เมื่อจบเรื่อง</li><li><b>🏷 ติดป้าย</b> · <b>● ยังไม่อ่าน</b> (เผลอเปิด)</li><li><b>🚫 ไม่ต้องตอบ</b> ข้อความที่ไม่ต้องตอบ (ไม่นับเป็นงานค้าง)</li></ul>` },
-    { sel:'.reply-bar', title:'พิมพ์และส่ง', body:`<ul><li>ปุ่มข้อความตอบด่วนเหนือช่องพิมพ์ กดแล้วแก้ก่อนส่งได้</li><li>ส่งรูป · ไฟล์ · อิโมจิ/สติกเกอร์ · วางรูปด้วย Ctrl+V</li><li>ในกลุ่มพิมพ์ <b>@</b> เพื่อแท็กเพื่อน · คลิกขวา/กดค้างที่ข้อความเพื่อ <b>ตอบกลับ</b></li></ul>` },
+    { sel:'#convList', title:'รายการแชท', body:`ตัวหนา = ยังไม่อ่าน · <b>⏱ รอ…</b> = เวลาที่ลูกค้ารอ (แดง = เกินกำหนด) · <b>🔥</b> = ลูกค้าเร่ง/ไม่พอใจ · <b>⏰</b> = ทีมสัญญาว่าจะตอบกลับ (2 อย่างนี้ขึ้นบนสุด) · <b>🏆</b> ข้างชื่อ = ตอบไวประจำสัปดาห์ · จุด <b>L</b>/<b>f</b> ที่มุมรูป = มาจาก LINE / Facebook<br>กดแชทเพื่อเปิดอ่านและตอบ` },
+    { sel:'#chatTools', title:'เครื่องมือในแชท', body:`เมื่อเปิดแชทจะมีแถบนี้:<ul>${owner ? '<li><b>👤 ผู้รับผิดชอบ</b> / <b>✋ รับเรื่องเอง</b></li>' : ''}<li><b>✓ ทำเครื่องหมายเสร็จ</b> เมื่อจบเรื่อง</li><li><b>🏷 ติดป้าย</b> · <b>● ยังไม่อ่าน</b> (เผลอเปิด)</li><li><b>🚫 ไม่ต้องตอบ</b> ข้อความที่ไม่ต้องตอบ (ไม่นับเป็นงานค้าง)</li><li>พิมพ์ "เดี๋ยวเช็คให้นะคะ" ระบบจดเป็น <b>⏰ คำสัญญา</b> และเตือนเมื่อถึงเวลา</li></ul>` },
+    { sel:'.reply-bar', title:'พิมพ์และส่ง', body:`<ul><li>ปุ่มข้อความตอบด่วนเหนือช่องพิมพ์ กดแล้วแก้ก่อนส่งได้</li><li>ส่งรูป · ไฟล์ · อิโมจิ/สติกเกอร์ · วางรูปด้วย Ctrl+V</li><li>ในกลุ่มพิมพ์ <b>@</b> เพื่อแท็กเพื่อน · คลิกขวา/กดค้างที่ข้อความเพื่อ <b>ตอบกลับ</b></li><li>ข้อความเสียงจากลูกค้าถอดเป็นตัวหนังสือให้อัตโนมัติ</li></ul>` },
     { sel:'#bellBtn', title:'🔔 แจ้งเตือน', body:`รวมแชทใหม่ งานใกล้เกินเวลา และการแท็กถึงคุณ · เปิดแจ้งเตือนบนมือถือ/คอมได้ที่หน้า <b>ตั้งค่า</b>` },
     { sel:tabSel('dash'), title:'📊 แดชบอร์ด', body:`ดูว่าใครตอบอะไร เร็วแค่ไหน งานค้างกี่งาน ${sup ? '(หัวหน้าเห็นทุกคน)' : '(คุณเห็นของตัวเอง)'}${acct?.slug === 'purchase' ? ' · ท้ายหน้ามีการ์ด <b>สินค้าขาด</b>' : ''}` },
     { sel:tabSel('send'), title:'📣 บรอดแคสต์', body:`เปิดแอพ <b>Rattana ส่ง LINE</b> ในแอพนี้เลย ใช้ส่งเอกสาร/ข้อความถึงคู่ค้าและลูกค้าหลายคนพร้อมกัน` },
@@ -3674,6 +3721,30 @@ function tourPaint(){
   else top = Math.max(m, vh - ch - m);
   card.style.left = left + 'px'; card.style.top = top + 'px';
 }
+// v2.58 🌅 สรุปเช้าเข้า LINE หัวหน้า (pur-brief · จ–ส 08:00)
+function briefCardHtml(){
+  const on = settings.brief_on !== false;
+  return `<div class="card card-gold"><div class="card-head"><h3>🌅 สรุปเช้าทาง LINE · ${esc(acctName())}</h3>
+    <div class="hint">ทุกวันจันทร์–เสาร์ 08:00 ส่งสรุปเข้า LINE ส่วนตัวของ<b>หัวหน้าบัญชีนี้</b>ที่ผูก LINE กับแอพแล้ว: งานที่ทักเข้ามา ตอบทันเวลากี่ % งานค้าง รอนานสุด คนที่ตอบช้า ⏰ คำสัญญาที่เลยเวลา 🔥 แชทด่วน${acct?.slug === 'purchase' ? ' 📦 สินค้าใกล้หมด' : ''} ·
+      ส่งจาก LINE OA ${esc(acctName())} (นับโควตาข้อความของ OA วันละ 1 ข้อความต่อหัวหน้า) · หัวหน้าต้องเป็นเพื่อนกับ OA นี้</div></div>
+    <div class="card-body"><label class="row" style="gap:8px;cursor:pointer"><input type="checkbox" id="briefOn" ${on ? 'checked' : ''} onchange="saveBrief(this.checked)"> ส่งสรุปเช้าของบัญชีนี้</label>
+      <div class="mt-8"><button class="btn btn-outline btn-sm" onclick="testBrief()">📨 ส่งสรุปตอนนี้ให้ฉันดู</button></div></div></div>`;
+}
+async function saveBrief(on){
+  try{ await rpc('pur_set_brief', { p_account:acct.id, p_on:!!on }); settings.brief_on = !!on; showToast(on ? 'เปิดสรุปเช้าแล้ว ✓' : 'ปิดสรุปเช้าแล้ว', 'success'); }
+  catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
+}
+async function testBrief(){
+  if(DEMO){ showToast('โหมดตัวอย่าง — ไม่ได้ส่งจริง', 'info'); return; }
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    const r = await fetch(SUPABASE_URL + '/functions/v1/pur-brief', { method:'POST', headers:{ 'Content-Type':'application/json', Authorization:'Bearer ' + session.access_token, apikey:SUPABASE_ANON },
+      body:JSON.stringify({ action:'test', accountId:acct.id }) });
+    const j = await r.json().catch(() => ({}));
+    if(!j.ok) throw new Error(j.error || ('HTTP ' + r.status));
+    showToast(j.sent ? 'ส่งเข้า LINE ของคุณแล้ว ✓' : 'ส่งไม่สำเร็จ — ' + (j.failed?.[0]?.error || 'ตรวจว่าเป็นเพื่อนกับ OA นี้แล้ว'), j.sent ? 'success' : 'error', 5000);
+  }catch(e){ showToast('ส่งไม่สำเร็จ: ' + e.message, 'error', 5000); }
+}
 function helpCardHtml(){
   return `<div class="card card-gold"><div class="card-head"><h3>📖 วิธีใช้แอพ</h3>
     <div class="hint">พาชมทีละจุดว่าฟีเจอร์อะไรอยู่ตรงไหน (ไม่ถึง 1 นาที) · เปิดแอพครั้งแรกจะเห็นเอง</div></div>
@@ -3726,6 +3797,14 @@ async function toggleExclude(){
   catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
 }
 // v2.23 ติด/ถอดป้ายสถานะแชท — ทุกคนในบัญชีทำได้ · ชุดป้ายหัวหน้าตั้งในหน้าตั้งค่า
+// v2.58 ⏰ ปิดคำสัญญาเอง (เช่น โทรคุยแล้ว ไม่ได้พิมพ์ในแชท)
+async function clearPromise(){
+  const id = activeId, c = chatById.get(id); if(!c?.promise_due) return;
+  if(!confirm(`ทำตามที่สัญญาไว้แล้ว?\n"${c.promise_text || ''}"\n\n(ตอบลูกค้าในแชทนี้ ป้ายจะหายเอง ไม่ต้องกด)`)) return;
+  if(DEMO){ patchChat(id, { promise_due:null, promise_text:null, promise_by:null, promise_at:null }); return; }
+  try{ await rpc('pur_promise_clear', { p_chat:id }); patchChat(id, { promise_due:null, promise_text:null, promise_by:null, promise_at:null }); showToast('ปิดคำสัญญาแล้ว ✓', 'success'); }
+  catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
+}
 function openTagMenu(){
   const c = chatById.get(activeId); if(!c) return;
   const team = settings?.chat_tags || [], cur = new Set(chatTagsOf(c));
@@ -5582,7 +5661,7 @@ let peopleQ = '';
 function renderSettings(){
   if(view !== 'set') return;
   const sup = isSup();
-  $('setContent').innerHTML = helpCardHtml() + linkCardHtml() + notiCardHtml() + (isAdmin() ? accountsCardHtml() + accessCardHtml() + lineSheetCardHtml() : '') + (sup ? teamCardHtml() + peopleCardHtml() + hoursCardHtml() : '') + quickCardHtml() + tagsCardHtml() + (sup ? whCardHtml() + (acct?.slug === 'purchase' ? prodCardHtml() : '') + ackCardHtml() + quotaCardHtml() : '') + (isAdmin() ? adminCardHtml() : '') + (sup ? aboutCardHtml() : '');   // v2.22 พนักงานเห็นแค่ของตัวเอง (ผูก LINE · แจ้งเตือน · ข้อความตอบด่วน · v2.41 + ป้ายสถานะแชท) · v2.41 การ์ดแท็กสินค้าเฉพาะบัญชีจัดซื้อ
+  $('setContent').innerHTML = helpCardHtml() + linkCardHtml() + notiCardHtml() + (sup ? briefCardHtml() : '') + (isAdmin() ? accountsCardHtml() + accessCardHtml() + lineSheetCardHtml() : '') + (sup ? teamCardHtml() + peopleCardHtml() + hoursCardHtml() : '') + quickCardHtml() + tagsCardHtml() + (sup ? whCardHtml() + (acct?.slug === 'purchase' ? prodCardHtml() : '') + ackCardHtml() + quotaCardHtml() : '') + (isAdmin() ? adminCardHtml() : '') + (sup ? aboutCardHtml() : '');   // v2.22 พนักงานเห็นแค่ของตัวเอง (ผูก LINE · แจ้งเตือน · ข้อความตอบด่วน · v2.41 + ป้ายสถานะแชท) · v2.41 การ์ดแท็กสินค้าเฉพาะบัญชีจัดซื้อ
   if(sup && peopleOpen) renderPeopleRows();
   if(sup && oaAdmins === null && !DEMO) loadOaAdmins();
 }
