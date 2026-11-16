@@ -124,6 +124,10 @@ body.dark .bni .nbadge{border-color:#1a2744}
 .view.active{display:flex}
 #viewChat{flex-direction:row}
 .scroll-view{flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
+#viewSend{flex-direction:column}
+#viewSend .send-bar{display:flex;align-items:center;gap:6px;padding:6px 12px;font-size:13px;font-weight:600;border-bottom:1px solid var(--border);background:var(--card-bg);color:var(--text)}
+#viewSend .send-bar .sp{flex:1}
+#sendFrame{flex:1;width:100%;min-height:0;border:0;background:#fff}
 .content{width:100%;max-width:1200px;margin:0 auto;padding:12px 12px 90px}
 @media(min-width:640px){.content{padding:16px 16px 90px}}
 @media(min-width:1024px){.content{padding:20px 20px 60px}}
@@ -922,7 +926,7 @@ select.input{appearance:auto}
   .app-hdr .hdr-wide{display:none}
   .app-hdr .noti-dot{border-color:#fff;top:-3px;right:-2px}
   body.dark .app-hdr .noti-dot{border-color:#1a2744}
-  .conv-list,.scroll-view{padding-bottom:var(--nav-space)}            /* เลื่อนรายการสุดท้ายพ้นแถบลอยได้ */
+  .conv-list,.scroll-view,#viewSend{padding-bottom:var(--nav-space)}            /* เลื่อนรายการสุดท้ายพ้นแถบลอยได้ */
   .reply-bar{padding-bottom:max(8px,env(safe-area-inset-bottom))}    /* เปิดแชท = แถบล่างหลบ ช่องพิมพ์ติดขอบจอจริง */
   .upd-bar{bottom:calc(var(--nav-h) + 20px + env(safe-area-inset-bottom))}
   body:has(.chat-pane.open) .upd-bar{bottom:calc(10px + env(safe-area-inset-bottom))}
@@ -1218,7 +1222,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 <nav class="top-tabs">
   <button class="tab-btn active" data-v="chat" onclick="setView('chat')"><span data-ic="chat"></span>แชท <span class="nbadge" id="tb-chat"></span></button>
   <button class="tab-btn" data-v="dash" onclick="setView('dash')"><span data-ic="chart"></span>แดชบอร์ด</button>
-  <button class="tab-btn" data-v="blast" onclick="openBlastApp()" title="เปิดแอพ Rattana ส่ง LINE (แท็บใหม่)"><span data-ic="send"></span>บรอดแคสต์ ↗</button>
+  <button class="tab-btn" data-v="send" onclick="setView('send')" title="Rattana ส่ง LINE"><span data-ic="send"></span>บรอดแคสต์</button>
   <button class="tab-btn" data-v="set" onclick="setView('set')"><span data-ic="settings"></span>ตั้งค่า</button>
 </nav>
 
@@ -1441,6 +1445,14 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
   </section>
 
   <!-- ══════════ VIEW: SETTINGS ══════════ -->
+  <!-- v2.58 หน้า "บรอดแคสต์" = แอพ Rattana ส่ง LINE ฝังในแอพ (โหลดครั้งแรกที่เปิด แล้วค้างไว้ สลับไปมาไม่โหลดใหม่) -->
+  <section class="view" id="viewSend">
+    <div class="send-bar"><span>📣 Rattana ส่ง LINE</span><span class="sp"></span>
+      <button class="btn btn-outline btn-sm" onclick="reloadSendApp()" title="โหลดหน้านี้ใหม่">⟳ โหลดใหม่</button>
+      <button class="btn btn-outline btn-sm" onclick="openBlastApp()" title="เปิดในแท็บใหม่">แท็บใหม่ ↗</button></div>
+    <iframe id="sendFrame" title="Rattana ส่ง LINE" allow="identity-credentials-get; clipboard-read; clipboard-write; fullscreen" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  </section>
+
   <section class="view scroll-view" id="viewBlast" data-scroll>
     <div class="content" id="blastContent"></div>
   </section>
@@ -1454,7 +1466,7 @@ body.dark .ov-g.good .w{color:#7be0a3}body.dark .ov-g.bad .w{color:#ff8a7e}
 <nav class="bottom-nav">
   <button class="bni active" data-v="chat" onclick="setView('chat')"><div class="bni-icon"><span data-ic="chat"></span></div><span class="bni-label">แชท</span><span class="nbadge" id="bn-chat"></span></button>
   <button class="bni" data-v="dash" onclick="setView('dash')"><div class="bni-icon"><span data-ic="chart"></span></div><span class="bni-label">แดชบอร์ด</span></button>
-  <button class="bni" data-v="blast" onclick="openBlastApp()" title="เปิดแอพ Rattana ส่ง LINE"><div class="bni-icon"><span data-ic="send"></span></div><span class="bni-label">บรอดแคสต์ ↗</span></button>
+  <button class="bni" data-v="send" onclick="setView('send')" title="Rattana ส่ง LINE"><div class="bni-icon"><span data-ic="send"></span></div><span class="bni-label">บรอดแคสต์</span></button>
   <button class="bni" data-v="set" onclick="setView('set')"><div class="bni-icon"><span data-ic="settings"></span></div><span class="bni-label">ตั้งค่า</span></button>
 </nav>
 
@@ -3553,7 +3565,11 @@ function onKey(e){ if(mpKey(e)) return; if(e.key === 'Enter' && !e.shiftKey && w
 function grow(el){ el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
 function syncSend(){ $('sendBtn').classList.toggle('lit', $('replyInp').value.trim().length > 0); }
 // v2.57 ปุ่มบรอดแคสต์ → เปิดแอพ Rattana ส่ง LINE แทนหน้าบรอดแคสต์ในแอพ (ผู้ใช้ 11/11 · โค้ดหน้าเดิมยังอยู่ ไม่มีทางเข้า)
-const BLAST_APP_URL = 'https://rattanaphaiboon.github.io/app/rattana-budget-letter.html';
+const BLAST_APP_URL = 'https://rattanaphaiboon.github.io/app/rattana-linesend.html';   // v2.58 ลิงก์ตรง (rattana-budget-letter.html พาต่อมาที่นี่)
+// v2.58 ฝังในแอพ: One Chat ตัวจริงอยู่ rattanaphaiboon.github.io เหมือนกัน → ใช้ที่เก็บข้อมูลชุดเดียวกับเปิดแอพนั้นตรงๆ
+//   เคยล็อกอิน Rattana ส่ง LINE ในเบราว์เซอร์นี้แล้ว = เข้าได้เลย · ยังไม่เคย = ล็อกอิน Google ครั้งแรกครั้งเดียว (ลิงก์ทดสอบคนละโดเมน ต้องล็อกอินแยก)
+function loadSendApp(force){ const f = $('sendFrame'); if(!f) return; if(force || !f.src) f.src = BLAST_APP_URL; }
+function reloadSendApp(){ const f = $('sendFrame'); if(f){ f.src = 'about:blank'; setTimeout(() => loadSendApp(true), 50); } }
 function openBlastApp(){ const w = window.open(BLAST_APP_URL, '_blank'); if(w) w.opener = null; else location.href = BLAST_APP_URL; }   // ใส่ 'noopener' แล้ว window.open คืน null เสมอ → ใช้ตัด opener เอง
 function useQuick(btn){ const i = $('replyInp'); i.value = btn.textContent.trim(); i.focus(); grow(i); syncSend(); warmSend(); }
 
@@ -6218,7 +6234,7 @@ function aboutCardHtml(){
 function setView(v){
   view = v; document.body.classList.remove('hdr-hidden');
   document.querySelectorAll('.tab-btn,.bni').forEach(b => b.classList.toggle('active', b.dataset.v === v));
-  const ids = { chat:'viewChat', dash:'viewDash', blast:'viewBlast', set:'viewSet' };
+  const ids = { chat:'viewChat', dash:'viewDash', blast:'viewBlast', send:'viewSend', set:'viewSet' };
   document.querySelectorAll('.view').forEach(s => s.classList.toggle('active', s.id === ids[v]));
   LS.set('pur.view', v); tipHide();
   // กลับมาหน้าแชท → แชทที่เปิดค้างไว้มีข้อความเข้าระหว่างอยู่หน้าอื่น ค่อยนับว่าอ่านตอนนี้
@@ -6226,6 +6242,7 @@ function setView(v){
   if(v === 'chat') setTimeout(markActiveRead, 0);
   if(v === 'dash'){ fillPersonDD(); if(!dashLoadedOnce) loadDash(); else renderDash(); }
   if(v === 'blast') renderBlast();
+  if(v === 'send') loadSendApp();
   if(v === 'set') renderSettings();
   updateBackToTop();
 }
