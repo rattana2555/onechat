@@ -14,6 +14,15 @@
 <!-- แอพรุ่น v2.0–v2.07 หาเลขเวอร์ชันด้วยชื่อ "RTN Chat Hub vX" — คงไว้ให้เครื่องที่ยังเปิดรุ่นเก่าเห็นแถบอัปเดต -->
 <meta name="x-app-legacy2" content="RTN Chat Hub v2.57">
 <title>[ทดสอบ] Rattana One Chat v2.57</title>
+<script type="application/json" id="whatsNew">{"items":[
+["⏰","ตามคำสัญญาให้อัตโนมัติ","พิมพ์ \"เดี๋ยวเช็คให้นะคะ\" ระบบจำไว้ ถึงเวลาแล้วยังเงียบ = เตือนทันที"],
+["🔥","แชทด่วนขึ้นบนสุด","ลูกค้าเร่งหรือไม่พอใจ เห็นก่อนใคร"],
+["🏆","ตอบไวประจำสัปดาห์","ประกาศทุกวันศุกร์ พร้อมป้ายเท่ๆ ข้างชื่อ"],
+["🌅","สรุปเช้าเข้า LINE หัวหน้า","ทุกเช้า 08:00 ไม่ต้องเปิดแอพก็รู้ภาพรวม"],
+["🎙️","ถอดข้อความเสียง","ลูกค้าส่งเสียงมา อ่านเป็นตัวหนังสือได้เลย"],
+["📣","บรอดแคสต์เปิดในแอพ","ส่ง LINE หาหลายคนได้ ไม่ต้องสลับเว็บ"],
+["📖","ทัวร์สอนใช้","พาชมทีละจุด ดูซ้ำได้ที่ ตั้งค่า"]
+]}</script>
 <link rel="icon" id="favicon" type="image/png" href="">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -128,6 +137,36 @@ body.dark .bni .nbadge{border-color:#1a2744}
 #viewSend .send-bar{display:flex;align-items:center;gap:6px;padding:6px 12px;font-size:13px;font-weight:600;border-bottom:1px solid var(--border);background:var(--card-bg);color:var(--text)}
 #viewSend .send-bar .sp{flex:1}
 #sendFrame{flex:1;width:100%;min-height:0;border:0;background:#fff}
+/* v2.58 ป๊อปอัปของใหม่ (ก่อน/หลังอัปเดต) */
+#wnOv{position:fixed;inset:0;z-index:9500;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(5,12,30,.55);animation:wnFade .25s ease;overflow:hidden}
+#wnOv .wn-card{position:relative;width:min(400px,100%);max-height:calc(100dvh - 32px);overflow:auto;background:var(--card-bg);color:var(--text);border-radius:20px;box-shadow:0 24px 60px rgba(0,0,0,.4);animation:wnPop .55s cubic-bezier(.2,1.4,.4,1)}
+#wnOv .wn-top{position:relative;padding:22px 20px 16px;text-align:center;background:linear-gradient(135deg,#0d1b3e,#243b73);color:#fff;border-radius:20px 20px 0 0;overflow:hidden}
+#wnOv .wn-ico{font-size:52px;line-height:1;display:inline-block;animation:wnBob 1.6s ease-in-out infinite}
+#wnOv .wn-ico.go{animation:wnRocket 1.4s ease-in-out infinite}
+#wnOv .wn-h{font-size:20px;font-weight:800;margin-top:8px}
+#wnOv .wn-sub{font-size:13px;opacity:.85;margin-top:4px}
+#wnOv .wn-ver{display:inline-block;margin-top:8px;padding:2px 10px;border-radius:999px;background:var(--gold);color:#0d1b3e;font-weight:800;font-size:12px}
+#wnOv .wn-list{padding:10px 16px 4px}
+#wnOv .wn-it{display:flex;gap:10px;align-items:flex-start;padding:9px 6px;border-radius:12px;opacity:0;animation:wnUp .45s ease forwards}
+#wnOv .wn-it:hover{background:rgba(201,168,76,.10)}
+#wnOv .wn-it .e{font-size:22px;width:30px;text-align:center;flex-shrink:0;animation:wnWiggle 2.4s ease-in-out infinite}
+#wnOv .wn-it b{display:block;font-size:14px}
+#wnOv .wn-it span{font-size:12.5px;color:var(--muted);line-height:1.5}
+#wnOv .wn-foot{display:flex;gap:8px;padding:12px 16px 16px}
+#wnOv .wn-foot .btn{flex:1;justify-content:center}
+#wnOv .wn-go{animation:wnPulse 1.8s ease-in-out infinite}
+#wnOv .cf{position:absolute;top:-14px;width:9px;height:14px;border-radius:2px;opacity:.9;animation:wnFall linear forwards;pointer-events:none}
+#wnOv .spark{position:absolute;font-size:14px;animation:wnTwinkle 1.8s ease-in-out infinite}
+@keyframes wnFade{from{opacity:0}to{opacity:1}}
+@keyframes wnPop{0%{transform:scale(.6) translateY(30px);opacity:0}100%{transform:none;opacity:1}}
+@keyframes wnBob{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-8px) rotate(6deg)}}
+@keyframes wnRocket{0%,100%{transform:translate(0,0) rotate(0)}50%{transform:translate(4px,-10px) rotate(-8deg)}}
+@keyframes wnUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes wnWiggle{0%,86%,100%{transform:rotate(0)}90%{transform:rotate(-14deg) scale(1.15)}95%{transform:rotate(12deg) scale(1.15)}}
+@keyframes wnPulse{0%,100%{box-shadow:0 0 0 0 rgba(201,168,76,.55)}50%{box-shadow:0 0 0 9px rgba(201,168,76,0)}}
+@keyframes wnFall{to{transform:translateY(110vh) rotate(720deg)}}
+@keyframes wnTwinkle{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1.2)}}
+@media (prefers-reduced-motion:reduce){#wnOv *{animation-duration:.01s!important;animation-iteration-count:1!important}}
 /* v2.58 สอนใช้ครั้งแรก (ทัวร์) */
 #tourOv{position:fixed;inset:0;z-index:9000}
 #tourOv .t-shade{position:absolute;inset:0;background:rgba(5,12,30,.55)}
@@ -1687,6 +1726,7 @@ const tagPal = () => { const team = settings?.chat_tags || []; return [...team, 
 const isMyTag = t => !(settings?.chat_tags || []).includes(t) && myTags.includes(t);
 const chatTagsOf = c => { const team = c?.tags || []; return [...team, ...(myChatTags.get(c?.id) || []).filter(t => !team.includes(t))]; };
 const LS = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
+const WN_PRIOR = !!(LS.get('pur.view') || LS.get('pur.newSeen') || LS.get('pur.updFrom'));   // v2.58 เคยเปิดแอพในเครื่องนี้มาก่อน (คนใหม่ = ไม่ขึ้น "อัปเดตเรียบร้อย" ดูทัวร์แทน)
 let clockMode = LS.get('pur.clock') || 'biz';          // biz = เวลาทำการ · raw = 24 ชม.
 // ค่าตั้งแจ้งเตือนอยู่ในบล็อก "การแจ้งเตือน" ด้านล่าง (notiPrefs)
 let listSort  = LS.get('pur.sort') === 'wait' ? 'wait' : 'recent';   // recent = แบบ LINE ข้อความล่าสุดบนสุด · wait = รอตอบนานสุดก่อน
@@ -3660,7 +3700,7 @@ function tourSteps(){
 let tour = null;
 function maybeStartTour(tries = 0){
   if(LS.get('pur.tourVer') === TOUR_VER) return;
-  const busy = !started || !acct || !$('acctGate').classList.contains('hide') || $('rmdOv') || $('modal')?.classList.contains('open') || view !== 'chat';
+  const busy = !started || !acct || !$('acctGate').classList.contains('hide') || $('rmdOv') || $('wnOv') || $('modal')?.classList.contains('open') || view !== 'chat';
   if(busy){ if(tries < 120) setTimeout(() => maybeStartTour(tries + 1), 1500); return; }
   startTour(false);
 }
@@ -4224,7 +4264,7 @@ function remindRows(){
   return rows.sort((a, b) => b.age - a.age);
 }
 function showRemind(why){
-  if(!started || !notiPrefs.remind || $('rmdOv') || $('tourOv') || !acct) return;
+  if(!started || !notiPrefs.remind || $('rmdOv') || $('tourOv') || $('wnOv') || !acct) return;
   if(document.querySelector('.modal.open') || $('modal')?.classList.contains('open')) return;   // กำลังทำอย่างอื่นในหน้าต่างอยู่ — ไม่แทรก
   const rows = remindRows(); if(!rows.length) return;
   if(why === 'return' && Date.now() - rmdShownAt < RMD_GAP_MS) return;
@@ -4284,7 +4324,7 @@ async function checkUpdate(){
   if(DEMO) return;
   try{
     const res = await fetch(location.pathname + '?v=' + Date.now(),
-                            { cache:'no-store', headers:{ Range:'bytes=0-1500' } });
+                            { cache:'no-store', headers:{ Range:'bytes=0-12000' } });   // v2.58 รวมรายการของใหม่ (whatsNew) ต้นไฟล์
     if(!res.ok && res.status !== 206) return;
     const head = await res.text();
     const m = /(?:Rattana One Chat|RTN Chat Hub) v([0-9.]+)/.exec(head);
@@ -4292,12 +4332,61 @@ async function checkUpdate(){
     updSeen = m[1];
     $('updVer').textContent = 'v' + m[1];
     $('updBar').classList.add('show');
+    showWhatsNew('before', m[1], parseWhatsNew(head));             // v2.58 ป๊อปอัป "ของใหม่มาแล้ว" (ปิดได้ — แถบด้านบนยังอยู่)
   }catch(_){ /* ออฟไลน์อยู่ ไม่เป็นไร */ }
 }
 function applyUpdate(){
   $('updBar').classList.remove('show');
+  LS.set('pur.updFrom', APP_VERSION);                              // v2.58 เปิดใหม่แล้วขึ้น "อัปเดตเรียบร้อย"
   // ใส่ ?v= ท้าย URL บังคับให้โหลดไฟล์ใหม่จริง (reload เฉยๆ บน iOS ยังได้ของเก่าในแคช)
   location.replace(location.pathname + '?v=' + Date.now());
+}
+
+// ═══ v2.58 ป๊อปอัปของใหม่ — ก่อนอัปเดต ("ของใหม่มาแล้ว") และหลังอัปเดต ("อัปเดตเรียบร้อย") ═══
+function parseWhatsNew(html){
+  const m = /<script type="application\/json" id="whatsNew">([\s\S]*?)<\/script>/.exec(html || '');
+  try{ return m ? (JSON.parse(m[1]).items || []) : []; }catch(_){ return []; }
+}
+const wnBusy = () => $('tourOv') || $('rmdOv') || $('wnOv') || $('modal')?.classList.contains('open') || document.querySelector('.modal-overlay.open');
+function showWhatsNew(kind, ver, items, tries = 0){
+  if(!started) return;
+  if(wnBusy()){ if(tries < 60) setTimeout(() => showWhatsNew(kind, ver, items, tries + 1), 2500); return; }
+  const before = kind === 'before';
+  const list = (items || []).slice(0, 8).map((x, i) => `<div class="wn-it" style="animation-delay:${.25 + i * .09}s"><div class="e" style="animation-delay:${i * .3}s">${esc(x[0])}</div><div><b>${esc(x[1])}</b><span>${esc(x[2] || '')}</span></div></div>`).join('');
+  const sparks = [[8, 18, 0], [86, 14, .5], [16, 70, 1], [82, 62, .2], [50, 8, .8]].map(([l, t, d]) => `<i class="spark" style="left:${l}%;top:${t}%;animation-delay:${d}s">✦</i>`).join('');
+  const ov = document.createElement('div'); ov.id = 'wnOv';
+  ov.innerHTML = `<div class="wn-card" role="dialog" aria-modal="true">
+    <div class="wn-top">${sparks}<div class="wn-ico ${before ? 'go' : ''}">${before ? '🚀' : '🎉'}</div>
+      <div class="wn-h">${before ? 'ของใหม่มาแล้ว!' : 'อัปเดตเรียบร้อย!'}</div>
+      <div class="wn-sub">${before ? 'มีฟีเจอร์ใหม่รอให้ลองเพียบ อัปเดตแป๊บเดียวเสร็จ' : 'ตอนนี้ใช้เวอร์ชันล่าสุดแล้ว ไปลองของใหม่กันเลย 👇'}</div>
+      <div class="wn-ver">v${esc(ver)}</div></div>
+    ${list ? `<div class="wn-list">${list}</div>` : '<div class="wn-list txt-sm txt-muted" style="padding:16px">ปรับปรุงให้ใช้งานลื่นขึ้น</div>'}
+    <div class="wn-foot">${before
+      ? `<button class="btn btn-outline" onclick="closeWhatsNew()">ไว้ทีหลัง</button><button class="btn btn-gold wn-go" onclick="closeWhatsNew();applyUpdate()">🚀 อัปเดตเลย</button>`
+      : `<button class="btn btn-outline" onclick="closeWhatsNew();startTour(true)">▶ พาชมทีละจุด</button><button class="btn btn-gold wn-go" onclick="closeWhatsNew()">ลองเลย ✨</button>`}</div></div>`;
+  ov.addEventListener('click', e => { if(e.target === ov) closeWhatsNew(); });
+  document.body.appendChild(ov);
+  if(!before) wnConfetti(ov);
+}
+function closeWhatsNew(){ $('wnOv')?.remove(); }
+function wnConfetti(ov){
+  if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+  const colors = ['#c9a84c', '#e8c86a', '#3f86ff', '#ff6b8a', '#4cc38a', '#ffffff'];
+  for(let i = 0; i < 70; i++){
+    const c = document.createElement('i'); c.className = 'cf';
+    c.style.left = Math.random() * 100 + '%'; c.style.background = colors[i % colors.length];
+    c.style.animationDuration = (2.2 + Math.random() * 2.2) + 's'; c.style.animationDelay = (Math.random() * .8) + 's';
+    c.style.transform = `rotate(${Math.random() * 360}deg)`; if(i % 3 === 0){ c.style.width = '7px'; c.style.height = '7px'; c.style.borderRadius = '50%'; }
+    ov.appendChild(c); setTimeout(() => c.remove(), 5200);
+  }
+}
+// เปิดแอพรุ่นใหม่ครั้งแรก: กดอัปเดตจากรุ่นเก่า หรือเครื่องที่เคยใช้แล้วได้รุ่นใหม่เอง → "อัปเดตเรียบร้อย" ครั้งเดียวต่อเวอร์ชัน (คนใหม่เห็นทัวร์แทน)
+function maybeShowUpdated(){
+  const from = LS.get('pur.updFrom'), seen = LS.get('pur.newSeen');
+  LS.set('pur.newSeen', APP_VERSION); LS.set('pur.updFrom', '');
+  const used = !!(from || seen || WN_PRIOR);
+  if(!used || seen === APP_VERSION) return;
+  setTimeout(() => showWhatsNew('after', APP_VERSION, parseWhatsNew(document.head.innerHTML)), 1800);
 }
 
 // ── แจ้งเตือนตอนไม่ได้เปิดแอพ (Web Push) ──────────────────────
@@ -7048,6 +7137,7 @@ async function showApp(){
   document.addEventListener('visibilitychange', () => { if(!document.hidden) checkUpdate(); });   // แจ้งเตือน: โหลดค่าตั้ง (scope ขึ้นกับสิทธิ์) แล้วเริ่มเฝ้า SLA
   setView((v => v === 'blast' ? 'chat' : v)(LS.get('pur.view')) || 'chat');   // v2.57 หน้าบรอดแคสต์ในแอพไม่มีทางเข้าแล้ว
   setTimeout(() => showRemind('open'), 1500);                      // v2.31 ป๊อปอัป "อย่าลืมตอบแชทนะ"
+  if(!DEMO) maybeShowUpdated();                                     // v2.58 "อัปเดตเรียบร้อย" + ของใหม่
   setTimeout(maybeStartTour, 3000);                                // v2.58 สอนใช้ครั้งแรก (รอป๊อปอัปเตือนปิดก่อน)
   // ตัวเลข "รอมานาน" เดินตามเวลาจริง
   // ตัวเลข "รอมานาน" เดินตามเวลาจริง — ข้ามตอนแอพถูกซ่อน ไม่มีใครดูอยู่ก็ไม่ต้องเปลืองแรงเครื่อง
