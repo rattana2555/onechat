@@ -4048,7 +4048,8 @@ function onMsgUpdate(m){
   if(!x) return;
   // รวมกรณีไฟล์แนบที่เพิ่งดึงกลับมาจาก LINE (ป้ายข้อความ → รูป/ไฟล์จริง) และเครดิตคนตอบที่เพิ่งจับคู่ได้
   Object.assign(x, { status:m.status, error:m.error, unsent:m.unsent, line_msg_id:m.line_msg_id, quote_token:m.quote_token,
-                     msg_type:m.msg_type, content:m.content, file_name:m.file_name, card:m.card, staff_email:m.staff_email, sender_name:m.sender_name, prod_tags:m.prod_tags });
+                     msg_type:m.msg_type, content:m.content, file_name:m.file_name, card:m.card, staff_email:m.staff_email, sender_name:m.sender_name, prod_tags:m.prod_tags,
+                     transcript:m.transcript });   // v2.60 ถอดเสียงเสร็จหลังข้อความขึ้นแล้ว (cron ทุก 5 นาที) → เติมตัวหนังสือใต้คลิปทันที ไม่ต้องรีเฟรช
   renderMsgs(list);
 }
 
