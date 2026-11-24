@@ -1784,17 +1784,24 @@ function liteTools(c){
   return `<button class="tool-btn ${c.status === 'resolved' ? 'done' : ''}" onclick="toggleResolve()">${c.status === 'resolved' ? '✓ เสร็จแล้ว' : '✓ ทำเครื่องหมายเสร็จ'}</button>`
        + (c.awaiting_since ? `<button class="tool-btn danger" onclick="dismissWait()">🚫 ไม่ต้องตอบ</button>` : '');
 }
+// v2.63 เช็คตราเวลาการเปลี่ยนแปลง (apiStamp — อ่านค่าเดียว) ทุก 4 วินาที · เปลี่ยน = โหลดรายการแชท + ข้อความแชทที่เปิดอยู่ · ไม่เปลี่ยน 60 วิ = โหลดกันพลาด
+let liteStamp = 0, liteFullAt = 0, liteBusy = false;
 function startLitePoll(){
   clearInterval(litePollT);
   litePollT = setInterval(async () => {
-    if(document.hidden || !acct) return;
+    if(document.hidden || !acct || liteBusy) return;
+    liteBusy = true;
     try{
+      const t = await liteApi('stamp').catch(() => 0);
+      if(t ? (t === liteStamp && Date.now() - liteFullAt < 60000) : Date.now() - liteFullAt < 12000) return;   // Lite รุ่นเก่า (ไม่มี stamp) = โหลดทุก 12 วิแบบเดิม
+      liteStamp = t; liteFullAt = Date.now();
       await liteLoadChats();
       const id = activeId; if(!id) return;
       const list = await liteLoadMsgs(id);
       if(activeId === id && list.length !== liteMsgN[id]){ liteMsgN[id] = list.length; renderMsgs(list); }
     }catch(e){ console.warn('lite poll:', e.message); }
-  }, 12000);
+    finally{ liteBusy = false; }
+  }, 4000);
 }
 // v2.59 ที่เก็บล็อกอินทนทาน — แก้ "ล็อกอินแล้วเด้งกลับหน้าล็อกอิน" ใน Chrome (เป็นบ่อย)
 //   แอพอยู่โดเมนเดียวกับแอพอื่นของบริษัททั้งชุด (rattanaphaiboon.github.io/app/…) → ใช้ localStorage ก้อนเดียวกัน (~5MB ต่อโดเมน)
