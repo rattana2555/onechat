@@ -1743,9 +1743,39 @@ async function liteLoadChats(){
   chatById = new Map(chats.map(c => [c.id, c]));
   detectNew(before); renderList(); updateBadges();
   if(activeId && chatById.get(activeId)) renderChatHeader(chatById.get(activeId));
+  litePrefetch();   // v2.64
 }
 async function liteLoadMsgs(chatId){
+  const c = chatById.get(chatId), seen = c && c.last_message_at;
   const rows = await liteApi('msgs', [acct.slug, chatId]);
+  liteGot[chatId] = seen;
+  return liteMap(chatId, rows);
+}
+// v2.64 ดึงล่วงหน้า: แชทที่เปิดอยู่ + รอตอบ + ล่าสุด (เฉพาะที่มีข้อความใหม่) ในคำขอเดียว → กดเปิดแชทแล้วขึ้นทันที
+const liteGot = {};   // chatId → last_message_at ตอนดึงข้อความ (เท่ากัน = ข้อความในเครื่องล่าสุดแล้ว)
+const liteSig = (l) => l.length + ':' + (l.length ? l[l.length - 1].id : '');
+let litePfBusy = false, litePfAgain = false;
+async function litePrefetch(){
+  if(litePfBusy){ litePfAgain = true; return; }
+  const a = acct; if(!a || !chats.length) return;
+  litePfBusy = true;
+  try{
+    const order = [chatById.get(activeId), ...chats.filter(c => c.awaiting_since), ...chats.slice(0, 12)].filter(Boolean);
+    const ids = [];
+    for(const c of order){ if(ids.length >= 15) break; if(!ids.includes(c.id) && liteGot[c.id] !== c.last_message_at) ids.push(c.id); }
+    if(!ids.length) return;
+    const seen = Object.fromEntries(ids.map(id => [id, chatById.get(id)?.last_message_at]));
+    const map = await liteApi('msgsMany', [a.slug, ids]);
+    if(acct?.id !== a.id || !map) return;
+    for(const id of ids){
+      if(!map[id]) continue;
+      const list = liteMap(id, map[id]); liteGot[id] = seen[id];
+      if(activeId === id && liteSig(list) !== liteMsgN[id]){ liteMsgN[id] = liteSig(list); renderMsgs(list); }
+    }
+  }catch(e){ console.warn('lite prefetch:', e.message); }
+  finally{ litePfBusy = false; if(litePfAgain){ litePfAgain = false; litePrefetch(); } }
+}
+function liteMap(chatId, rows){
   const list = (rows || []).map(m => {
     const out = m.dir === 'out', media = m.media ? 'gd:' + m.media : '';
     const stk = /^stk:(\d+)/.exec(m.text || '');
@@ -1771,7 +1801,7 @@ async function liteSendMedia(chatId, kind, blob, name){
   }catch(e){ showToast('ส่งไม่สำเร็จ: ' + e.message, 'error', 6000); }
 }
 async function liteRefreshActive(chatId){
-  const l = await liteLoadMsgs(chatId); liteMsgN[chatId] = l.length;
+  const l = await liteLoadMsgs(chatId); liteMsgN[chatId] = liteSig(l);
   if(activeId === chatId){ renderMsgs(l); scrollBottom(); }
   liteLoadChats().catch(() => {});
 }
@@ -1795,11 +1825,9 @@ function startLitePoll(){
     try{
       const t = await liteApi('stamp').catch(() => 0);
       if(t ? (t === liteStamp && Date.now() - liteFullAt < 60000) : Date.now() - liteFullAt < 12000) return;   // Lite รุ่นเก่า (ไม่มี stamp) = โหลดทุก 12 วิแบบเดิม
+      if(t && t === liteStamp && activeId) delete liteGot[activeId];   // โหลดกันพลาด 60 วิ → ดึงแชทที่เปิดอยู่ใหม่ด้วย
       liteStamp = t; liteFullAt = Date.now();
-      await liteLoadChats();
-      const id = activeId; if(!id) return;
-      const list = await liteLoadMsgs(id);
-      if(activeId === id && list.length !== liteMsgN[id]){ liteMsgN[id] = list.length; renderMsgs(list); }
+      await liteLoadChats();   // v2.64 ข้อความแชทที่เปิด/รอตอบ ดึงต่อใน litePrefetch
     }catch(e){ console.warn('lite poll:', e.message); }
     finally{ liteBusy = false; }
   }, 4000);
@@ -2202,7 +2230,11 @@ async function fetchMsgPage(chatId, before){
 }
 async function loadMsgs(chatId){
   if(DEMO) return msgCache[chatId] || [];
-  if(LITE){ const l = await liteLoadMsgs(chatId); liteMsgN[chatId] = l.length; return l; }   // v2.61
+  if(LITE){   // v2.61 · v2.64 ข้อความในเครื่องล่าสุดอยู่แล้ว (ดึงล่วงหน้าไว้) = ไม่ต้องรอเน็ต
+    const c = chatById.get(chatId);
+    if(msgCache[chatId] && c && liteGot[chatId] === c.last_message_at){ liteMsgN[chatId] = liteSig(msgCache[chatId]); return msgCache[chatId]; }
+    const l = await liteLoadMsgs(chatId); liteMsgN[chatId] = liteSig(l); return l;
+  }
   const rows = (await fetchMsgPage(chatId)).reverse();                  // เก่า → ใหม่
   const prev = msgCache[chatId] || [], meta = msgMeta[chatId] || (msgMeta[chatId] = {});
   const tmp = prev.filter(m => m.tmp);                                  // ฟองที่กำลังส่งอยู่ ยังไม่มีในฐานข้อมูล
@@ -2231,6 +2263,7 @@ async function refreshAll(){
   const b = $('refreshBtn'); b.disabled = true; b.style.transition = 'transform .6s'; b.style.transform = 'rotate(360deg)';
   try{
     if(DEMO){ renderList(); if(view === 'dash') renderDash(); }
+    else if(LITE){ if(activeId) delete liteGot[activeId]; await liteLoadChats(); if(activeId) await liteRefreshActive(activeId); }   // v2.64 โหมดชั่วคราว ไม่เรียก Supabase
     else {
       await Promise.all([loadMembers(), loadPeople(), loadSettings()]);
       await loadChats();
@@ -2625,7 +2658,8 @@ async function openChat(id){
   renderChatHeader(c);
   $('chatEmpty').style.display = 'none'; $('chatContent').style.display = 'flex';
   if(window.innerWidth < 768) $('chatPane').classList.add('open');
-  $('msgsArea').innerHTML = '<div class="conv-empty">กำลังโหลดข้อความ…</div>';
+  if(LITE && msgCache[id]){ renderMsgs(msgCache[id]); scrollBottom(); }   // v2.64 แสดงที่ดึงล่วงหน้าไว้ก่อน แล้วค่อยอัพเดท
+  else $('msgsArea').innerHTML = '<div class="conv-empty">กำลังโหลดข้อความ…</div>';
   try{
     const msgs = await loadMsgs(id); if(activeId !== id) return; renderMsgs(msgs); renderList();
     const mineProd = myMentions(c).some(isProdTag);
@@ -3603,7 +3637,7 @@ async function sendText(){
   if(DEMO){ demoBlock(); return; }
   if(LITE){                                                              // v2.61 โหมดชั่วคราว: ส่งข้อความผ่าน Apps Script
     const chatId = activeId; inp.value = ''; grow(inp); syncSend(); clearQuote();
-    try{ await liteApi('send', [acct.slug, chatId, text, me.nick]); const l = await liteLoadMsgs(chatId); liteMsgN[chatId] = l.length; if(activeId === chatId){ renderMsgs(l); scrollBottom(); } liteLoadChats(); }
+    try{ await liteApi('send', [acct.slug, chatId, text, me.nick]); const l = await liteLoadMsgs(chatId); liteMsgN[chatId] = liteSig(l); if(activeId === chatId){ renderMsgs(l); scrollBottom(); } liteLoadChats(); }
     catch(e){ inp.value = text; grow(inp); syncSend(); showToast('ส่งไม่สำเร็จ: ' + e.message, 'error', 5000); }
     return;
   }
