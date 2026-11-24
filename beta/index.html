@@ -1962,15 +1962,47 @@ async function loadMyTags(){
   }catch(e){ console.warn('my tags:', e.message); myTags = []; myChatTags = new Map(); }
   renderTagChips(); renderList(); if(activeId && chatById.get(activeId)) renderChatHeader(chatById.get(activeId));
 }   // v2.45 สลับบัญชีระหว่างรอ = ทิ้งผล
+// v2.60 ลด Egress: รายการแชททั้งบัญชี (จัดซื้อ ~0.9 MB) เดิมโหลดเต็มทุกครั้งที่เปิดแอพ/สลับบัญชี/รีเฟรช — มือถือเปิดใหม่วันละหลายสิบรอบต่อคน
+//   ตอนนี้เก็บสำเนาไว้ในเครื่อง (IndexedDB 'onechat-cache') → เปิดแอพ = ขอเฉพาะแชทที่เปลี่ยนหลังสำเนา + รายการ id (ไว้ลบแชทที่ถูกรวม/ลบ)
+//   สำเนาเก่ากว่า 3 วัน / ไม่มี / ผิดรูปแบบ = โหลดเต็มแบบเดิม
+const chatCache = (() => {
+  let dbp = null;
+  const open = () => dbp || (dbp = new Promise((res, rej) => {
+    try{ const r = indexedDB.open('onechat-cache', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }catch(e){ rej(e); }
+  }));
+  const run = (mode, fn) => open().then(db => new Promise((res, rej) => { const t = db.transaction('kv', mode), q = fn(t.objectStore('kv')); t.oncomplete = () => res(q ? q.result : undefined); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error); }));
+  const key = aid => `chats:${aid}:${me?.email || ''}`;      // แยกตามคน (RLS ของแต่ละคนเห็นแชทไม่เท่ากัน)
+  let saveT = null;
+  return {
+    async get(aid){ try{ const v = await run('readonly', st => st.get(key(aid))); return v && Array.isArray(v.rows) && v.at > Date.now() - 3 * 86400e3 ? v : null; }catch(_){ return null; } },
+    save(aid){ clearTimeout(saveT); saveT = setTimeout(() => { if(acct?.id !== aid || !chatSync) return; const v = { at:Date.now(), sync:chatSync, rows:chats }; run('readwrite', st => st.put(v, key(aid))).catch(() => {}); }, 3000); },
+  };
+})();
 async function loadChats(){
   // ถ้ามีเหตุการณ์ realtime ค้างรอวาดอยู่ (schedulePaint 250ms) ให้ใช้ภาพ "ก่อนเหตุการณ์" ของมัน
   // ไม่งั้นภาพที่ถ่ายตรงนี้มีข้อความใหม่อยู่แล้ว + บรรทัดล้าง paintSnap ข้างล่าง = การแจ้งเตือนของข้อความนั้นหาย
   const before = paintSnap || snapshot();
   const aid = acct.id;
-  const rows = await fetchAll('pur_chats', q => q.eq('account_id', aid).order('last_message_at', { ascending:false, nullsFirst:false }));
+  let rows = null;
+  const cached = DEMO ? null : await chatCache.get(aid);
+  if(cached){
+    try{
+      // แชทที่เปลี่ยนหลังสำเนา (ถอยเผื่อ 1 นาที) + id ทั้งบัญชี (แถวละ ~45 ไบต์) ไว้ตัดแชทที่หายไป
+      const since = new Date(tsOf(cached.sync) - SYNC_OVERLAP_MS).toISOString();
+      const [delta, ids] = await Promise.all([
+        fetchAll('pur_chats', q => q.eq('account_id', aid).gt('updated_at', since)),
+        (async () => { const out = []; for(let from = 0;; from += 1000){ const { data, error } = await sb.from('pur_chats').select('id').eq('account_id', aid).order('id').range(from, from + 999); if(error) throw new Error(error.message); out.push(...(data || [])); if(!data || data.length < 1000) break; } return out; })(),
+      ]);
+      const keep = new Set(ids.map(r => r.id)), map = new Map(cached.rows.filter(r => keep.has(r.id)).map(r => [r.id, r]));
+      delta.forEach(r => map.set(r.id, r));
+      rows = keep.size === map.size ? [...map.values()].sort((a, b) => tsOf(b.last_message_at) - tsOf(a.last_message_at)) : null;   // มี id ที่สำเนาไม่มี (ไม่น่าเกิด) = โหลดเต็ม
+    }catch(e){ console.warn('chat cache:', e.message); rows = null; }
+  }
+  if(!rows) rows = await fetchAll('pur_chats', q => q.eq('account_id', aid).order('last_message_at', { ascending:false, nullsFirst:false }));
   if(acct?.id !== aid) return;                               // v2.45 สลับบัญชีระหว่างโหลด → ไม่เอาแชทบัญชีเก่ามาทับ
   chats = rows; chatById = new Map(rows.map(r => [r.id, r]));
   chatSync = maxUpdated(rows); lastFullChats = Date.now();
+  if(!DEMO) chatCache.save(aid);
   if(typeof paintSnap !== 'undefined') paintSnap = null;
   detectNew(before); renderList(); updateBadges();
   if(activeId && chatById.get(activeId)) renderChatHeader(chatById.get(activeId));
@@ -2020,6 +2052,7 @@ async function syncChats(){
   const before = paintSnap || snapshot();
   for(const r of changed){ const i = chats.findIndex(c => c.id === r.id); if(i >= 0) chats[i] = r; else chats.push(r); chatById.set(r.id, r); }
   chats.sort((a, b) => tsOf(b.last_message_at) - tsOf(a.last_message_at));   // ลำดับเดียวกับ loadChats (ล่าสุดก่อน ไม่มีเวลาไว้ท้าย)
+  chatCache.save(acctId);                                         // v2.60
   if(typeof paintSnap !== 'undefined') paintSnap = null;
   detectNew(before); renderList(); updateBadges();
   if(activeId && chatById.get(activeId)) renderChatHeader(chatById.get(activeId));
@@ -2033,7 +2066,7 @@ function activeMissingMsgs(){
   return tsOf(c.last_message_at) > newest + 1000;
 }
 // ข้อความโหลดทีละหน้าแบบ LINE: เปิดแชทเห็นข้อความล่าสุดด้านล่าง เลื่อนขึ้นบนสุดเพื่อโหลดข้อความเก่ากว่า
-const MSG_PAGE = 120;
+const MSG_PAGE = 50;        // v2.60 ลด Egress: เดิม 120 (~150 KB ต่อการเปิดแชท) · เลื่อนขึ้นบนสุดโหลดเพิ่มทีละ 50
 const byTime = (a, b) => (Date.parse(a.sent_at) - Date.parse(b.sent_at)) || String(a.created_at || '').localeCompare(String(b.created_at || ''));
 async function fetchMsgPage(chatId, before){
   let q = sb.from('pur_messages').select('*').eq('chat_id', chatId);
@@ -3969,6 +4002,23 @@ function schedulePaint(){
 // DELETE ใส่ filter ไม่ได้ (Supabase ส่งมาแต่รหัสแถว) → ฟังแยก ไม่กรอง ตัวจัดการลบเฉพาะแชทที่มีในรายการอยู่แล้ว
 let rtChannels = [];
 function teardownRealtime(){ rtChannels.forEach(ch => { try{ sb.removeChannel(ch); }catch(_){ } }); rtChannels = []; }
+// v2.60 ลด Egress: แท็บ/แอพที่ซ่อนอยู่ยังรับ "ข้อความใหม่ทุกข้อความของบัญชี" (รวมการ์ดเต็ม) ตลอดวัน ทั้งที่ใช้แค่แชทที่เปิดอยู่
+//   ซ่อนเกิน 3 นาที → ปิดเฉพาะช่องข้อความ (ช่องรายการแชทยังเปิด — แจ้งเตือน/ป้ายยังอยู่) · กลับมา → เปิดใหม่ + โหลดข้อความแชทที่เปิดอยู่ถ้าพลาด
+let msgChHiddenT = null;
+document.addEventListener('visibilitychange', () => {
+  if(DEMO || !started) return;
+  const ch = rtChannels.find(c => String(c.topic || '').includes('pur-msgs-'));
+  if(document.hidden){ clearTimeout(msgChHiddenT); msgChHiddenT = setTimeout(() => { const c = rtChannels.find(x => String(x.topic || '').includes('pur-msgs-')); if(c && document.hidden){ try{ sb.removeChannel(c); }catch(_){ } rtChannels = rtChannels.filter(x => x !== c); } }, 3 * 60 * 1000); return; }
+  clearTimeout(msgChHiddenT);
+  if(!ch && acct){ subscribeMsgs(); if(activeId) refreshActiveMsgs().catch(() => {}); }
+});
+function subscribeMsgs(){
+  const f = `account_id=eq.${acct.id}`;
+  rtChannels.push(sb.channel('pur-msgs-' + acct.id)
+    .on('postgres_changes', { event:'INSERT', schema:'public', table:'pur_messages', filter:f }, p => onMsgInsert(p.new))
+    .on('postgres_changes', { event:'UPDATE', schema:'public', table:'pur_messages', filter:f }, p => onMsgUpdate(p.new))
+    .subscribe());
+}
 function setupRealtime(){
   teardownRealtime();
   const f = `account_id=eq.${acct.id}`;
@@ -3994,10 +4044,7 @@ function setupRealtime(){
     .on('postgres_changes', { event:'DELETE', schema:'public', table:'pur_chats' }, onChat)
     .subscribe());
 
-  rtChannels.push(sb.channel('pur-msgs-' + acct.id)
-    .on('postgres_changes', { event:'INSERT', schema:'public', table:'pur_messages', filter:f }, p => onMsgInsert(p.new))
-    .on('postgres_changes', { event:'UPDATE', schema:'public', table:'pur_messages', filter:f }, p => onMsgUpdate(p.new))
-    .subscribe());
+  subscribeMsgs();
 
   rtChannels.push(sb.channel('pur-people-' + Date.now().toString(36)).on('postgres_changes', { event:'*', schema:'public', table:'pur_people' }, p => {
     if(p.new?.line_user_id){ people.set(p.new.line_user_id, p.new); refreshPeopleCards(); }
