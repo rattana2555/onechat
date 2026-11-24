@@ -927,7 +927,7 @@ select.input{appearance:auto}
 /* ───────────── LOGIN GATE ───────────── */
 #loginGate{position:fixed;inset:0;z-index:9500;background:var(--navy);display:flex;align-items:center;justify-content:center;padding:20px}
 #loginGate:not(.hide) ~ .modal-overlay{z-index:9600}
-body.lite #chatTools,body.lite #attachBtn,body.lite #fileBtn,body.lite #emoBtn,body.lite #chatStrips,body.lite .tab-btn:not([data-v=chat]),body.lite .bni:not([data-v=chat]){display:none!important}   /* v2.61 โหมดชั่วคราว */   /* v2.61 หน้าต่างตั้งค่าโหมดชั่วคราวเปิดทับหน้าล็อกอินได้ */
+body.lite #chatStrips,body.lite .tab-btn:not([data-v=chat]),body.lite .bni:not([data-v=chat]){display:none!important}   /* v2.61 โหมดชั่วคราว */   /* v2.61 หน้าต่างตั้งค่าโหมดชั่วคราวเปิดทับหน้าล็อกอินได้ */
 #loginGate.hide{display:none}
 .login-card{background:var(--card-bg);border-radius:var(--radius-xl);border-top:4px solid var(--gold);padding:28px 24px;width:100%;max-width:360px;box-shadow:0 8px 30px rgba(0,0,0,.35);text-align:center}
 .lg-logo{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:18px}
@@ -1736,8 +1736,8 @@ async function liteLoadChats(){
   if(acct?.id !== a.id) return;
   const before = snapshot();
   chats = (rows || []).map(c => { const at = new Date(c.at).toISOString();
-    return { id:c.id, account_id:a.id, kind:c.kind === 'room' ? 'group' : c.kind, title:c.title, supplier_name:null, line_id:c.id, last_message:c.text, last_message_at:at, updated_at:at,
-             awaiting_since:c.waiting ? at : null, unread_count:0, status:'open', is_active:true, tags:[], team_seen:{}, assignee_email:null, exclude_kpi:false, member_count:null }; });
+    return { id:c.id, account_id:a.id, kind:c.kind === 'room' ? 'group' : c.kind, title:c.title, supplier_name:null, line_id:c.id, last_message:/^stk:/.test(c.text || '') ? '[สติกเกอร์]' : c.text, last_message_at:at, updated_at:at,
+             awaiting_since:c.waiting ? at : null, unread_count:0, status:c.done ? 'resolved' : 'open', is_active:true, tags:[], team_seen:{}, assignee_email:null, exclude_kpi:false, member_count:null, avatar_url:c.pic || null }; });
   chatById = new Map(chats.map(c => [c.id, c]));
   detectNew(before); renderList(); updateBadges();
   if(activeId && chatById.get(activeId)) renderChatHeader(chatById.get(activeId));
@@ -1746,6 +1746,9 @@ async function liteLoadMsgs(chatId){
   const rows = await liteApi('msgs', [acct.slug, chatId]);
   const list = (rows || []).map(m => {
     const out = m.dir === 'out', media = m.media ? 'gd:' + m.media : '';
+    const stk = /^stk:(\d+)/.exec(m.text || '');
+    if(stk) return { id:chatId + '-' + m.row, chat_id:chatId, via:out ? 'app' : 'line', direction:out ? 'out' : 'in', sender_type:out ? 'staff' : 'supplier',
+                     sender_name:out ? (m.by || 'ทีม') : (m.name || ''), msg_type:'sticker', content:stkUrl(stk[1]), status:'sent', unsent:false, is_ack:true, sent_at:new Date(m.at).toISOString() };
     const type = media && ['image', 'video', 'audio', 'file'].includes(m.type) ? m.type : 'text';
     return { id:chatId + '-' + m.row, chat_id:chatId, via:out ? 'app' : 'line', direction:out ? 'out' : 'in', sender_type:out ? 'staff' : 'supplier',
              sender_name:out ? (m.by || 'ทีม') : (m.name || ''), msg_type:type, content:type === 'text' ? m.text : media,
@@ -1755,6 +1758,31 @@ async function liteLoadMsgs(chatId){
   return list;
 }
 let litePollT = null, liteMsgN = {};
+// v2.62 ส่งรูป/ไฟล์ — ไฟล์ไปเก็บ Google Drive ของ Apps Script แล้วส่งเข้า LINE (รูป = รูป · ไฟล์ = การ์ดปุ่มเปิดไฟล์)
+async function liteSendMedia(chatId, kind, blob, name){
+  if(blob.size > 15 * 1024 * 1024){ showToast('ไฟล์ใหญ่เกิน 15MB', 'warning'); return; }
+  showToast(kind === 'image' ? 'กำลังส่งรูป…' : 'กำลังส่งไฟล์…', 'info', 2500);
+  try{
+    const b64 = (await readAsDataURL(blob)).split(',')[1] || '';
+    await liteApi('media', [acct.slug, chatId, kind, name, blob.type || 'application/octet-stream', b64, me.nick]);
+    await liteRefreshActive(chatId);
+  }catch(e){ showToast('ส่งไม่สำเร็จ: ' + e.message, 'error', 6000); }
+}
+async function liteRefreshActive(chatId){
+  const l = await liteLoadMsgs(chatId); liteMsgN[chatId] = l.length;
+  if(activeId === chatId){ renderMsgs(l); scrollBottom(); }
+  liteLoadChats().catch(() => {});
+}
+async function liteDone(msg){
+  const id = activeId; if(!id) return;
+  try{ await liteApi('done', [acct.slug, id]); showToast(msg, 'success'); await liteLoadChats(); }
+  catch(e){ showToast(e.message, 'error'); }
+}
+// ปุ่มในแชท (โหมดชั่วคราว): เสร็จแล้ว / ไม่ต้องตอบ
+function liteTools(c){
+  return `<button class="tool-btn ${c.status === 'resolved' ? 'done' : ''}" onclick="toggleResolve()">${c.status === 'resolved' ? '✓ เสร็จแล้ว' : '✓ ทำเครื่องหมายเสร็จ'}</button>`
+       + (c.awaiting_since ? `<button class="tool-btn danger" onclick="dismissWait()">🚫 ไม่ต้องตอบ</button>` : '');
+}
 function startLitePoll(){
   clearInterval(litePollT);
   litePollT = setInterval(async () => {
@@ -2629,6 +2657,7 @@ function renderTools(c){
   h += `<button class="tool-btn" onclick="markUnread()" title="เผลอเปิดอ่าน? ให้แชทนี้กลับไปขึ้นตัวหนาเหมือนยังไม่ได้อ่าน">● ยังไม่อ่าน</button>`;
   if(c.awaiting_since && !c.exclude_kpi) h += `<button class="tool-btn danger" onclick="dismissWait()" title="ปิดงานรอตอบโดยไม่ตอบ เช่น ข้อความไม่เกี่ยวกับเรา">🚫 ไม่ต้องตอบ</button>`;
   if(isSup()) h += `<span class="tool-sp"></span><button class="tool-btn ${c.exclude_kpi ? 'danger' : ''}" onclick="toggleExclude()" title="แชททดสอบ/แชทภายใน ไม่ควรนับสถิติ">${c.exclude_kpi ? '📵 ไม่นับสถิติ' : '📊 นับสถิติ'}</button>`;
+  if(LITE) h = liteTools(c);   // v2.62 โหมดชั่วคราว: เสร็จแล้ว / ไม่ต้องตอบ
   $('chatTools').innerHTML = h;
 }
 let stripsOpen = LS.get('pur.stripsOpen') === '1';
@@ -3669,6 +3698,7 @@ async function sendImage(file, toChat){
   const chatId = toChat || activeId; if(!chatId) return;
   if(!/^image\//.test(file.type)){ showToast('เลือกได้เฉพาะไฟล์รูปภาพ', 'warning'); return; }
   if(DEMO){ demoBlock(); return; }
+  if(LITE){ const small = await downscaleImage(file); return liteSendMedia(chatId, 'image', small, file.name || 'image.jpg'); }   // v2.62
   if(isOaOnly(chatById.get(chatId))){ showToast(OA_ONLY_MSG, 'warning', 4500); return; }
   const blobUrl = URL.createObjectURL(file);
   const local = { id:'tmp-' + Date.now(), tmp:true, chat_id:chatId, via:'app', direction:'out', sender_type:'staff', staff_email:me.email,
@@ -3718,6 +3748,7 @@ async function sendPickedFile(){
 async function sendFile(file, caption){
   if(!activeId) return; const chatId = activeId;
   if(DEMO){ demoBlock(); return; }
+  if(LITE) return liteSendMedia(chatId, 'file', file, file.name);   // v2.62
   const local = { id:'tmp-' + Date.now(), tmp:true, chat_id:chatId, via:'app', direction:'out', sender_type:'staff', staff_email:me.email,
                   sender_name:me.nick, msg_type:'file', content:'', file_name:file.name, status:'sending', sent_at:new Date().toISOString() };
   (msgCache[chatId] || (msgCache[chatId] = [])).push(local);
@@ -3801,6 +3832,7 @@ function insEmoji(e){
 async function sendSticker(pkg, id){
   if(!activeId) return; const chatId = activeId; const c = chatById.get(chatId); if(!c) return;
   if(DEMO){ demoBlock(); return; }
+  if(LITE){ pushRecent('pur.stkRecent', `${pkg}:${id}`, 24); try{ await liteApi('sticker', [acct.slug, chatId, pkg, id, me.nick]); await liteRefreshActive(chatId); }catch(e){ showToast('ส่งไม่สำเร็จ: ' + e.message, 'error', 5000); } return; }   // v2.62
   if(isOaOnly(c)){ showToast(OA_ONLY_MSG, 'warning', 4500); return; }
   pushRecent('pur.stkRecent', `${pkg}:${id}`, 24);
   const local = { id:'tmp-' + Date.now(), tmp:true, chat_id:chatId, via:'app', direction:'out', sender_type:'staff', staff_email:me.email,
@@ -3966,6 +3998,7 @@ async function claimChat(){
   catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
 }
 function dismissWait(){
+  if(LITE) return liteDone('ไม่ต้องตอบแล้ว ✓');   // v2.62
   const c = chatById.get(activeId); if(!c || !c.awaiting_since) return;
   openModal('ปิดงานรอตอบ — ไม่ต้องตอบ', `<p>ใช้เมื่อข้อความนี้ไม่ต้องการคำตอบจากทีม เช่น ${peer()}คุยกันเอง ส่งผิดกลุ่ม หรือแจ้งให้ทราบเฉยๆ</p><p class="txt-sm txt-muted mt-8">ระบบจะบันทึกว่า <b>${esc(me.nick || me.email)}</b> เป็นคนปิดงานนี้ (ไม่นับเป็นการตอบ และไม่นับเป็นงานค้าง)</p>`,
     `<button class="btn btn-outline" onclick="closeModal()">ยกเลิก</button><button class="btn btn-danger" onclick="doDismiss()">🚫 ยืนยัน ไม่ต้องตอบ</button>`);
@@ -3977,6 +4010,7 @@ async function doDismiss(){
   catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
 }
 async function toggleResolve(){
+  if(LITE) return liteDone('ทำเครื่องหมายเสร็จแล้ว ✓');   // v2.62
   const c = chatById.get(activeId); if(!c) return; const id = c.id; const st = c.status === 'resolved' ? 'open' : 'resolved';
   try{ await rpc('pur_set_status', { p_chat:id, p_status:st }); patchChat(id, { status:st }); showToast(st === 'resolved' ? 'ทำเครื่องหมายเสร็จแล้ว ✓' : 'เปิดแชทใหม่แล้ว', 'success'); }
   catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
@@ -7285,7 +7319,7 @@ async function enterAccount(id){
   me = { ...(meRow || {}), role:a.role };
   applyListW();
   if(DEMO){ demoEnter(); renderAcctHeader(); if(started) setView(view); else await showApp(); return; }
-  if(LITE){ if(activeId) closeChat(); renderAcctHeader(); if(started){ try{ await liteLoadChats(); }catch(e){ showToast('โหลดไม่สำเร็จ: ' + e.message, 'error'); } setView('chat'); } else await showApp(); return; }   // v2.61
+  if(LITE){ if(activeId) closeChat(); renderAcctHeader(); liteApi('quick', [a.slug]).then(q => { if(settings){ settings.quick_replies = q || []; renderQuick(); } }).catch(() => {}); if(started){ try{ await liteLoadChats(); }catch(e){ showToast('โหลดไม่สำเร็จ: ' + e.message, 'error'); } setView('chat'); } else await showApp(); return; }   // v2.61
   if(!started){ await showApp(); return; }
   if(switching) resetAccountState();
   showSpinner(`กำลังเปิดบัญชี ${a.name}…`);
@@ -7324,7 +7358,7 @@ async function showApp(){
   showSpinner('กำลังโหลดข้อมูล…');
   try{
     if(DEMO){ /* demoBoot + demoEnter โหลดข้อมูลของบัญชีที่เลือกไว้แล้ว */ }
-    else if(LITE){ applySettings(defaultSettings()); await liteLoadChats(); startLitePoll(); }   // v2.61
+    else if(LITE){ applySettings(defaultSettings()); try{ settings.quick_replies = await liteApi('quick', [acct.slug]) || []; renderQuick(); }catch(_){} await liteLoadChats(); startLitePoll(); }   // v2.61 · v2.62 ข้อความตอบด่วน
     else { await Promise.all([loadMembers(), loadPeople(), loadSettings()]); await loadChats(); setupRealtime(); startAutoRefresh(); }
   }catch(e){ console.error('load failed:', e); showToast('โหลดข้อมูลไม่สำเร็จ: ' + e.message, 'error', 6000); }
   finally{ hideSpinner(); }
