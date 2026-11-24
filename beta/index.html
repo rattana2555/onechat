@@ -4002,23 +4002,6 @@ function schedulePaint(){
 // DELETE ใส่ filter ไม่ได้ (Supabase ส่งมาแต่รหัสแถว) → ฟังแยก ไม่กรอง ตัวจัดการลบเฉพาะแชทที่มีในรายการอยู่แล้ว
 let rtChannels = [];
 function teardownRealtime(){ rtChannels.forEach(ch => { try{ sb.removeChannel(ch); }catch(_){ } }); rtChannels = []; }
-// v2.60 ลด Egress: แท็บ/แอพที่ซ่อนอยู่ยังรับ "ข้อความใหม่ทุกข้อความของบัญชี" (รวมการ์ดเต็ม) ตลอดวัน ทั้งที่ใช้แค่แชทที่เปิดอยู่
-//   ซ่อนเกิน 3 นาที → ปิดเฉพาะช่องข้อความ (ช่องรายการแชทยังเปิด — แจ้งเตือน/ป้ายยังอยู่) · กลับมา → เปิดใหม่ + โหลดข้อความแชทที่เปิดอยู่ถ้าพลาด
-let msgChHiddenT = null;
-document.addEventListener('visibilitychange', () => {
-  if(DEMO || !started) return;
-  const ch = rtChannels.find(c => String(c.topic || '').includes('pur-msgs-'));
-  if(document.hidden){ clearTimeout(msgChHiddenT); msgChHiddenT = setTimeout(() => { const c = rtChannels.find(x => String(x.topic || '').includes('pur-msgs-')); if(c && document.hidden){ try{ sb.removeChannel(c); }catch(_){ } rtChannels = rtChannels.filter(x => x !== c); } }, 3 * 60 * 1000); return; }
-  clearTimeout(msgChHiddenT);
-  if(!ch && acct){ subscribeMsgs(); if(activeId) refreshActiveMsgs().catch(() => {}); }
-});
-function subscribeMsgs(){
-  const f = `account_id=eq.${acct.id}`;
-  rtChannels.push(sb.channel('pur-msgs-' + acct.id)
-    .on('postgres_changes', { event:'INSERT', schema:'public', table:'pur_messages', filter:f }, p => onMsgInsert(p.new))
-    .on('postgres_changes', { event:'UPDATE', schema:'public', table:'pur_messages', filter:f }, p => onMsgUpdate(p.new))
-    .subscribe());
-}
 function setupRealtime(){
   teardownRealtime();
   const f = `account_id=eq.${acct.id}`;
@@ -4038,18 +4021,47 @@ function setupRealtime(){
     if(activeId === r.id) paintHeader = true;
     schedulePaint();
   };
-  rtChannels.push(sb.channel('pur-chats-' + acct.id)
-    .on('postgres_changes', { event:'INSERT', schema:'public', table:'pur_chats', filter:f }, onChat)
-    .on('postgres_changes', { event:'UPDATE', schema:'public', table:'pur_chats', filter:f }, onChat)
-    .on('postgres_changes', { event:'DELETE', schema:'public', table:'pur_chats' }, onChat)
+  // v2.60 ลด Egress (Realtime = 64% ของ Egress ทั้งโปรเจกต์): เดิมรับทั้งแถวของ pur_chats/pur_messages/pur_people ทุกครั้งที่เปลี่ยน
+  //   (แชทเปลี่ยน ~11 ครั้งต่อข้อความ × ทุกเครื่องที่เปิดอยู่) → ตอนนี้รับแค่สัญญาณ "แชทนี้เปลี่ยน" (pur_rt_pings ~100 ไบต์)
+  //   แล้วรวบดึงเฉพาะแชทที่เปลี่ยนทีเดียว · ข้อความดึงเฉพาะแชทที่เปิดอยู่ · ผลส่งเข้า onChat/onMsgInsert/onMsgUpdate เดิม (แจ้งเตือน/ป้ายทำงานเหมือนเดิม)
+  rtOnChat = onChat;
+  rtChannels.push(sb.channel('pur-pings-' + acct.id)
+    .on('postgres_changes', { event:'INSERT', schema:'public', table:'pur_rt_pings', filter:f }, p => onPing(p.new))
+    .on('postgres_changes', { event:'UPDATE', schema:'public', table:'pur_rt_pings', filter:f }, p => onPing(p.new))
     .subscribe());
-
-  subscribeMsgs();
-
-  rtChannels.push(sb.channel('pur-people-' + Date.now().toString(36)).on('postgres_changes', { event:'*', schema:'public', table:'pur_people' }, p => {
-    if(p.new?.line_user_id){ people.set(p.new.line_user_id, p.new); refreshPeopleCards(); }
-  }).subscribe());
 }
+let rtOnChat = null;
+const pingChats = new Set(); let pingChatT = null, pingMsgT = null;
+function onPing(r){
+  if(!r?.chat_id || (acct && r.account_id !== acct.id)) return;
+  if(r.kind === 'x'){ rtOnChat?.({ eventType:'DELETE', old:{ id:r.chat_id } }); return; }
+  if(r.kind === 'm'){ if(r.chat_id === activeId){ clearTimeout(pingMsgT); pingMsgT = setTimeout(flushPingMsgs, 700); } return; }
+  pingChats.add(r.chat_id);
+  if(!pingChatT) pingChatT = setTimeout(flushPingChats, document.hidden ? 15000 : 1200);   // ซ่อนอยู่ = รวบนานขึ้น (ยังได้แจ้งเตือน)
+}
+async function flushPingChats(){
+  pingChatT = null; if(!pingChats.size || !acct) return;
+  const ids = [...pingChats].slice(0, 100), aid = acct.id; ids.forEach(id => pingChats.delete(id));
+  try{
+    const { data, error } = await sb.from('pur_chats').select('*').in('id', ids);
+    if(error) throw error; if(acct?.id !== aid) return;
+    (data || []).forEach(r => rtOnChat?.({ eventType:'UPDATE', new:r }));
+    const m = maxUpdated(data || []); if(tsOf(m) > tsOf(chatSync)) chatSync = m;
+    chatCache.save(aid);
+  }catch(e){ console.warn('ping chats:', e.message); ids.forEach(id => pingChats.add(id)); }
+  if(pingChats.size) pingChatT = setTimeout(flushPingChats, 1200);
+}
+// ข้อความในแชทที่เปิดอยู่: ดึง 30 ข้อความล่าสุด แล้วรวมเข้ากับที่มี (ใหม่ = แทรก · มีแล้ว = อัปเดตสถานะ/การ์ด/ถอดเสียง)
+async function flushPingMsgs(){
+  const id = activeId; if(!id) return;
+  try{
+    const { data, error } = await sb.from('pur_messages').select('*').eq('chat_id', id).order('sent_at', { ascending:false }).limit(30);
+    if(error) throw error; if(activeId !== id) return;
+    const have = new Set((msgCache[id] || []).map(x => x.id));
+    (data || []).reverse().forEach(m => have.has(m.id) ? onMsgUpdate(m) : onMsgInsert(m));
+  }catch(e){ console.warn('ping msgs:', e.message); }
+}
+document.addEventListener('visibilitychange', () => { if(!document.hidden && pingChats.size){ clearTimeout(pingChatT); flushPingChats(); } });
 function onMsgInsert(m){
   if(!m || m.chat_id !== activeId) return;
   const list = msgCache[activeId] || (msgCache[activeId] = []);
@@ -5997,7 +6009,10 @@ async function newLinkCode(){
         <br>ยังไม่ได้เพิ่มเพื่อน? กดปุ่มกลางก่อน · ปุ่มไม่ทำงาน ส่งรหัส <b>${esc(code)}</b> ในแชท 1:1 กับ <b>${esc(curOaId())}</b> เองก็ได้
         <br>ระบบจะตอบยืนยัน แล้วหน้านี้จะขึ้น "ผูกแล้ว" เอง</div>
       <div class="txt-sm txt-muted mt-8" id="linkCountdown"></div>`;
-    const tick = () => { const el = $('linkCountdown'); if(!el) return; const left = exp - Date.now(); if(left <= 0){ el.textContent = 'รหัสหมดอายุแล้ว — ขอรหัสใหม่ได้เลย'; return; } el.textContent = `รหัสใช้ได้อีก ${Math.floor(left/60000)}:${pad(Math.floor(left % 60000 / 1000))} นาที · ใช้ได้ครั้งเดียว`; linkTimer = setTimeout(tick, 1000); };
+    const mine0 = [...people.values()].filter(p => p.member_email === me.email).length; let n = 0;
+    const tick = () => { const el = $('linkCountdown'); if(!el) return; const left = exp - Date.now(); if(left <= 0){ el.textContent = 'รหัสหมดอายุแล้ว — ขอรหัสใหม่ได้เลย'; return; } el.textContent = `รหัสใช้ได้อีก ${Math.floor(left/60000)}:${pad(Math.floor(left % 60000 / 1000))} นาที · ใช้ได้ครั้งเดียว`;
+      if(!DEMO && ++n % 6 === 0) loadPeople().then(() => { if([...people.values()].filter(p => p.member_email === me.email).length > mine0){ clearTimeout(linkTimer); refreshPeopleCards(); showToast('ผูก LINE แล้ว ✓', 'success'); } }).catch(() => {});   // v2.60 ไม่มี realtime ของ pur_people แล้ว
+      linkTimer = setTimeout(tick, 1000); };
     clearTimeout(linkTimer);      // ขอรหัสซ้ำ → หยุดตัวนับของรหัสเก่า ไม่งั้นสองตัวเขียนทับบรรทัดเดียวกันสลับกันทุกวินาที
     tick();
   }catch(e){ if(e.message !== 'demo') showToast(e.message, 'error'); }
